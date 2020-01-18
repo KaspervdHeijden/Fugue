@@ -21,5 +21,5 @@ use Fugue\HTTP\Request;
 
 require_once __DIR__ . '/src/bootstrap.inc.php';
 
-(new RuntimeFactory())->getRuntime(new FrameWork())
+(new RuntimeFactory())->getRuntime(new FrameWork(false))
                       ->handle(Request::fromSuperGlobals());

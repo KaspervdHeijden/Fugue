@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Fugue\Core\Runtime;
 
 use Fugue\CronJob\CronJobFactory;
-use Fugue\Configuration\Config;
 use InvalidArgumentException;
 use Fugue\Core\FrameWork;
 use Fugue\HTTP\Request;
@@ -31,11 +30,11 @@ final class CLIRuntime implements RuntimeInterface
         }
 
         $cronArgs = array_slice($arguments, 2);
-        $cronId   = $arguments[1];
+        $cronName = $arguments[1];
 
         $factory  = new CronJobFactory($this->framework->getConfig());
-        $cronJob  = $factory->getCronJobFromIdentifier($cronId, $cronArgs);
+        $cronJob  = $factory->getCronJobFromIdentifier($cronName);
 
-        $cronJob->run();
+        $cronJob->run($cronArgs);
     }
 }

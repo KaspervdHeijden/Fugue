@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Fugue\HTTP\Routing;
 
-use Fugue\View\Templating\TemplateUtil;
-use Fugue\Configuration\Config;
+use Fugue\Container\ClassResolver;
+use Fugue\Container\Container;
+use Fugue\Collection\Map;
 use Fugue\HTTP\Response;
 use Fugue\HTTP\Request;
 use RuntimeException;
@@ -18,20 +19,22 @@ use function explode;
 
 final class RouteMatcher
 {
-    /** @var TemplateUtil */
-    private $templateUtil;
+    public const DEFAULT_CONTROLLER_METHOD = 'handleRequest';
+
+    /** @var Map */
+    private $objectMapping;
+
+    /** @var Container */
+    private $container;
 
     /** @var RouteMap */
     private $routeMap;
 
-    /** @var Config */
-    private $config;
-
-    public function __construct(TemplateUtil $templateUtil, Config $config, RouteMap $routeMap)
+    public function __construct(Map $objectMapping, Container $container, RouteMap $routeMap)
     {
-        $this->templateUtil = $templateUtil;
-        $this->routeMap     = $routeMap;
-        $this->config       = $config;
+        $this->objectMapping = $objectMapping;
+        $this->container     = $container;
+        $this->routeMap      = $routeMap;
     }
 
     /**
@@ -87,13 +90,24 @@ final class RouteMatcher
 
         [$className, $methodName] = explode('@', "\\{$handler}", 2);
         if ($className === '' || ! class_exists($className, true)) {
-            throw new RuntimeException("Can't load class '{$className}'.");
+            throw new RuntimeException("Cannot load class '{$className}'.");
         }
 
-        $instance = new $className($request, $route, $this->config, $this->templateUtil);
-        if ($methodName === '' || ! method_exists($instance, $methodName)) {
+        if (! isset($methodName) || $methodName === '') {
+            $methodName = self::DEFAULT_CONTROLLER_METHOD;
+        }
+
+        $mapping = $this->objectMapping->merge(new Map([
+            Container::class => $this->container,
+            RouteMap::class  => $this->routeMap,
+            Request::class   => $request,
+            Route::class     => $route,
+        ]));
+
+        $instance = (new ClassResolver())->resolve($className, $this->container, $mapping);
+        if (! method_exists($instance, $methodName)) {
             throw new RuntimeException(
-                "Cannot find function '{$className}->{$methodName}()'."
+                "Handler function does not exist: '{$className}->{$methodName}()'."
             );
         }
 

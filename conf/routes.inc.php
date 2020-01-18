@@ -6,5 +6,5 @@ use Fugue\Controller\DefaultController;
 use Fugue\HTTP\Routing\Route;
 
 return [
-    Route::get('/test', DefaultController::class . '@testPage', 'landing-page'),
+    Route::get('/', DefaultController::class . '@onLoad', 'landing-page'),
 ];

@@ -22,7 +22,7 @@ final class RuntimeFactory
     /**
      * Determines if the current request was called from the CI.
      *
-     * @return bool TRUE if the call was issued from the CLI, FALSE otherwise.
+     * @return bool TRUE if the request was issued from the CLI, FALSE otherwise.
      */
     private function isCalledFromCLI(): bool
     {

@@ -8,6 +8,8 @@ interface CronJobInterface
 {
     /**
      * Calls the CronJob.
+     *
+     * @param string[] $arguments
      */
-    public function run(): void;
+    public function run(array $arguments): void;
 }

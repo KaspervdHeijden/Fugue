@@ -108,7 +108,7 @@ abstract class Controller
     {
         return new TemplateAdapterFactory(
             $this->templateUtil,
-            $this->config
+            $this->config->getValue('directory.templates')
         );
     }
 
@@ -130,7 +130,7 @@ abstract class Controller
         array $variables = [],
         int $statusCode  = Response::HTTP_OK
     ): Response {
-        $view                 = $this->getTemplateFactory()->getTemplateAdapterFromIdentifier();
+        $view                 = $this->getTemplateFactory()->getForTemplate($contentTemplate);
         $variables            = $this->getTemplateVariables($title, $variables);
         $variables['content'] = $view->render($contentTemplate, $variables);
 
@@ -252,7 +252,7 @@ abstract class Controller
         int $statusCode     = Response::HTTP_OK
     ): Response {
         $content = $this->getTemplateFactory()
-                        ->getTemplateAdapterFromIdentifier()
+                        ->getForTemplate($contentTemplate)
                         ->render($contentTemplate, $variables);
 
         return new Response(

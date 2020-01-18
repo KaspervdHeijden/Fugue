@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Fugue\View\Templating;
 
-use Fugue\Configuration\Config;
 use InvalidArgumentException;
 
 final class TemplateAdapterFactory
@@ -12,52 +11,35 @@ final class TemplateAdapterFactory
     /** @var string */
     private const SUBDIRECTORY_PHP = 'php/';
 
-    /**
-     * @var string The PHP native template renderer.
-     */
-    public const TEMPLATE_PHP      = 'php';
-
-    /**
-     * @var string The system default template renderer.
-     */
-    public const TEMPLATE_DEFAULT = 'default';
+    /** @var string */
+    private $templateRootDir;
 
     /** @var TemplateUtil */
     private $templateUtil;
 
-    /** @var Config */
-    private $config;
-
-    public function __construct(TemplateUtil $templateUtil, Config $config)
+    public function __construct(TemplateUtil $templateUtil, string $templateRootDir)
     {
-        $this->templateUtil = $templateUtil;
-        $this->config       = $config;
+        $this->templateRootDir = $templateRootDir;
+        $this->templateUtil    = $templateUtil;
     }
 
     /**
      * Gets a TemplateInterface.
      *
-     * @param string $identifier        The identifier to get the TemplateInterface for. Defaults to system default.
-     *
-     * @return TemplateInterface        The TemplateInterface.
-     * @throws InvalidArgumentException If the identifier could not be recognized.
+     * @param string $template   The template filename to get the TemplateInterface for.
+     * @return TemplateInterface The TemplateInterface.
      */
-    public function getTemplateAdapterFromIdentifier(string $identifier = self::TEMPLATE_DEFAULT): TemplateInterface
+    public function getForTemplate(string $template): TemplateInterface
     {
-        switch ($identifier) {
-            case self::TEMPLATE_PHP:
-                return new PHPTemplateAdapter(
-                    $this->templateUtil,
-                    $this->config->getValue('directory.templates') . self::SUBDIRECTORY_PHP
-                );
-            case self::TEMPLATE_DEFAULT:
-                return $this->getTemplateAdapterFromIdentifier(
-                    $this->config->getValue('templating.identifier')
-                );
-            default:
-                throw new InvalidArgumentException(
-                    "Identifier {$identifier} not recognized."
-                );
+        if ((bool)preg_match('/\.php$/', $template)) {
+            return new PHPTemplateAdapter(
+                $this->templateUtil,
+                $this->templateRootDir . self::SUBDIRECTORY_PHP
+            );
         }
+
+        throw new InvalidArgumentException(
+            "Identifier {$template} not recognized."
+        );
     }
 }

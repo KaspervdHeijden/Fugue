@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Fugue\Core;
 
+use Fugue\Configuration\Loader\ConfigurationLoaderInterface;
+use Fugue\Configuration\Loader\PHPConfigurationLoader;
+use Fugue\Container\ContainerDefinition;
 use Fugue\Core\Runtime\RuntimeInterface;
 use Fugue\Configuration\Config;
+use Fugue\Container\Container;
 
 use function date_default_timezone_set;
 use function spl_autoload_extensions;
@@ -18,20 +22,18 @@ use function mb_language;
 use function str_replace;
 use function is_readable;
 use function setlocale;
+use function is_array;
 use function sprintf;
 use function ini_set;
+use function is_file;
 
 final class FrameWork
 {
-    /**
-     * @var int The process exit code in case of an exception.
-     */
-    private const EXIT_CODE_EXCEPTION = 1;
+    /** @var string */
+    private const NAMESPACE_BASE = 'Fugue';
 
-    /**
-     * @var string The class namespaces root.
-     */
-    private const NAMESPACE_BASE      = 'Fugue';
+    /** @var Container */
+    private $container;
 
     /** @var Config */
     private $config;
@@ -40,21 +42,21 @@ final class FrameWork
      * Instantiates the framework.
      *
      * Although this is not static, Fugue does NOT support multiple instances of the FrameWork.
+     *
+     * @param bool $debugMode Whether or not to run in debug mode.
      */
-    public function __construct()
+    public function __construct(bool $debugMode)
     {
+        ini_set('display_errors', ($debugMode ? '1' : '0'));
         set_error_handler([$this, 'genericErrorHandler']);
-
         ini_set('zlib.output_compression', '1');
-        ini_set('display_errors', '1'); // '0'
-        error_reporting(E_ALL);         // 0
+        error_reporting(E_ALL);
 
         spl_autoload_extensions('.php');
         spl_autoload_register([$this, 'genericClassloader']);
 
-        $localization = $this->getConfig()->getBranch('localization');
-
         // Set locale/timezone/charset
+        $localization = $this->getConfig()->getBranch('localization');
         ini_set('default_charset', RuntimeInterface::CHARSET);
         date_default_timezone_set(RuntimeInterface::CHARSET);
         setlocale(LC_TIME, RuntimeInterface::CHARSET);
@@ -75,45 +77,69 @@ final class FrameWork
     }
 
     /**
-     * @param string $fileName
-     * @return mixed|null
+     * @return ConfigurationLoaderInterface[]
      */
-    private function requireOnce(string $fileName)
+    private function getConfigurationLoaders(): array
     {
-        if (is_readable($fileName)) {
-            /** @noinspection PhpIncludeInspection */
-            return require_once $fileName;
-        }
-
-        return null;
+        $configPath = "{$this->getRootDir()}../conf/";
+        return [
+            new PHPConfigurationLoader($configPath),
+        ];
     }
 
     /**
      * Loads a configuration file.
      *
-     * @param string $fileName The filename to load.
-     * @return array           Result returned from the included file, or NULL
+     * @param string $identifier Identifies the configuration item to load.
+     * @return array             Result returned from the included file/
      */
-    public function loadConfigFile(string $fileName): array
+    public function loadConfiguration(string $identifier): array
     {
-        $result = $this->requireOnce("{$this->getRootDir()}../conf/{$fileName}.inc.php");
-        if ($result === null) {
-            return [];
+        $loaders = $this->getConfigurationLoaders();
+        foreach ($loaders as $loader) {
+            if (! $loader->supports($identifier)) {
+                continue;
+            }
+
+            $result = $loader->load($identifier);
+            if (is_array($result)) {
+                return $result;
+            }
         }
 
-        return (array)$result;
+        return [];
     }
 
     public function getConfig(): Config
     {
         if (! $this->config instanceof Config) {
             $this->config = new Config(
-                $this->loadConfigFile('config'),
-                $this->loadConfigFile('env.config')
+                $this->loadConfiguration('config'),
+                $this->loadConfiguration('env.config')
             );
         }
 
         return $this->config;
+    }
+
+    public function getContainer(): Container
+    {
+        if (! $this->container instanceof Container) {
+            /** @var ContainerDefinition[] $services */
+            $services = $this->loadConfiguration('services');
+            $this->container = new Container(...$services);
+        }
+
+        return $this->container;
+    }
+
+    private function classToFileName(string $className): string
+    {
+        return str_replace(
+            ['\\', self::NAMESPACE_BASE],
+            ['/', $this->getRootDir()],
+            $className
+        );
     }
 
     /**
@@ -123,11 +149,11 @@ final class FrameWork
      */
     public function genericClassloader(string $className): void
     {
-        $this->requireOnce(str_replace(
-            ['\\', self::NAMESPACE_BASE],
-            ['/', $this->getRootDir()],
-            $className
-        ));
+        $fileName = $this->classToFileName($className);
+        if (is_file($fileName) && is_readable($fileName)) {
+            /** @noinspection PhpIncludeInspection */
+            require_once $fileName;
+        }
     }
 
     /**
@@ -156,6 +182,6 @@ final class FrameWork
             $errorMessage
         );
 
-        exit($errorNumber ?: self::EXIT_CODE_EXCEPTION);
+        exit($errorNumber ?: 32);
     }
 }

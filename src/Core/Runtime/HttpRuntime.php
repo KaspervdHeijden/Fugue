@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace Fugue\Core\Runtime;
 
-use Fugue\Localization\Implementation\DutchPhoneNumberDisplayAdapter;
-use Fugue\Localization\Implementation\DutchNumberFormatter;
-use Fugue\Localization\Implementation\DutchDateFormatter;
-use Fugue\View\Templating\TemplateUtil;
 use Fugue\HTTP\Routing\RouteMatcher;
 use Fugue\HTTP\Routing\RouteMap;
-use Fugue\Configuration\Config;
+use Fugue\Collection\Map;
 use Fugue\Core\FrameWork;
 use Fugue\HTTP\Response;
 use Fugue\HTTP\Request;
@@ -22,35 +18,22 @@ use function strlen;
 
 final class HttpRuntime implements RuntimeInterface
 {
-    /** @var TemplateUtil */
-    private $templateUtil;
-
-    /** @var RouteMap */
-    private $routeMap;
-
-    /** @var Config */
-    private $config;
+    /** @var FrameWork */
+    private $framework;
 
     public function __construct(FrameWork $frameWork)
     {
-        $routeMap           = new RouteMap($frameWork->loadConfigFile('routes'));
-        $this->templateUtil = new TemplateUtil(
-            new DutchPhoneNumberDisplayAdapter(), // @todo load from container
-            new DutchNumberFormatter(),
-            new DutchDateFormatter(),
-            $routeMap
-        );
-
-        $this->config   = $frameWork->getConfig();
-        $this->routeMap = $routeMap;
+        $this->framework = $frameWork;
     }
 
     public function handle(Request $request): void
     {
+        $mapping  = new Map($this->framework->loadConfiguration('object-mapping'));
+        $routeMap = new RouteMap($this->framework->loadConfiguration('routes'));
         $matcher  = new RouteMatcher(
-            $this->templateUtil,
-            $this->config,
-            $this->routeMap
+            $mapping,
+            $this->framework->getContainer(),
+            $routeMap
         );
 
         $response = $matcher->findAndRun($request);
@@ -78,7 +61,7 @@ final class HttpRuntime implements RuntimeInterface
     private function getHeaders(Request $request, Response $response): array
     {
         $headers = [
-            "{$request->getProtocol()} {$response->getStatusCode()} {$response->getStatusCodeText()}"
+            "{$request->getProtocol()} {$response->getStatusCode()} {$response->getStatusCodeText()}",
         ];
 
         foreach ($response->getHeaders() as $name => $value) {
