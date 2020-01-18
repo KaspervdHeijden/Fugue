@@ -19,25 +19,12 @@ return [
         'identifier' => 'native',
         'timeout'    => 14400,         // Log out after 4 hours of no activity
     ],
-
-    // Set locale to Dutch
-    'localization' => [
-        'timezone'   => 'Europe/Amsterdam',
-        'identifier' => 'dutch',
-        'locale'     => 'nl_NL',
-    ],
-
     // Application
     'application' => [
         'version'       => '<your-application-version>',
         'name'          => '<your-application-name>',
         'default-email' => '',
         'url-prefix'    => '',
-    ],
-
-    // Templating
-    'templating' => [
-        'identifier' => 'php',
     ],
 
     // Directory structure settings. Important! These paths must ALWAYS end with a trailing slash!

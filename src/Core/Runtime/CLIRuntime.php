@@ -6,7 +6,6 @@ namespace Fugue\Core\Runtime;
 
 use Fugue\CronJob\CronJobFactory;
 use InvalidArgumentException;
-use Fugue\Core\FrameWork;
 use Fugue\HTTP\Request;
 
 use function array_slice;
@@ -14,14 +13,6 @@ use function count;
 
 final class CLIRuntime implements RuntimeInterface
 {
-    /** @var FrameWork */
-    private $framework;
-
-    public function __construct(FrameWork $frameWork)
-    {
-        $this->framework = $frameWork;
-    }
-
     public function handle(Request $request): void
     {
         $arguments = $request->server()->getArray('argv');
@@ -32,7 +23,7 @@ final class CLIRuntime implements RuntimeInterface
         $cronArgs = array_slice($arguments, 2);
         $cronName = $arguments[1];
 
-        $factory  = new CronJobFactory($this->framework->getConfig());
+        $factory  = new CronJobFactory();
         $cronJob  = $factory->getCronJobFromIdentifier($cronName);
 
         $cronJob->run($cronArgs);

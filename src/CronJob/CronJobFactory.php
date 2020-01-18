@@ -4,19 +4,10 @@ declare(strict_types=1);
 
 namespace Fugue\CronJob;
 
-use Fugue\Configuration\Config;
 use InvalidArgumentException;
 
 final class CronJobFactory
 {
-    /** @var Config $config */
-    private $config;
-
-    public function __construct(Config $config)
-    {
-        $this->config = $config;
-    }
-
     /**
      * Gets a CronJob from an identifier.
      *

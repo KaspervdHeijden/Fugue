@@ -10,6 +10,9 @@ use Fugue\Localization\DateFormatterInterface;
 use Fugue\HTTP\Routing\RouteMap;
 use Fugue\HTTP\Routing\Route;
 
+use function realpath;
+use function rtrim;
+
 final class TemplateUtil
 {
     /** @var PhoneNumberDisplayAdapterInterface */
@@ -168,5 +171,11 @@ final class TemplateUtil
         }
 
         return $formattedPhoneNumber;
+    }
+
+    public function getTemplateRootDir(): string
+    {
+        $rootDir = rtrim(realpath(__DIR__ . '/../../../'), '/');
+        return "{$rootDir}/templates/";
     }
 }

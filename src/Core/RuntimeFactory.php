@@ -42,7 +42,7 @@ final class RuntimeFactory
     public function getRuntime(FrameWork $frameWork): RuntimeInterface
     {
         if ($this->isCalledFromCLI()) {
-            return new CLIRuntime($frameWork);
+            return new CLIRuntime();
         }
 
         return new HttpRuntime($frameWork);

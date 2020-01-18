@@ -19,18 +19,21 @@ use function is_file;
 final class PHPTemplateAdapter implements TemplateInterface
 {
     /** @var string */
-    private const FILE_EXTENSION = '.php';
+    private const SUBDIRECTORY_PHP = 'php/';
 
     /** @var string */
-    private $templateRootDirectory;
+    private const FILE_EXTENSION   = '.php';
 
     /** @var TemplateUtil */
     private $templateUtil;
 
-    public function __construct(TemplateUtil $templateUtil, string $templateRootDirectory)
+    /** @var string */
+    private $rootDir;
+
+    public function __construct(TemplateUtil $templateUtil)
     {
-        $this->templateRootDirectory = $templateRootDirectory;
-        $this->templateUtil          = $templateUtil;
+        $this->rootDir      = $templateUtil->getTemplateRootDir() . self::SUBDIRECTORY_PHP;
+        $this->templateUtil = $templateUtil;
     }
 
     /**
@@ -45,7 +48,7 @@ final class PHPTemplateAdapter implements TemplateInterface
             throw new LogicException('Template filename should not be empty.');
         }
 
-        $fullPath = "{$this->templateRootDirectory}/{$fileName}";
+        $fullPath = "{$this->rootDir}/{$fileName}";
         if (mb_substr($fullPath, -mb_strlen(self::FILE_EXTENSION)) !== self::FILE_EXTENSION) {
             $fullPath .= self::FILE_EXTENSION;
         }

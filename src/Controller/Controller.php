@@ -78,25 +78,14 @@ abstract class Controller
 
     private function getTemplateVariables(string $title, array $variables): array
     {
-        $appName  = $this->config->getValue('application.name');
         $defaults = [
-            'pageTitle'  => ($title !== '') ? "{$title} - {$appName}" : $appName,
             'charset'    => RuntimeInterface::CHARSET,
             'content'    => self::DEFAULT_HTML,
+            'pageTitle'  => $title,
             'message'    => '',
         ];
 
         return array_merge($defaults, $variables);
-    }
-
-    /**
-     * Gets the loaded config.
-     *
-     * @return Config The loaded configuration.
-     */
-    final protected function getConfig(): Config
-    {
-        return $this->config;
     }
 
     final protected function getTemplateUtil(): TemplateUtil
@@ -106,10 +95,7 @@ abstract class Controller
 
     final protected function getTemplateFactory(): TemplateAdapterFactory
     {
-        return new TemplateAdapterFactory(
-            $this->templateUtil,
-            $this->config->getValue('directory.templates')
-        );
+        return new TemplateAdapterFactory($this->templateUtil);
     }
 
     /**

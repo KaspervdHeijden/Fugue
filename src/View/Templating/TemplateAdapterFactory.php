@@ -6,21 +6,16 @@ namespace Fugue\View\Templating;
 
 use InvalidArgumentException;
 
+use function preg_match;
+
 final class TemplateAdapterFactory
 {
-    /** @var string */
-    private const SUBDIRECTORY_PHP = 'php/';
-
-    /** @var string */
-    private $templateRootDir;
-
     /** @var TemplateUtil */
     private $templateUtil;
 
-    public function __construct(TemplateUtil $templateUtil, string $templateRootDir)
+    public function __construct(TemplateUtil $templateUtil)
     {
-        $this->templateRootDir = $templateRootDir;
-        $this->templateUtil    = $templateUtil;
+        $this->templateUtil = $templateUtil;
     }
 
     /**
@@ -32,10 +27,7 @@ final class TemplateAdapterFactory
     public function getForTemplate(string $template): TemplateInterface
     {
         if ((bool)preg_match('/\.php$/', $template)) {
-            return new PHPTemplateAdapter(
-                $this->templateUtil,
-                $this->templateRootDir . self::SUBDIRECTORY_PHP
-            );
+            return new PHPTemplateAdapter($this->templateUtil);
         }
 
         throw new InvalidArgumentException(

@@ -8,7 +8,6 @@ use Fugue\Configuration\Loader\ConfigurationLoaderInterface;
 use Fugue\Configuration\Loader\PHPConfigurationLoader;
 use Fugue\Container\ContainerDefinition;
 use Fugue\Core\Runtime\RuntimeInterface;
-use Fugue\Configuration\Config;
 use Fugue\Container\Container;
 
 use function date_default_timezone_set;
@@ -35,9 +34,6 @@ final class FrameWork
     /** @var Container */
     private $container;
 
-    /** @var Config */
-    private $config;
-
     /**
      * Instantiates the framework.
      *
@@ -56,13 +52,12 @@ final class FrameWork
         spl_autoload_register([$this, 'genericClassloader']);
 
         // Set locale/timezone/charset
-        $localization = $this->getConfig()->getBranch('localization');
         ini_set('default_charset', RuntimeInterface::CHARSET);
         date_default_timezone_set(RuntimeInterface::CHARSET);
         setlocale(LC_TIME, RuntimeInterface::CHARSET);
 
-        mb_internal_encoding($localization['charset']);
-        mb_regex_encoding($localization['charset']);
+        mb_internal_encoding(RuntimeInterface::CHARSET);
+        mb_regex_encoding(RuntimeInterface::CHARSET);
         mb_language('uni');
     }
 
@@ -108,18 +103,6 @@ final class FrameWork
         }
 
         return [];
-    }
-
-    public function getConfig(): Config
-    {
-        if (! $this->config instanceof Config) {
-            $this->config = new Config(
-                $this->loadConfiguration('config'),
-                $this->loadConfiguration('env.config')
-            );
-        }
-
-        return $this->config;
     }
 
     public function getContainer(): Container
