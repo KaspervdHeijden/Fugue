@@ -6,7 +6,7 @@ namespace Fugue\HTTP\Routing;
 
 use Fugue\Container\ClassResolver;
 use Fugue\Container\Container;
-use Fugue\Collection\Map;
+use Fugue\Collection\ArrayMap;
 use Fugue\HTTP\Response;
 use Fugue\HTTP\Request;
 use RuntimeException;
@@ -21,7 +21,7 @@ final class RouteMatcher
 {
     public const DEFAULT_CONTROLLER_METHOD = 'handleRequest';
 
-    /** @var Map */
+    /** @var ArrayMap */
     private $objectMapping;
 
     /** @var Container */
@@ -30,7 +30,7 @@ final class RouteMatcher
     /** @var RouteMap */
     private $routeMap;
 
-    public function __construct(Map $objectMapping, Container $container, RouteMap $routeMap)
+    public function __construct(ArrayMap $objectMapping, Container $container, RouteMap $routeMap)
     {
         $this->objectMapping = $objectMapping;
         $this->container     = $container;
@@ -97,7 +97,7 @@ final class RouteMatcher
             $methodName = self::DEFAULT_CONTROLLER_METHOD;
         }
 
-        $mapping = $this->objectMapping->merge(new Map([
+        $mapping = $this->objectMapping->merge(new ArrayMap([
             Container::class => $this->container,
             RouteMap::class  => $this->routeMap,
             Request::class   => $request,
@@ -126,6 +126,9 @@ final class RouteMatcher
     private function run(Route $route, Request $request, array $params): Response
     {
         $handler = $this->getHandler($route, $request);
-        return call_user_func_array($handler, $params);
+        return call_user_func_array(
+            $handler,
+            array_merge($params, [$request, $route])
+        );
     }
 }

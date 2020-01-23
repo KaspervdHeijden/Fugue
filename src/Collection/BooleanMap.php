@@ -1,1 +1,1 @@
-<?phpdeclare(strict_types=1);namespace Fugue\Collection;use function is_bool;final class BooleanMap extends Map{    protected function checkValue($value): bool    {        return is_bool($value);    }}
+<?phpdeclare(strict_types=1);namespace Fugue\Collection;use function is_bool;final class BooleanMap extends ArrayMap{    protected function checkValue($value): bool    {        return is_bool($value);    }}

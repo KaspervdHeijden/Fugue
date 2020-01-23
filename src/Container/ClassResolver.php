@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\Container;
 
-use Fugue\Collection\Map;
+use Fugue\Collection\ArrayMap;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionClass;
@@ -19,20 +19,20 @@ final class ClassResolver
     /**
      * @param string    $className
      * @param Container $container
-     * @param Map       $classToObjects
+     * @param ArrayMap  $classToObjects
      *
      * @return mixed    Instance of $className
      */
     public function resolve(
         string $className,
         Container $container,
-        Map $classToObjects
+        ArrayMap $classToObjects
     ) {
         $argumentClasses = $this->getArgumentClassesFromConstructor($className);
         $objectsToLoad   = array_map(
             static function (ReflectionClass $reflectionClass) use ($classToObjects): string {
                 $typeName = $reflectionClass->getName();
-                if (isset($classToObjects[$typeName])) {
+                if ($classToObjects->containsKey($typeName)) {
                     return $classToObjects[$typeName];
                 }
 
@@ -41,14 +41,18 @@ final class ClassResolver
             $argumentClasses
         );
 
-        $arguments = [];
-        foreach ($objectsToLoad as $objectToLoad) {
-            if (isset($container[$objectToLoad])) {
-                $arguments[] = $container[$objectToLoad];
-            } else {
-                $arguments[] = $this->resolve($objectToLoad, $container, $classToObjects);
-            }
-        }
+        $arguments = array_map(
+            function ($objectToLoad) use ($container, $classToObjects) {
+                if (! is_string($objectToLoad)) {
+                    return $objectToLoad;
+                } elseif ($container->isRegistered($objectToLoad)) {
+                    return $container->resolve($objectToLoad);
+                } else {
+                    return $this->resolve($objectToLoad, $container, $classToObjects);
+                }
+            },
+            $objectsToLoad
+        );
 
         return new $className(...$arguments);
     }
@@ -71,12 +75,12 @@ final class ClassResolver
             }
 
             $parameters = $constructor->getParameters();
-            $names      = [];
+            $classes    = [];
 
             foreach ($parameters as $parameter) {
                 $class = $parameter->getClass();
                 if ($class instanceof ReflectionClass) {
-                    $names[] = $class;
+                    $classes[] = $class;
                     continue;
                 }
 
@@ -90,8 +94,8 @@ final class ClassResolver
                 );
             }
 
-            $this->classCache[$className] = $names;
-            return $names;
+            $this->classCache[$className] = $classes;
+            return $classes;
         } catch (ReflectionException $reflectionException) {
             throw InvalidClassException::forClassName($className);
         }

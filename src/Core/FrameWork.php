@@ -6,8 +6,8 @@ namespace Fugue\Core;
 
 use Fugue\Configuration\Loader\ConfigurationLoaderInterface;
 use Fugue\Configuration\Loader\PHPConfigurationLoader;
-use Fugue\Container\ContainerDefinition;
 use Fugue\Core\Runtime\RuntimeInterface;
+use Fugue\Collection\ArrayMap;
 use Fugue\Container\Container;
 
 use function date_default_timezone_set;
@@ -20,8 +20,8 @@ use function error_reporting;
 use function mb_language;
 use function str_replace;
 use function is_readable;
+use function is_iterable;
 use function setlocale;
-use function is_array;
 use function sprintf;
 use function ini_set;
 use function is_file;
@@ -86,9 +86,9 @@ final class FrameWork
      * Loads a configuration file.
      *
      * @param string $identifier Identifies the configuration item to load.
-     * @return array             Result returned from the included file/
+     * @return ArrayMap          Result returned from the included file/
      */
-    public function loadConfiguration(string $identifier): array
+    public function loadConfiguration(string $identifier): ArrayMap
     {
         $loaders = $this->getConfigurationLoaders();
         foreach ($loaders as $loader) {
@@ -97,20 +97,19 @@ final class FrameWork
             }
 
             $result = $loader->load($identifier);
-            if (is_array($result)) {
-                return $result;
+            if (is_iterable($result)) {
+                return new ArrayMap($result);
             }
         }
 
-        return [];
+        return new ArrayMap();
     }
 
     public function getContainer(): Container
     {
         if (! $this->container instanceof Container) {
-            /** @var ContainerDefinition[] $services */
-            $services = $this->loadConfiguration('services');
-            $this->container = new Container(...$services);
+            $services        = $this->loadConfiguration('services');
+            $this->container = new Container(...$services->all());
         }
 
         return $this->container;

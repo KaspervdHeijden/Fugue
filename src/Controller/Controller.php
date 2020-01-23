@@ -8,7 +8,6 @@ use Fugue\View\Templating\TemplateAdapterFactory;
 use Fugue\Core\Runtime\RuntimeInterface;
 use Fugue\View\Templating\TemplateUtil;
 use Fugue\Collection\PropertyBag;
-use Fugue\Configuration\Config;
 use Fugue\HTTP\Routing\Route;
 use Fugue\HTTP\Response;
 use Fugue\HTTP\Request;
@@ -24,56 +23,12 @@ abstract class Controller
     private const DEFAULT_HTML =
         '<p class="empty-page">You have encountered an empty page. Please notify your system administrator.</p>';
 
-    /** @var TemplateUtil */
-    private $templateUtil;
+    /** @var TemplateAdapterFactory */
+    private $templateFactory;
 
-    /** @var Request */
-    private $request;
-
-    /** @var Config */
-    private $config;
-
-    /** @var Route */
-    private $route;
-
-    /**
-     * Creates a Controller instance.
-     *
-     * @param Request      $request      The request.
-     * @param Route|null   $route        The active route running this controller.
-     * @param Config       $config       The loaded config.
-     * @param TemplateUtil $templateUtil The template render utility helper.
-     */
-    public function __construct(
-        Request $request,
-        Route $route,
-        Config $config,
-        TemplateUtil $templateUtil
-    ) {
-        $this->templateUtil = $templateUtil;
-        $this->request      = $request;
-        $this->config       = $config;
-        $this->route        = $route;
-    }
-
-    /**
-     * Gets the Request.
-     *
-     * @return Request The request currently being handled.
-     */
-    final protected function getRequest(): Request
+    public function __construct(TemplateAdapterFactory $templateFactory)
     {
-        return $this->request;
-    }
-
-    /**
-     * Gets the Route.
-     *
-     * @return Route The route that matched the URL and is being executed.
-     */
-    final protected function getRoute(): Route
-    {
-        return $this->route;
+        $this->templateFactory = $templateFactory;
     }
 
     private function getTemplateVariables(string $title, array $variables): array
@@ -88,14 +43,9 @@ abstract class Controller
         return array_merge($defaults, $variables);
     }
 
-    final protected function getTemplateUtil(): TemplateUtil
-    {
-        return $this->templateUtil;
-    }
-
     final protected function getTemplateFactory(): TemplateAdapterFactory
     {
-        return new TemplateAdapterFactory($this->templateUtil);
+        return $this->templateFactory;
     }
 
     /**
@@ -116,7 +66,7 @@ abstract class Controller
         array $variables = [],
         int $statusCode  = Response::HTTP_OK
     ): Response {
-        $view                 = $this->getTemplateFactory()->getForTemplate($contentTemplate);
+        $view                 = $this->templateFactory->getForTemplate($contentTemplate);
         $variables            = $this->getTemplateVariables($title, $variables);
         $variables['content'] = $view->render($contentTemplate, $variables);
 
@@ -237,7 +187,7 @@ abstract class Controller
         string $contentType = Response::CONTENT_TYPE_HTML,
         int $statusCode     = Response::HTTP_OK
     ): Response {
-        $content = $this->getTemplateFactory()
+        $content = $this->templateFactory
                         ->getForTemplate($contentTemplate)
                         ->render($contentTemplate, $variables);
 
@@ -246,25 +196,5 @@ abstract class Controller
             $contentType,
             $statusCode
         );
-    }
-
-    /**
-     * Convenience method for quick access to GET variables.
-     *
-     * @return PropertyBag The GET values.
-     */
-    protected function get(): PropertyBag
-    {
-        return $this->request->get();
-    }
-
-    /**
-     * Convenience method for quick access to POST variables.
-     *
-     * @return PropertyBag The POST values.
-     */
-    protected function post(): PropertyBag
-    {
-        return $this->request->post();
     }
 }

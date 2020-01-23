@@ -28,12 +28,12 @@ final class HttpRuntime implements RuntimeInterface
 
     public function handle(Request $request): void
     {
-        $mapping  = new Map($this->framework->loadConfiguration('object-mapping'));
-        $routeMap = new RouteMap($this->framework->loadConfiguration('routes'));
-        $matcher  = new RouteMatcher(
+        $mapping = $this->framework->loadConfiguration('object-mapping');
+        $routes  = $this->framework->loadConfiguration('routes');
+        $matcher = new RouteMatcher(
             $mapping,
             $this->framework->getContainer(),
-            $routeMap
+            new RouteMap($routes)
         );
 
         $response = $matcher->findAndRun($request);
