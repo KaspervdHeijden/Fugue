@@ -36,15 +36,15 @@ final class RuntimeFactory
     /**
      * Gets a RuntimeInterface from a request.
      *
-     * @param FrameWork $frameWork The frameWork to use.
-     * @return RuntimeInterface    A RuntimeInterface suitable to handle the request.
+     * @param Kernel $kernel    The frameWork to use.
+     * @return RuntimeInterface A RuntimeInterface suitable to handle the request.
      */
-    public function getRuntime(FrameWork $frameWork): RuntimeInterface
+    public function getRuntime(Kernel $kernel): RuntimeInterface
     {
         if ($this->isCalledFromCLI()) {
             return new CLIRuntime();
         }
 
-        return new HttpRuntime($frameWork);
+        return new HttpRuntime($kernel);
     }
 }

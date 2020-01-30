@@ -10,6 +10,8 @@ final class CannotResolveClassException extends LogicException
 {
     public static function forConstructorParameter(string $parameter, string $className): self
     {
-        return new self("Could not resolve argument {$parameter} for constructor of class {$className}");
+        return new self(
+            "Could not resolve argument {$parameter} for constructor of class {$className}"
+        );
     }
 }

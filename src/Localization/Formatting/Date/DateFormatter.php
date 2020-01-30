@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Fugue\Localization\Implementation;
+namespace Fugue\Localization\Formatting\Date;
 
-use Fugue\Localization\DateFormatterInterface;
 use DateTimeImmutable;
 use DateTimeInterface;
 use IntlDateFormatter;

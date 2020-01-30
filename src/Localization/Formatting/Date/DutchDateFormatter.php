@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fugue\Localization\Implementation;
+namespace Fugue\Localization\Formatting\Date;
 
 final class DutchDateFormatter extends DateFormatter
 {

@@ -26,7 +26,7 @@ use function sprintf;
 use function ini_set;
 use function is_file;
 
-final class FrameWork
+final class Kernel
 {
     /** @var string */
     private const NAMESPACE_BASE = 'Fugue';

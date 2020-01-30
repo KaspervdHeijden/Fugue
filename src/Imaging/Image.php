@@ -19,6 +19,7 @@ use function file_exists;
 use function is_readable;
 use function is_resource;
 use function imagejpeg;
+use function is_string;
 use function imagegif;
 use function is_array;
 use function imagepng;
@@ -62,7 +63,12 @@ final class Image
      */
     private static function getImageFromFile(string $filename)
     {
-        $image = imagecreatefromstring(file_get_contents($filename));
+        $contents = file_get_contents($filename);
+        if (! is_string($contents)) {
+            throw new RuntimeException("Could not read file '{$filename}'.");
+        }
+
+        $image = imagecreatefromstring($contents);
         if (! is_resource($image)) {
             throw new RuntimeException("Invalid image '{$filename}'.");
         }

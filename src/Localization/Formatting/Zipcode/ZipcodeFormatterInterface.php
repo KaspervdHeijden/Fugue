@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fugue\Localization;
+namespace Fugue\Localization\Formatting\Zipcode;
 
 interface ZipcodeFormatterInterface
 {

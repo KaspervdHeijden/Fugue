@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Fugue\Localization\Implementation;
-
-use Fugue\Localization\PhoneNumberDisplayAdapterInterface;
+namespace Fugue\Localization\Formatting\PhoneNumber;
 
 use function mb_substr;
 
-final class DutchPhoneNumberDisplayAdapter implements PhoneNumberDisplayAdapterInterface
+final class DutchPhoneNumberFormatter implements PhoneNumberFormatterInterface
 {
     public function format(string $phoneNumber): string
     {

@@ -6,10 +6,10 @@ namespace Fugue\Core\Runtime;
 
 use Fugue\HTTP\Routing\RouteMatcher;
 use Fugue\HTTP\Routing\RouteMap;
-use Fugue\Collection\Map;
-use Fugue\Core\FrameWork;
+use Fugue\Collection\ArrayMap;
 use Fugue\HTTP\Response;
 use Fugue\HTTP\Request;
+use Fugue\Core\Kernel;
 
 use function header_remove;
 use function headers_sent;
@@ -18,21 +18,21 @@ use function strlen;
 
 final class HttpRuntime implements RuntimeInterface
 {
-    /** @var FrameWork */
-    private $framework;
+    /** @var Kernel */
+    private $kernel;
 
-    public function __construct(FrameWork $frameWork)
+    public function __construct(Kernel $kernel)
     {
-        $this->framework = $frameWork;
+        $this->kernel = $kernel;
     }
 
     public function handle(Request $request): void
     {
-        $mapping = $this->framework->loadConfiguration('object-mapping');
-        $routes  = $this->framework->loadConfiguration('routes');
+        $mapping = $this->kernel->loadConfiguration('object-mapping');
+        $routes  = $this->kernel->loadConfiguration('routes');
         $matcher = new RouteMatcher(
             $mapping,
-            $this->framework->getContainer(),
+            $this->kernel->getContainer(),
             new RouteMap($routes)
         );
 

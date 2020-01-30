@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Fugue\Localization;
+namespace Fugue\Localization\Formatting\PhoneNumber;
 
-interface PhoneNumberDisplayAdapterInterface
+interface PhoneNumberFormatterInterface
 {
     /**
      * Display a formatted phone number.

@@ -10,6 +10,7 @@ use ReflectionMethod;
 use ReflectionClass;
 
 use function array_map;
+use function is_string;
 
 final class ClassResolver
 {

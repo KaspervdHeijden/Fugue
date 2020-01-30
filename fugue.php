@@ -16,10 +16,10 @@ declare(strict_types=1);
  */
 
 use Fugue\Core\RuntimeFactory;
-use Fugue\Core\FrameWork;
 use Fugue\HTTP\Request;
+use Fugue\Core\Kernel;
 
 require_once __DIR__ . '/src/bootstrap.inc.php';
 
-(new RuntimeFactory())->getRuntime(new FrameWork(false))
+(new RuntimeFactory())->getRuntime(new Kernel(false))
                       ->handle(Request::fromSuperGlobals());

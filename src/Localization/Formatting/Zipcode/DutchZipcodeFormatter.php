@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Fugue\Localization\Implementation;
+namespace Fugue\Localization\Formatting\Zipcode;
 
-use Fugue\Localization\ZipcodeFormatterInterface;
 use InvalidArgumentException;
 
 use function mb_strtoupper;

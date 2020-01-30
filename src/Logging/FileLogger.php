@@ -33,7 +33,9 @@ final class FileLogger extends Logger
     public function getFilename(): string
     {
         if ($this->filename === '') {
-            throw new LogicException('No filename given for FileLogger.');
+            throw new LogicException(
+                'No filename given for FileLogger.'
+            );
         }
 
         return $this->filename;
@@ -56,7 +58,7 @@ final class FileLogger extends Logger
     /**
      * Sets the FileOpen mode.
      *
-     * @see fopen() for values of $mode.
+     * @see   fopen()      For values of $mode.
      * @param string $mode The file open mode. Must be w, w+, a, a+, x, x+, c or c+.
      */
     public function setFileOpenMode(string $mode): void
@@ -126,17 +128,11 @@ final class FileLogger extends Logger
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __destruct()
     {
         $this->close();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function log(string $logType, string $message): void
     {
         fwrite($this->getFilePointer(), $this->getFormattedMessage($logType, $message));
