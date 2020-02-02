@@ -5,15 +5,10 @@ declare(strict_types=1);
 namespace Fugue\HTTP\Routing;
 
 use Fugue\HTTP\Request;
-use Fugue\HTTP\URL;
 
 use function preg_replace_callback;
 use function mb_strtolower;
 use function mb_strtoupper;
-use function array_filter;
-use function str_replace;
-use function preg_match;
-use function rtrim;
 use function trim;
 
 final class Route
@@ -21,7 +16,7 @@ final class Route
     /**
      * @var string The regular expression used to parse the URL templates.
      */
-    private const URL_TEMPLATE_REGEX = '#\{([a-z_][a-z0-9_]+)(\:[sif])?\}#iu';
+    private const URL_TEMPLATE_REGEX       = '#\{([a-z_][a-z0-9_]+)(\:[sif])?\}#iu';
 
     /** @var string */
     private $urlTemplate;
@@ -29,7 +24,7 @@ final class Route
     /** @var callable|string */
     private $handler;
 
-    /** @var string */
+    /** @var string|null */
     private $method;
 
     /** @var string */
@@ -121,16 +116,16 @@ final class Route
      *
      * @param string $name             The name of the Route
      * @param string $urlTemplate      The path match.
-     * @param string $method           The method used.
+     * @param string|null $method      The method used.
      * @param callable|string $handler The handler to perform.
      */
     private function __construct(
         string $name,
         string $urlTemplate,
-        string $method,
+        ?string $method,
         $handler
     ) {
-        $this->method      = mb_strtoupper(trim($method));
+        $this->method      = ((string)$method !== '' ) ? mb_strtoupper(trim($method)) : null;
         $this->urlTemplate = $urlTemplate;
         $this->handler     = $handler;
         $this->name        = $name;
@@ -157,13 +152,33 @@ final class Route
     }
 
     /**
+     * Gets the method of the Route.
+     *
+     * @return string The Route's method requirement.
+     */
+    public function getMethod(): ?string
+    {
+        return $this->method;
+    }
+
+    /**
+     * Gets the handler.
+     *
+     * @return callable|string
+     */
+    public function getHandler()
+    {
+        return $this->handler;
+    }
+
+    /**
      * Gets the regular expression used for matching a URL.
      *
      * @return string The regular expression.
      */
-    private function getRegex(): string
+    public function getRegex(): string
     {
-        return '#^' . str_replace('/', '/+', rtrim(preg_replace_callback(
+        $regex = str_replace('/', '/+', rtrim(preg_replace_callback(
             self::URL_TEMPLATE_REGEX,
             static function (array $matches): string {
                 switch (isset($matches[2]) && $matches[2] !== '' ? mb_strtolower($matches[2][1]) : 's') {
@@ -181,46 +196,9 @@ final class Route
                 return "(?<{$matches[1]}>{$regex})";
             },
             $this->getURLTemplate()
-        ), '/')) . '\/*$#';
-    }
+        ), '/'));
 
-    /**
-     * Gives a value if this route matches the given request.
-     *
-     * @param URL $url          The URL path to match against.
-     * @return RouteMatchResult The result of the match.
-     */
-    public function match(URL $url): RouteMatchResult
-    {
-        $matches   = [];
-        if (! (bool)preg_match($this->getRegex(), $url->getPath(), $matches)) {
-            return new RouteMatchResult(false, []);
-        }
-
-        return new RouteMatchResult(
-            true,
-            array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY)
-        );
-    }
-
-    /**
-     * Gets the method of the Route.
-     *
-     * @return string The Route's method requirement.
-     */
-    public function getMethod(): string
-    {
-        return $this->method;
-    }
-
-    /**
-     * Gets the handler.
-     *
-     * @return callable|string
-     */
-    public function getHandler()
-    {
-        return $this->handler;
+        return "#^{$regex}\/*$#";
     }
 
     /**

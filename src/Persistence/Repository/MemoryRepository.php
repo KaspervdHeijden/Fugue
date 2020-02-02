@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Fugue\Persistence\Repository;
 
-use Fugue\Collection\ArrayMap;
+use Fugue\Collection\CollectionMap;
 
 abstract class MemoryRepository
 {
-    /** @var ArrayMap */
+    /** @var CollectionMap */
     private $map;
 
-    protected function getMap(): ArrayMap
+    protected function getMap(): CollectionMap
     {
-        if (! $this->map instanceof ArrayMap) {
-            $this->map = new ArrayMap();
+        if (! $this->map instanceof CollectionMap) {
+            $this->map = new CollectionMap();
         }
 
         return $this->map;

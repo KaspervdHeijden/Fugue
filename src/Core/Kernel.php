@@ -4,26 +4,21 @@ declare(strict_types=1);
 
 namespace Fugue\Core;
 
+use Composer\Autoload\ClassLoader;
+use Fugue\Core\ClassLoader\ClassLoaderInterface;
 use Fugue\Configuration\Loader\ConfigurationLoaderInterface;
 use Fugue\Configuration\Loader\PHPConfigurationLoader;
-use Fugue\Core\Runtime\RuntimeInterface;
-use Fugue\Collection\ArrayMap;
+use Fugue\Core\Output\OutputHandlerInterface;
+use Fugue\Collection\CollectionMap;
 use Fugue\Container\Container;
 
-use function date_default_timezone_set;
-use function spl_autoload_extensions;
 use function spl_autoload_register;
-use function mb_internal_encoding;
-use function mb_regex_encoding;
 use function set_error_handler;
 use function error_reporting;
-use function mb_language;
 use function str_replace;
 use function is_readable;
 use function is_iterable;
-use function setlocale;
 use function sprintf;
-use function ini_set;
 use function is_file;
 
 final class Kernel
@@ -31,34 +26,33 @@ final class Kernel
     /** @var string */
     private const NAMESPACE_BASE = 'Fugue';
 
+    /** @var OutputHandlerInterface */
+    private $outputHandler;
+
+    /** @var ClassLoaderInterface */
+    private $classLoader;
+
     /** @var Container */
     private $container;
 
     /**
      * Instantiates the framework.
      *
-     * Although this is not static, Fugue does NOT support multiple instances of the FrameWork.
+     * Although this is not static, Fugue does NOT support multiple instances of the Kernel.
      *
-     * @param bool $debugMode Whether or not to run in debug mode.
+     * @param OutputHandlerInterface $outputHandler  Where to write output to.
+     * @param bool                   $attachHandlers Whether or not to attach class loader and error handler.
      */
-    public function __construct(bool $debugMode)
-    {
-        ini_set('display_errors', ($debugMode ? '1' : '0'));
-        set_error_handler([$this, 'genericErrorHandler']);
-        ini_set('zlib.output_compression', '1');
-        error_reporting(E_ALL);
+    public function __construct(
+        OutputhandlerInterface $outputHandler,
+        bool $attachHandlers
+    ) {
+        $this->outputHandler = $outputHandler;
 
-        spl_autoload_extensions('.php');
-        spl_autoload_register([$this, 'genericClassloader']);
-
-        // Set locale/timezone/charset
-        ini_set('default_charset', RuntimeInterface::CHARSET);
-        date_default_timezone_set(RuntimeInterface::CHARSET);
-        setlocale(LC_TIME, RuntimeInterface::CHARSET);
-
-        mb_internal_encoding(RuntimeInterface::CHARSET);
-        mb_regex_encoding(RuntimeInterface::CHARSET);
-        mb_language('uni');
+        if ($attachHandlers) {
+            spl_autoload_register([$this, 'genericClassloader'], true, true);
+            set_error_handler([$this, 'genericErrorHandler']);
+        }
     }
 
     /**
@@ -77,6 +71,7 @@ final class Kernel
     private function getConfigurationLoaders(): array
     {
         $configPath = "{$this->getRootDir()}../conf/";
+
         return [
             new PHPConfigurationLoader($configPath),
         ];
@@ -86,9 +81,9 @@ final class Kernel
      * Loads a configuration file.
      *
      * @param string $identifier Identifies the configuration item to load.
-     * @return ArrayMap          Result returned from the included file/
+     * @return CollectionMap          Result returned from the included file/
      */
-    public function loadConfiguration(string $identifier): ArrayMap
+    public function loadConfiguration(string $identifier): CollectionMap
     {
         $loaders = $this->getConfigurationLoaders();
         foreach ($loaders as $loader) {
@@ -98,11 +93,11 @@ final class Kernel
 
             $result = $loader->load($identifier);
             if (is_iterable($result)) {
-                return new ArrayMap($result);
+                return new CollectionMap($result);
             }
         }
 
-        return new ArrayMap();
+        return new CollectionMap();
     }
 
     public function getContainer(): Container
@@ -113,6 +108,11 @@ final class Kernel
         }
 
         return $this->container;
+    }
+
+    public function getOutputHandler(): OutputHandlerInterface
+    {
+        return $this->outputHandler;
     }
 
     private function classToFileName(string $className): string
@@ -156,13 +156,13 @@ final class Kernel
             return;
         }
 
-        echo sprintf(
+        $this->outputHandler->write(sprintf(
             "Exception caught by %s.\n\nFile: %s:%d\nMessage: %s",
             __FUNCTION__,
             $file,
             $lineNumber,
             $errorMessage
-        );
+        ));
 
         exit($errorNumber ?: 32);
     }

@@ -1,0 +1,23 @@
+{
+    "name": "kaspervdheijden/fugue",
+    "description": "A simple and lightweight PHP framework",
+    "authors": [
+        {
+            "name": "Kasper van der Heijden",
+            "email": "kasper@kaspervdheijden.nl"
+        }
+    ],
+    "require": {
+        "php": ">=7.3",
+        "ext-spl": "*",
+        "ext-pdo": "*",
+        "ext-xml": "*",
+        "ext-pcre": "*",
+        "ext-json": "*",
+        "ext-hash": "*",
+        "ext-date": "*",
+        "ext-session": "*",
+        "ext-mbstring": "*",
+        "ext-simplexml": "*"
+    }
+}

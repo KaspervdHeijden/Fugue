@@ -13,6 +13,12 @@ declare(strict_types=1);
  * (c) 2020. All rights reserved.
  */
 
+if (is_file(__DIR__ . '/../vendor/autoload.php')) {
+    include_once __DIR__ . '/../vendor/autoload.php';
+}
+
+require_once __DIR__ . '/Core/Output/OutputHandlerInterface.php';
+require_once __DIR__ . '/Core/Output/StandardOutputHandler.php';
 require_once __DIR__ . '/Core/Runtime/RuntimeInterface.php';
 require_once __DIR__ . '/Core/RuntimeFactory.php';
-require_once __DIR__ . '/Core/FrameWork.php';
+require_once __DIR__ . '/Core/Kernel.php';

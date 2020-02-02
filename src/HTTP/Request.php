@@ -78,22 +78,6 @@ final class Request
     }
 
     /**
-     * Creates a Request object from the super globals.
-     *
-     * @return Request
-     */
-    public static function fromSuperGlobals(): Request
-    {
-        return new self(
-            new PropertyBag($_GET),
-            new PropertyBag($_POST),
-            new PropertyBag($_COOKIE),
-            new PropertyBag($_FILES),
-            new PropertyBag($_SERVER)
-        );
-    }
-
-    /**
      * Gets the URL of the current Request.
      *
      * @return URL The current Request URL.

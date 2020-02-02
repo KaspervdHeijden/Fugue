@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\Collection;
 
-final class PropertyBag extends ArrayMap
+final class PropertyBag extends CollectionMap
 {
     /**
      * Gets an integer value from this PropertyBag.

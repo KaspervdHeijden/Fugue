@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\Logging;
 
+use Fugue\Core\Output\OutputHandlerInterface;
 use InvalidArgumentException;
 
 final class LoggerFactory
@@ -33,6 +34,14 @@ final class LoggerFactory
      */
     public const LOGGER_STDOUT = 'stdout';
 
+    /** @var OutputHandlerInterface */
+    private $outputHandler;
+
+    public function __construct(OutputHandlerInterface $outputHandler)
+    {
+        $this->outputHandler = $outputHandler;
+    }
+
     /**
      * Gets a LoggerInterface from an identifier.
      *
@@ -51,7 +60,7 @@ final class LoggerFactory
             case self::LOGGER_MEMORY:
                 return new MemoryLogger();
             case self::LOGGER_STDOUT:
-                return new OutputLogger();
+                return new OutputLogger($this->outputHandler);
             default:
                 throw new InvalidArgumentException(
                     "Identifier {$identifier} not recognized."

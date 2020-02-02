@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\Container;
 
-use Fugue\Collection\ArrayMap;
+use Fugue\Collection\CollectionMap;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionClass;
@@ -18,16 +18,16 @@ final class ClassResolver
     private $classCache = [];
 
     /**
-     * @param string    $className
-     * @param Container $container
-     * @param ArrayMap  $classToObjects
+     * @param string        $className
+     * @param Container     $container
+     * @param CollectionMap $classToObjects
      *
      * @return mixed    Instance of $className
      */
     public function resolve(
         string $className,
         Container $container,
-        ArrayMap $classToObjects
+        CollectionMap $classToObjects
     ) {
         $argumentClasses = $this->getArgumentClassesFromConstructor($className);
         $objectsToLoad   = array_map(

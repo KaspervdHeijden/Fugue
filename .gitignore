@@ -1,2 +1,4 @@
 conf/env.config.inc.php
 .idea
+
+/vendor/

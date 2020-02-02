@@ -11,26 +11,62 @@ use ArrayAccess;
 use Traversable;
 use Countable;
 
+use InvalidArgumentException;
 use function array_key_exists;
+use function array_key_first;
+use function array_key_last;
 use function array_search;
 use function array_merge;
+use function array_slice;
 use function array_keys;
 use function count;
 
-abstract class CustomArray implements ArrayAccess, IteratorAggregate, Countable
+abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
 {
+    /** @var callable[] */
+    private const TYPE_MAPPING = [
+        'resource' => 'is_resource',
+        'callable' => 'is_callable',
+        'string'   => 'is_string',
+        'array'    => 'is_array',
+        'float'    => 'is_float',
+        'bool'     => 'is_bool',
+        'int'      => 'is_int',
+    ];
+
     /** @var mixed[] */
     private $elements = [];
 
-    public function __construct(iterable $elements = [])
+    /** @var string */
+    private $type;
+
+    public function __construct(iterable $elements = [], ?string $type = null)
     {
+        $this->type = $type;
         foreach ($elements as $key => $value) {
-            $this->set($key, $value);
+            $this->set($value, $key);
         }
     }
 
+    public static function forIterable(iterable $elements): self
+    {
+        foreach ($elements as $element) {
+            if (is_object($element)) {
+                return new static($elements, get_class($element));
+            }
+
+            foreach (self::TYPE_MAPPING as $type => $check) {
+                if ($check($element)) {
+                    return new static($elements, $type);
+                }
+            }
+        }
+
+        return new static();
+    }
+
     /**
-     * Determines if this Map contains the supplied key.
+     * Determines if this collection contains the supplied key.
      *
      * @param string|int $key The key to test for.
      * @return bool           TRUE if the key exists in this Map, FALSE otherwise.
@@ -47,7 +83,7 @@ abstract class CustomArray implements ArrayAccess, IteratorAggregate, Countable
         );
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $this->containsKey($offset);
     }
@@ -57,12 +93,12 @@ abstract class CustomArray implements ArrayAccess, IteratorAggregate, Countable
         return $this->get($offset, null);
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
-        $this->set($offset, $value);
+        $this->set($value, $offset);
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $this->unset($offset);
     }
@@ -83,10 +119,10 @@ abstract class CustomArray implements ArrayAccess, IteratorAggregate, Countable
     /**
      * Sets a value.
      *
-     * @param string|int $key   The name of the value to set.
-     * @param mixed      $value The value to store.
+     * @param mixed           $value The value to store.
+     * @param string|int|null $key   The name of the value to set.
      */
-    public function set($key, $value): void
+    public function set($value, $key = null): void
     {
         if (! $this->checkKey($key)) {
             throw new UnexpectedValueException(
@@ -108,13 +144,15 @@ abstract class CustomArray implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Deletes a value.
+     * Unset multiple values.
      *
-     * @param string|int $key The variable to delete.
+     * @param string[]|int[] $keys The keys to unset.
      */
-    public function unset($key): void
+    public function unset(...$keys): void
     {
-        unset($this->elements[$key]);
+        foreach ($keys as $key) {
+            unset($this->elements[$key]);
+        }
     }
 
     public function filter(callable $filter): self
@@ -133,16 +171,24 @@ abstract class CustomArray implements ArrayAccess, IteratorAggregate, Countable
 
     /**
      * @param mixed $value The value to check.
-     * @return bool        TRUE if the value is OK, FALSE otherwise.
+     * @return bool        TRUE if the value is acceptable, FALSE otherwise.
      */
     protected function checkValue($value): bool
     {
-        return true;
+        if ($this->type === null) {
+            return true;
+        }
+
+        if (isset(self::TYPE_MAPPING[$this->type])) {
+            return (self::TYPE_MAPPING[$this->type])($value);
+        }
+
+        return $value instanceof $this->type;
     }
 
     /**
      * @param string|int|null $key The key to check.
-     * @return bool        TRUE if the value is OK, FALSE otherwise.
+     * @return bool                TRUE if the value is acceptable, FALSE otherwise.
      */
     protected function checkKey($key): bool
     {
@@ -150,7 +196,7 @@ abstract class CustomArray implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Clears the Collection.
+     * Clears this collection.
      */
     public function clear(): void
     {
@@ -158,7 +204,7 @@ abstract class CustomArray implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Gets the data in this Map as an array.
+     * Gets the data in this collection as an array.
      *
      * @return array The elements of this CustomArray as an array.
      */
@@ -168,7 +214,7 @@ abstract class CustomArray implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Determines if this Map contains the supplied value.
+     * Determines if this collection contains the supplied value.
      *
      * @param mixed $element The element to test for.
      * @return bool          TRUE if the key exists in this Map, FALSE otherwise.
@@ -179,7 +225,7 @@ abstract class CustomArray implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Gets a list of all keys defined in this Map.
+     * Gets a list of all keys defined in this Collection.
      *
      * @return string[]|int[] List of keys.
      */
@@ -189,9 +235,47 @@ abstract class CustomArray implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Checks to see if this Map is empty.
+     * Gets a subset of this collection.
      *
-     * @return bool TRUE if this Map is empty, FALSE otherwise.
+     * @param int      $offset The start of the subset index.
+     * @param int|null $length The length of the subset, of NULL for all.
+     *
+     * @return Collection       The subset collection
+     */
+    public function slice(int $offset, ?int $length = null): self
+    {
+        return new static(array_slice(
+            $this->elements,
+            $offset,
+            $length,
+            true
+        ));
+    }
+
+    public function first()
+    {
+        $key = array_key_first($this->elements);
+        if ($key === null) {
+            return null;
+        }
+
+        return $this->elements[$key];
+    }
+
+    public function last()
+    {
+        $key = array_key_last($this->elements);
+        if ($key === null) {
+            return null;
+        }
+
+        return $this->elements[$key];
+    }
+
+    /**
+     * Checks to see if this collection is empty.
+     *
+     * @return bool TRUE if this collection is empty, FALSE otherwise.
      */
     public function isEmpty(): bool
     {

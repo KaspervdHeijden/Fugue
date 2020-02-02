@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Fugue\Controller;
 
+use Fugue\HTTP\Header;
 use Fugue\View\Templating\TemplateAdapterFactory;
 use Fugue\Core\Runtime\RuntimeInterface;
-use Fugue\View\Templating\TemplateUtil;
-use Fugue\Collection\PropertyBag;
-use Fugue\HTTP\Routing\Route;
+use Fugue\HTTP\HeaderBag;
 use Fugue\HTTP\Response;
-use Fugue\HTTP\Request;
 
 use function array_merge;
 use function json_encode;
@@ -70,7 +68,7 @@ abstract class Controller
         $variables            = $this->getTemplateVariables($title, $variables);
         $variables['content'] = $view->render($contentTemplate, $variables);
 
-        return new Response(
+        return $this->createResponse(
             $view->render($documentTemplate, $variables),
             Response::CONTENT_TYPE_HTML,
             $statusCode
@@ -87,7 +85,7 @@ abstract class Controller
      */
     protected function createJSONResponse(array $data, int $statusCode = Response::HTTP_OK): Response
     {
-        return new Response(
+        return $this->createResponse(
             json_encode($data),
             Response::CONTENT_TYPE_JAVASCRIPT,
             $statusCode
@@ -106,7 +104,7 @@ abstract class Controller
         string $text,
         int $statusCode = Response::HTTP_OK
     ): Response {
-        return new Response(
+        return $this->createResponse(
             $text,
             Response::CONTENT_TYPE_PLAINTEXT,
             $statusCode
@@ -127,20 +125,17 @@ abstract class Controller
         string $fileName = '',
         int $statusCode  = Response::HTTP_OK
     ): Response {
-        $response = new Response(
-            $csv,
-            Response::CONTENT_TYPE_CSV,
-            $statusCode
-        );
-
+        $headers = [];
         if ($fileName !== '') {
-            $response->setHeader(
-                'Content-Disposition',
-                "attachment;filename=\"{$fileName}\""
-            );
+            $headers[Header::NAME_CONTENT_DISPOSITION] = "attachment;filename=\"{$fileName}\"";
         }
 
-        return $response;
+        return $this->createResponse(
+            $csv,
+            Response::CONTENT_TYPE_CSV,
+            $statusCode,
+            $headers
+        );
     }
 
     /**
@@ -191,10 +186,30 @@ abstract class Controller
                         ->getForTemplate($contentTemplate)
                         ->render($contentTemplate, $variables);
 
-        return new Response(
+        return $this->createResponse(
             $content,
             $contentType,
             $statusCode
         );
+    }
+    protected function createResponse(
+        string $content,
+        string $contentType,
+        int $statusCode,
+        array $headers = []
+    ): Response {
+        $headers = new HeaderBag();
+        foreach ($headers as $key => $value) {
+            $headers->setFromString($key, $value);
+        }
+
+        if ($contentType !== '') {
+            $headers->setFromString(
+                Header::NAME_CONTENT_TYPE,
+                $contentType
+            );
+        }
+
+        return new Response($content, $statusCode, $headers);
     }
 }

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Fugue\HTTP\Routing;
 
-use Fugue\Collection\ArrayMap;
+use Fugue\Collection\CollectionMap;
 
 use function is_string;
 
-final class RouteMap extends ArrayMap
+final class RouteCollectionMap extends CollectionMap
 {
     protected function checkKey($key): bool
     {

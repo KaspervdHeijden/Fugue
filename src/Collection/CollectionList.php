@@ -6,7 +6,7 @@ namespace Fugue\Collection;
 
 use function is_int;
 
-class ArrayList extends CustomArray
+class CollectionList extends Collection
 {
     protected function checkKey($key): bool
     {

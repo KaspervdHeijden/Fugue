@@ -7,6 +7,7 @@ namespace Fugue\Core;
 use Fugue\Core\Runtime\RuntimeInterface;
 use Fugue\Core\Runtime\HttpRuntime;
 use Fugue\Core\Runtime\CLIRuntime;
+use Fugue\HTTP\Routing\RouteCollectionMap;
 
 use function php_sapi_name;
 use function mb_strtolower;
@@ -45,6 +46,9 @@ final class RuntimeFactory
             return new CLIRuntime();
         }
 
-        return new HttpRuntime($kernel);
+        return new HttpRuntime(
+            $kernel,
+            new RouteCollectionMap($kernel->loadConfiguration('routes'))
+        );
     }
 }

@@ -6,24 +6,16 @@ namespace Fugue\HTTP\Routing;
 
 final class RouteMatchResult
 {
-    /** @var bool */
-    private $matches;
-
     /** @var string[] */
     private $arguments;
 
-    public function __construct(bool $matches, array $arguments)
-    {
-        $this->matches = $matches;
-        $this->arguments = $arguments;
-    }
+    /** @var Route */
+    private $route;
 
-    /**
-     * @return bool
-     */
-    public function matches(): bool
+    public function __construct(Route $route, array $arguments)
     {
-        return $this->matches;
+        $this->arguments = $arguments;
+        $this->route     = $route;
     }
 
     /**
@@ -32,5 +24,10 @@ final class RouteMatchResult
     public function getArguments(): array
     {
         return $this->arguments;
+    }
+
+    public function getRoute(): Route
+    {
+        return $this->route;
     }
 }

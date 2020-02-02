@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Fugue\View\Templating;
 
-use Fugue\Localization\PhoneNumberDisplayAdapterInterface;
-use Fugue\Localization\NumberFormatterInterface;
-use Fugue\Localization\DateFormatterInterface;
-use Fugue\HTTP\Routing\RouteMap;
+use Fugue\Localization\Formatting\PhoneNumber\PhoneNumberFormatterInterface;
+use Fugue\Localization\Formatting\Number\NumberFormatterInterface;
+use Fugue\Localization\Formatting\Date\DateFormatterInterface;
+use Fugue\Core\Output\OutputHandlerInterface;
+use Fugue\HTTP\Routing\RouteCollectionMap;
 use Fugue\HTTP\Routing\Route;
 
 use function realpath;
@@ -15,7 +16,7 @@ use function rtrim;
 
 final class TemplateUtil
 {
-    /** @var PhoneNumberDisplayAdapterInterface */
+    /** @var PhoneNumberFormatterInterface */
     private $phoneNumberFormatter;
 
     /** @var NumberFormatterInterface */
@@ -24,17 +25,22 @@ final class TemplateUtil
     /** @var DateFormatterInterface */
     private $dateFormatter;
 
-    /** @var RouteMap */
+    /** @var OutputHandlerInterface */
+    private $outputHandler;
+
+    /** @var RouteCollectionMap */
     private $routeMap;
 
     public function __construct(
-        PhoneNumberDisplayAdapterInterface $phoneNumberFormatter,
+        PhoneNumberFormatterInterface $phoneNumberFormatter,
         NumberFormatterInterface $numberFormatter,
         DateFormatterInterface $dateFormatter,
-        RouteMap $routeMap
+        OutputHandlerInterface $outputHandler,
+        RouteCollectionMap $routeMap
     ) {
         $this->phoneNumberFormatter = $phoneNumberFormatter;
         $this->numberFormatter      = $numberFormatter;
+        $this->outputHandler        = $outputHandler;
         $this->dateFormatter        = $dateFormatter;
         $this->routeMap             = $routeMap;
     }
@@ -101,7 +107,7 @@ final class TemplateUtil
      */
     public function output($text): void
     {
-        echo (string)$text;
+        $this->outputHandler->write((string)$text);
     }
 
     /**
