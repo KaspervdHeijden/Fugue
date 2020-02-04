@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Fugue\CronJob;
 
-use Throwable;
 use Fugue\Logging\LoggerInterface;
+use Throwable;
 
 abstract class CronJob implements CronJobInterface
 {

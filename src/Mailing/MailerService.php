@@ -114,6 +114,7 @@ abstract class MailerService implements EmailSenderInterface
      * @param HTMLMessage       $htmlPart    The HTML message part.
      * @param string            $boundary    The top-level boundary identifier.
      * @param EmailAttachment[] $attachments The attachments.
+     *
      * @return string                        The message body.
      */
     private function getBody(
@@ -130,6 +131,10 @@ abstract class MailerService implements EmailSenderInterface
         ];
 
         foreach ([$textPart, $htmlPart] as $part) {
+            if (! $part instanceof MailPart) {
+                continue;
+            }
+
             array_push($body,
                 "--{$contentBoundary}",
                 "Content-Type: {$part->getContentType()}",

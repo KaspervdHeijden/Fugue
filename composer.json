@@ -9,6 +9,7 @@
     ],
     "require": {
         "php": ">=7.3",
+        "ext-dom": "*",
         "ext-spl": "*",
         "ext-pdo": "*",
         "ext-xml": "*",
@@ -16,6 +17,7 @@
         "ext-json": "*",
         "ext-hash": "*",
         "ext-date": "*",
+        "ext-libxml": "*",
         "ext-session": "*",
         "ext-mbstring": "*",
         "ext-simplexml": "*"

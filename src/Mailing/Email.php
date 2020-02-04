@@ -31,17 +31,17 @@ final class Email
     /** @var TextMessage */
     private $textMessage;
 
-    /** @var string */
-    private $subject;
-
     /** @var array */
     private $recipients;
 
     /** @var string */
-    private $from;
+    private $subject;
 
     /** @var string */
     private $replyTo;
+
+    /** @var string */
+    private $from;
 
     /**
      * Instantiates an Email.
@@ -65,6 +65,7 @@ final class Email
      * Checks if an email address is valid.
      *
      * @param string $emailAddress      The email address to check.
+     *
      * @throws InvalidArgumentException If the email address is empty or invalid.
      * @return string                   The valid email address.
      */
@@ -89,14 +90,14 @@ final class Email
     /**
      * Adds a recipients to the recipient list.
      *
-     * @param string $emailAddress The email address to add.
-     * @param int $type The recipient type. See the Email::RECIPIENT_TYPE_* constants.
-     * @throws InvalidArgumentException If the emailaddress is empty or invalid.
+     * @param string $emailAddress      The email address to add.
+     * @param int $type                 The recipient type. See the Email::RECIPIENT_TYPE_* constants.
+     *
+     * @throws InvalidArgumentException If the email address is empty or invalid.
      */
     public function addRecipient(string $emailAddress, int $type = self::RECIPIENT_TYPE_TO): void
     {
-        $email                    = $this->getAndCheckEmailAddress($emailAddress);
-        $this->recipients[$email] = $type;
+        $this->recipients[$this->getAndCheckEmailAddress($emailAddress)] = $type;
     }
 
     /**
@@ -104,6 +105,7 @@ final class Email
      *
      * @param string $emailAddress      The email address to add.
      * @param int    $type              The recipient type. See the Email::RECIPIENT_TYPE_* constants.
+     *
      * @throws InvalidArgumentException If the email address is empty or invalid.
      */
     public function removeRecipient(
@@ -111,7 +113,7 @@ final class Email
         int $type = self::RECIPIENT_TYPE_TO
     ): void {
         $email = $this->getAndCheckEmailAddress($emailAddress);
-        if (isset($this->recipients[$email]) && $this->recipients[$email] == $type) {
+        if (($this->recipients[$email] ?? null) === $type) {
             unset($this->recipients[$email]);
         }
     }
@@ -119,7 +121,7 @@ final class Email
     /**
      * Gets all recipients and their type.
      *
-     * @return array List of recipient and types.
+     * @return array[] List of recipient and types.
      */
     public function getRecipients(): array
     {

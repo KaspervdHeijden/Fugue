@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Fugue\Mailing;
 
+use function mail;
+
 final class NativeMailerService extends MailerService
 {
     protected function sendMail(
