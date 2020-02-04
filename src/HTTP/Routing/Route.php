@@ -16,7 +16,7 @@ final class Route
     /**
      * @var string The regular expression used to parse the URL templates.
      */
-    private const URL_TEMPLATE_REGEX       = '#\{([a-z_][a-z0-9_]+)(\:[sif])?\}#iu';
+    private const URL_TEMPLATE_REGEX = '#\{([a-z_][a-z0-9_]+)(\:[sif])?\}#iu';
 
     /** @var string */
     private $urlTemplate;

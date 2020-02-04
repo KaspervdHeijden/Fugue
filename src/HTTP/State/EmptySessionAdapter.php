@@ -31,4 +31,8 @@ final class EmptySessionAdapter implements SessionAdapterInterface
     public function unset(string $name): void
     {
     }
+
+    public function close(): void
+    {
+    }
 }

@@ -24,12 +24,12 @@ final class RouteMatcher
      * Gives a value if this route matches the given request.
      *
      * @param Route  $route          The route to test.
-     * @param URL    $url            The URL path to match against.
+     * @param Url    $url            The URL path to match against.
      *
      * @param string $method         The request method
      * @return RouteMatchResult|null The result of the match.
      */
-    private function match(Route $route, URL $url, string $method): ?RouteMatchResult
+    private function match(Route $route, Url $url, string $method): ?RouteMatchResult
     {
         if (! in_array($route->getMethod(), [null, $method], true)) {
             return null;
@@ -55,7 +55,7 @@ final class RouteMatcher
     public function findForRequest(Request $request): RouteMatchResult
     {
         $method = $request->getMethod();
-        $url    = $request->getURL();
+        $url    = $request->getUrl();
 
         foreach ($this->routeMap as $route) {
             $result = $this->match($route, $url, $method);
@@ -64,8 +64,6 @@ final class RouteMatcher
             }
         }
 
-        throw new RouteNotFoundException(
-            "Route not found for {$method} '{$url->getPath()}'."
-        );
+        throw RouteNotFoundException::forRequest($request);
     }
 }

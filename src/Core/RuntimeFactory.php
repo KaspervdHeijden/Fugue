@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Fugue\Core;
 
+use Fugue\HTTP\Routing\RouteCollectionMap;
 use Fugue\Core\Runtime\RuntimeInterface;
 use Fugue\Core\Runtime\HttpRuntime;
 use Fugue\Core\Runtime\CLIRuntime;
-use Fugue\HTTP\Routing\RouteCollectionMap;
 
 use function php_sapi_name;
 use function mb_strtolower;

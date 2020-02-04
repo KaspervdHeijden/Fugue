@@ -23,6 +23,6 @@ final class OutputLogger extends Logger
 
     protected function log(string $logType, string $message): void
     {
-        $this->outputHandler->writeLine($message);
+        $this->outputHandler->write($message . PHP_EOL);
     }
 }

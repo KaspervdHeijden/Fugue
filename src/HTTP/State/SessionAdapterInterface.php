@@ -52,4 +52,9 @@ interface SessionAdapterInterface
      * Clears all session data.
      */
     public function clear(): void;
+
+    /**
+     * Closes the session.
+     */
+    public function close(): void;
 }

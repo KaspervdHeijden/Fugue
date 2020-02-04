@@ -7,6 +7,4 @@ namespace Fugue\Core\Output;
 interface OutputHandlerInterface
 {
     public function write(string $text);
-
-    public function writeLine(string $text);
 }

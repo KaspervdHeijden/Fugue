@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Fugue\Core\Exception;
 
-use RuntimeException;
+use LogicException;
 
-class FugueException extends RuntimeException
+class FugueException extends LogicException
 {
 }

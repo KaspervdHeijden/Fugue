@@ -15,7 +15,6 @@ use Fugue\HTTP\Response;
 use Fugue\HTTP\Request;
 use Fugue\HTTP\Header;
 use Fugue\Core\Kernel;
-use RuntimeException;
 
 use function method_exists;
 use function header_remove;
@@ -23,6 +22,7 @@ use function headers_sent;
 use function class_exists;
 use function is_callable;
 use function array_merge;
+use function implode;
 use function explode;
 use function header;
 use function strlen;
@@ -30,7 +30,7 @@ use function strlen;
 final class HttpRuntime implements RuntimeInterface
 {
     /**
-     * @var string The regular expression used to parse the URL templates.
+     * @var string The default controller method name if not set.
      */
     public const DEFAULT_CONTROLLER_METHOD = 'handleRequest';
 
@@ -40,8 +40,10 @@ final class HttpRuntime implements RuntimeInterface
     /** @var Kernel */
     private $kernel;
 
-    public function __construct(Kernel $kernel, RouteCollectionMap $routeMap)
-    {
+    public function __construct(
+        Kernel $kernel,
+        RouteCollectionMap $routeMap
+    ) {
         $this->routeMap = $routeMap;
         $this->kernel   = $kernel;
     }
@@ -53,15 +55,18 @@ final class HttpRuntime implements RuntimeInterface
         $response    = $this->run($matchResult, $request);
 
         $this->sendHeaders($request, $response);
-        $this->kernel->getOutputHandler()->write($response->getContent());
+        $this->kernel->getOutputHandler()
+                     ->write($response->getContent());
     }
 
     /**
      * @param Request  $request  The Request
      * @param Response $response The Response
      */
-    private function sendHeaders(Request $request, Response $response): void
-    {
+    private function sendHeaders(
+        Request $request,
+        Response $response
+    ): void {
         if (headers_sent()) {
             return;
         }
@@ -74,29 +79,39 @@ final class HttpRuntime implements RuntimeInterface
         }
     }
 
-    private function getHeaders(Request $request, Response $response): array
-    {
-        $headers = $response->getHeaders();
+    private function getHeaders(
+        Request $request,
+        Response $response
+    ): array {
+        $headers      = $response->getHeaders();
+        $statusHeader = implode(' ', [
+            $request->getProtocol(),
+            $response->getStatusCode(),
+            $response->getStatusCodeText(),
+        ]);
+
         if ($this->shouldSendContentLength($request, $response)) {
-            $headers->setFromString(Header::NAME_CONTENT_LENGTH, (string)strlen($response->getContent()));
+            $headers->setFromString(
+                Header::NAME_CONTENT_LENGTH,
+                (string)strlen($response->getContent())
+            );
         }
 
-        $customHeaders = array_map(
-            static function (Header $header): string {
-                return $header->toHeaderString();
-            },
-            $headers->all()
+        return array_merge(
+            [$statusHeader],
+            array_map(
+                static function (Header $header): string {
+                    return $header->toHeaderString();
+                },
+                $headers->all()
+            )
         );
-
-        $fixedHeaders = [
-            "{$request->getProtocol()} {$response->getStatusCode()} {$response->getStatusCodeText()}"
-        ];
-
-        return array_merge($fixedHeaders, $customHeaders);
     }
 
-    private function shouldSendContentLength(Request $request, Response $response): bool
-    {
+    private function shouldSendContentLength(
+        Request $request,
+        Response $response
+    ): bool {
         switch ($response->getStatusCode()) {
             case Response::HTTP_NOT_MODIFIED:
             case Response::HTTP_NO_CONTENT:
@@ -118,8 +133,10 @@ final class HttpRuntime implements RuntimeInterface
      *
      * @return callable        The handler for the route.
      */
-    private function getHandler(Route $route, Request $request): callable
-    {
+    private function getHandler(
+        Route $route,
+        Request $request
+    ): callable {
         $handler = $route->getHandler();
         if (is_callable($handler)) {
             return $handler;
@@ -127,7 +144,7 @@ final class HttpRuntime implements RuntimeInterface
 
         [$className, $methodName] = explode('@', "\\{$handler}", 2);
         if (($className ?? '') === '' || ! class_exists($className, true)) {
-            throw new RuntimeException("Cannot load class '{$className}'.");
+            throw InvalidRouteHandlerException::nonExistentClass($className);
         }
 
         if (($methodName ?? '') === '') {
@@ -145,8 +162,9 @@ final class HttpRuntime implements RuntimeInterface
 
         $instance = (new ClassResolver())->resolve($className, $container, $mapping);
         if (! method_exists($instance, $methodName)) {
-            throw new RuntimeException(
-                "Handler function does not exist: '{$className}->{$methodName}()'."
+            throw InvalidRouteHandlerException::nonExistentClassFunction(
+                $className,
+                $methodName
             );
         }
 
@@ -161,8 +179,10 @@ final class HttpRuntime implements RuntimeInterface
      *
      * @return Response                     The response.
      */
-    private function run(RouteMatchResult $matchResult, Request $request): Response
-    {
+    private function run(
+        RouteMatchResult $matchResult,
+        Request $request
+    ): Response {
         $handler   = $this->getHandler($matchResult->getRoute(), $request);
         $arguments = array_merge(
             $matchResult->getArguments(),

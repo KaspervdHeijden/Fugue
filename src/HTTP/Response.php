@@ -96,7 +96,7 @@ final class Response
     public const HTTP_REQUEST_TIMEOUT = 408;
 
     /** @var int */
-    public const HTTP_CONFLICT = 408;
+    public const HTTP_CONFLICT = 409;
 
     /** @var int */
     public const HTTP_GONE = 410;
@@ -170,7 +170,7 @@ final class Response
     /** @var string */
     public const CONTENT_TYPE_PDF        = 'application/pdf';
     
-    private const MAPPING = [
+    private const STATUS_CODE_MAPPING = [
         self::HTTP_CONTINUE => 'Continue',
         self::HTTP_SWITCHING_PROTOCOLS => 'Switching Protocols',
         self::HTTP_OK => 'OK',
@@ -218,7 +218,7 @@ final class Response
     private $statusCode;
 
     /** @var HeaderBag */
-    private $headers = [];
+    private $headers;
 
     /** @var string */
     private $content;
@@ -285,14 +285,19 @@ final class Response
         $this->statusCode = $statusCode;
     }
 
+    private function getStatusCodeClass(): int
+    {
+        return (int)floor($this->getStatusCode() / 100);
+    }
+
     /**
-     * Is this a Informational response?
+     * Is this a informational response?
      *
      * @return bool TRUE if the status code is between 100 and 200, FALSE otherwise.
      */
     public function isInformational(): bool
     {
-        return ((int)floor($this->getStatusCode() / 100) === 1);
+        return ($this->getStatusCodeClass() === 1);
     }
 
     /**
@@ -302,7 +307,7 @@ final class Response
      */
     public function isSuccessful(): bool
     {
-        return ((int)floor($this->getStatusCode() / 100) === 2);
+        return ($this->getStatusCodeClass() === 2);
     }
 
     /**
@@ -312,7 +317,7 @@ final class Response
      */
     public function isRedirect(): bool
     {
-        return ((int)floor($this->getStatusCode() / 100) === 3);
+        return ($this->getStatusCodeClass() === 3);
     }
 
     /**
@@ -322,7 +327,7 @@ final class Response
      */
     public function isClientError(): bool
     {
-        return ((int)floor($this->getStatusCode() / 100) === 4);
+        return ($this->getStatusCodeClass() === 4);
     }
 
     /**
@@ -332,7 +337,7 @@ final class Response
      */
     public function isServerError(): bool
     {
-        return ((int)floor($this->getStatusCode() / 100) === 5);
+        return ($this->getStatusCodeClass() === 5);
     }
 
     /**
@@ -342,11 +347,6 @@ final class Response
      */
     public function getStatusCodeText(): string
     {
-        $code = $this->getStatusCode();
-        if (isset(self::MAPPING[$code])) {
-            return self::MAPPING[$code];
-        }
-
-        return 'Unknown';
+        return self::STATUS_CODE_MAPPING[$this->getStatusCode()] ?? 'Unknown';
     }
 }

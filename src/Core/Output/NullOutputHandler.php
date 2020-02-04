@@ -9,9 +9,4 @@ final class NullOutputHandler implements OutputHandlerInterface
     public function write(string $text)
     {
     }
-
-    public function writeLine(string $text)
-    {
-        $this->write($text);
-    }
 }

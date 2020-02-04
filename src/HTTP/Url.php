@@ -9,7 +9,7 @@ use RuntimeException;
 use function parse_url;
 use function is_array;
 
-final class URL
+final class Url
 {
     /**
      * @var int The default port number.
@@ -22,11 +22,6 @@ final class URL
     /** @var string */
     private $url;
 
-    /**
-     * Constructs a URL.
-     *
-     * @param string $url The initial URL to use.
-     */
     public function __construct(string $url)
     {
         $this->url = $url;
@@ -52,12 +47,7 @@ final class URL
         return (string)($this->parts[$part] ?? '');
     }
 
-    /**
-     * Gets the current URL.
-     *
-     * @return string The current URL.
-     */
-    public function getURL(): string
+    public function getUrl(): string
     {
         return $this->url;
     }
@@ -147,13 +137,8 @@ final class URL
         return $this->getPart('scheme');
     }
 
-    /**
-     * Gets a string representation of this URL.
-     *
-     * @return string The URL.
-     */
     public function __toString(): string
     {
-        return $this->getURL();
+        return $this->url;
     }
 }

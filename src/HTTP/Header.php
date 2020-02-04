@@ -85,12 +85,6 @@ final class Header
 
     public function toHeaderString(): string
     {
-        $value = $this->getValue();
-
-        if ($value !== '') {
-
-        }
-
         return "{$this->getName()}: {$this->getValue()}";
     }
 

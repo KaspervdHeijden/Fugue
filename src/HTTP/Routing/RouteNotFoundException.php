@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Fugue\HTTP\Routing;
 
+use Fugue\HTTP\Request;
 use Fugue\Core\Exception\FugueException;
-use Fugue\HTTP\Response;
 
 final class RouteNotFoundException extends FugueException
 {
-    public function getStatusCode(): int
+    public static function forRequest(Request $request): self
     {
-        return Response::HTTP_NOT_FOUND;
+        throw new static(
+            "Route not found for {$request->getMethod()} '{$request->getUrl()->getPath()}'."
+        );
     }
 }

@@ -51,6 +51,9 @@ final class Request
     /** @var PropertyBag */
     private $post;
 
+    /** @var Url */
+    private $url;
+
     /** @var PropertyBag */
     private $get;
 
@@ -80,27 +83,19 @@ final class Request
     /**
      * Gets the URL of the current Request.
      *
-     * @return URL The current Request URL.
+     * @return Url The current Request URL.
      */
-    public function getURL(): URL
+    public function getUrl(): Url
     {
-        return new URL(
-            $this->getBaseURL()->getURL() .
-            $this->server->getString('REQUEST_URI')
-        );
-    }
+        if (! $this->url instanceof Url) {
+            $host     = rtrim($this->server->getString('HTTP_HOST'), '/');
+            $path     = $this->server->getString('REQUEST_URI');
+            $protocol = ($this->isSecure()) ? 'https' : 'http';
 
-    /**
-     * Gets the URL of the current Request.
-     *
-     * @return URL The current Request URL.
-     */
-    public function getBaseURL(): URL
-    {
-        $host     = rtrim($this->server->getString('HTTP_HOST'), '/');
-        $protocol = ($this->isSecure()) ? 'https' : 'http';
+            $this->url = new Url("{$protocol}://{$host}{$path}");
+        }
 
-        return new URL("{$protocol}://{$host}");
+        return $this->url;
     }
 
     /**

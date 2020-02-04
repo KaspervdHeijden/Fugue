@@ -4,41 +4,28 @@ declare(strict_types=1);
 
 namespace Fugue\Configuration\Loader;
 
-use LogicException;
+use function is_iterable;
 
-use function is_readable;
-use function is_file;
-
-final class PHPConfigurationLoader implements ConfigurationLoaderInterface
+final class PHPConfigurationLoader extends FileConfigurationLoader
 {
-    private const FILENAME_SUFFIX = '.inc.php';
+    private const FILENAME_SUFFIX = '.php';
 
-    /** @var string */
-    private $directory;
-
-    public function __construct(string $directory)
+    protected function getFilenameSuffix(): string
     {
-        $this->directory = $directory;
+        return self::FILENAME_SUFFIX;
     }
 
-    private function getFullPathForIdentifier(string $identifier): string
+    protected function loadConfigurationFromFile(string $fileName): ?iterable
     {
-        return "{$this->directory}/{$identifier}" . self::FILENAME_SUFFIX;
-    }
-
-    public function supports(string $identifier): bool
-    {
-        $fileName = $this->getFullPathForIdentifier($identifier);
-        return is_file($fileName) && is_readable($fileName);
-    }
-
-    public function load(string $identifier)
-    {
-        if (! $this->supports($identifier)) {
-            throw new LogicException(static::class . " does not support '{$identifier}'");
-        }
-
         /** @noinspection PhpIncludeInspection */
-        return require_once $this->getFullPathForIdentifier($identifier);
+        $result = require_once $fileName;
+        switch (true) {
+            case $result === null:
+                return null;
+            case is_iterable($result):
+                return $result;
+            default:
+                return [$result];
+        }
     }
 }

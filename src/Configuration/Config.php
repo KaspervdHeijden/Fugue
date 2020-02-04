@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Fugue\Configuration;
 
-use InvalidArgumentException;
-
 use function mb_strtolower;
 use function is_scalar;
 use function is_array;
@@ -13,9 +11,6 @@ use function explode;
 use function count;
 use function trim;
 
-/**
- * The Configuration class holds all configuration data.
- */
 final class Config
 {
     /**
@@ -57,15 +52,13 @@ final class Config
     {
         $path = explode('.', mb_strtolower(trim($name, self::NAME_SEPARATOR)));
         if (count($path) === 0) {
-            throw new InvalidArgumentException('Name cannot be empty.');
+            throw InvalidConfigurationNameException::forEmptyName();
         }
 
         $data = $this->config;
         foreach ($path as $key) {
             if (! isset($data[$key])) {
-                throw new InvalidArgumentException(
-                    "Invalid name {$name}. Please check entry {$key}."
-                );
+                throw InvalidConfigurationNameException::forNonExistentName($name, $key);
             }
 
             $data = $data[$key];
@@ -84,9 +77,7 @@ final class Config
     {
         $data = $this->getByName($name);
         if (! is_scalar($data)) {
-            throw new InvalidArgumentException(
-                "Cannot load non-scalar configuration {$name}."
-            );
+            throw InvalidConfigurationNameException::forNonScalarType($name);
         }
 
         return $data;
@@ -120,9 +111,7 @@ final class Config
     {
         $data = $this->getByName($path);
         if (! is_array($data)) {
-            throw new InvalidArgumentException(
-                "Cannot load branch {$path} because it is not an array."
-            );
+            throw InvalidConfigurationNameException::forNonBranchType($path);
         }
 
         return new SettingBranch($path, $data);
