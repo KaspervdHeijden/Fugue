@@ -11,7 +11,7 @@ final class RouteNotFoundException extends FugueException
 {
     public static function forRequest(Request $request): self
     {
-        throw new static(
+        return new static(
             "Route not found for {$request->getMethod()} '{$request->getUrl()->getPath()}'."
         );
     }

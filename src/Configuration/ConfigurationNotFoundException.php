@@ -10,7 +10,7 @@ final class ConfigurationNotFoundException extends FugueException
 {
     public static function forIdentifier(string $identifier): self
     {
-        throw new static(
+        return new static(
             "Could not load configuration for '{$identifier}'."
         );
     }

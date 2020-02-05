@@ -8,11 +8,11 @@ use function is_iterable;
 
 final class PHPConfigurationLoader extends FileConfigurationLoader
 {
-    private const FILENAME_SUFFIX = '.php';
-
-    protected function getFilenameSuffix(): string
-    {
-        return self::FILENAME_SUFFIX;
+    protected function getFullPathForIdentifier(
+        string $directory,
+        string $identifier
+    ): string {
+        return "{$directory}/php/{$identifier}.conf.php";
     }
 
     protected function loadConfigurationFromFile(string $fileName): ?iterable

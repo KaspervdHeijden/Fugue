@@ -13,6 +13,7 @@
         "ext-spl": "*",
         "ext-pdo": "*",
         "ext-xml": "*",
+        "ext-intl": "*",
         "ext-pcre": "*",
         "ext-json": "*",
         "ext-hash": "*",

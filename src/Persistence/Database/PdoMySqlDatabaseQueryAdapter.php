@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Fugue\Persistence\Database;
 
-use Fugue\Configuration\SettingBranch;
 use Fugue\Logging\LoggerInterface;
 use RuntimeException;
 use PDOStatement;
@@ -19,7 +18,7 @@ use function is_int;
 
 final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterface
 {
-    /** @var SettingBranch */
+    /** @var DatabaseConnectionSettings */
     private $settings;
 
     /** @var LoggerInterface */
@@ -28,8 +27,10 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
     /** @var PDO */
     private $pdo;
 
-    public function __construct(SettingBranch $settings, LoggerInterface $logger)
-    {
+    public function __construct(
+        DatabaseConnectionSettings $settings,
+        LoggerInterface $logger
+    ) {
         $this->settings = $settings;
         $this->logger   = $logger;
     }
@@ -42,18 +43,17 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
 
         $this->logger->info('Connecting to database');
         $this->pdo = new PDO(
-            $this->settings['dsn'],
-            $this->settings['user'],
-            $this->settings['password'],
-            $this->settings['options']
+            $this->settings->getDsn(),
+            $this->settings->getUser(),
+            $this->settings->getPassword(),
+            $this->settings->getOptions()
         );
 
-        $charset = (string)$this->settings['charset'];
-        if ($charset !== '') {
-            $this->pdo->query("SET NAMES {$charset}");
+        if ($this->settings->getCharset() !== '') {
+            $this->pdo->query("SET NAMES {$this->settings->getCharset()}");
         }
 
-        $timeZone = (string)$this->settings['timezone'];
+        $timeZone = $this->settings->getTimezone();
         if ($timeZone !== '') {
             if (
                 ! $this->pdo->query('SET @session.time_zone = ?', [$timeZone]) &&

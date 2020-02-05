@@ -127,7 +127,7 @@ final class Container implements Countable, ArrayAccess
                 return $this->resolve($name);
             default:
                 throw new LogicException(
-                    "Invalid type ({$definition->getType()}) for '{$name}'"
+                    "Invalid type ({$definition->getType()}) for '{$name}'."
                 );
         }
     }
@@ -153,7 +153,7 @@ final class Container implements Countable, ArrayAccess
     private function ensureStringName($name): string
     {
         if (! is_string($name)) {
-            throw new InvalidArgumentException('Names must be strings');
+            throw new InvalidArgumentException('Names must be strings.');
         }
 
         return (string)$name;

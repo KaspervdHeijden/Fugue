@@ -13,7 +13,7 @@ use function implode;
 use function uniqid;
 use function count;
 
-abstract class MailerService implements EmailSenderInterface
+abstract class Mailer implements EmailSenderInterface
 {
     /** @var string */
     public const BOUNDARY_PREFIX = 'np';

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\Mailing;
 
-final class EmptyMailerService extends MailerService
+final class EmptyMailer extends Mailer
 {
     protected function sendMail(
         string $to,

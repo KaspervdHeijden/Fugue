@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Fugue\Controller;
 
-use Fugue\HTTP\Header;
 use Fugue\View\Templating\TemplateAdapterFactory;
 use Fugue\Core\Runtime\RuntimeInterface;
 use Fugue\HTTP\HeaderBag;
 use Fugue\HTTP\Response;
+use Fugue\HTTP\Header;
 
 use function array_merge;
 use function json_encode;

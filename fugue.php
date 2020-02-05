@@ -14,15 +14,14 @@ declare(strict_types=1);
  * (c) 2020. All rights reserved.
  */
 
-use Fugue\Configuration\Loader\PHPConfigurationLoader;
+use Fugue\Configuration\Loader\{IniConfigurationLoader, PHPConfigurationLoader};
 use Fugue\Core\ClassLoader\DefaultClassLoader;
 use Fugue\Core\Output\StandardOutputHandler;
 use Fugue\Core\Exception\OutputErrorHandler;
 use Fugue\Core\Runtime\RuntimeInterface;
+use Fugue\Core\{RuntimeFactory, Kernel};
 use Fugue\Collection\PropertyBag;
-use Fugue\Core\RuntimeFactory;
 use Fugue\HTTP\Request;
-use Fugue\Core\Kernel;
 
 if (is_file(__DIR__ . '/vendor/autoload.php')) {
     include_once __DIR__ . '/vendor/autoload.php';
@@ -47,15 +46,18 @@ require_once __DIR__ . '/src/Core/Runtime/RuntimeInterface.php';
         mb_language($language);
     }
 
-    public function fugue(string $currentDir): void
+    public function fugue(string $srcDir, string $configDir): void
     {
-        $classLoader   = new DefaultClassLoader("{$currentDir}/src", 'Fugue');
+        $classLoader   = new DefaultClassLoader($srcDir, 'Fugue');
         $outputHandler = new StandardOutputHandler();
         $kernel        = new Kernel(
             $outputHandler,
-            new OutputErrorHandler($outputHandler, true),
+            new OutputErrorHandler($outputHandler),
             $classLoader,
-            [new PHPConfigurationLoader("{$currentDir}/conf")]
+            [
+                new IniConfigurationLoader($configDir),
+                new PHPConfigurationLoader($configDir),
+            ]
         );
 
         $request = new Request(
@@ -66,7 +68,8 @@ require_once __DIR__ . '/src/Core/Runtime/RuntimeInterface.php';
             new PropertyBag($_SERVER)
         );
 
-        (new RuntimeFactory())->getRuntime($kernel)
-                              ->handle($request);
+        (new RuntimeFactory())
+            ->getRuntime($kernel)
+            ->handle($request);
     }
-})->fugue(__DIR__);
+})->fugue(__DIR__ . '/src', __DIR__ . '/conf');

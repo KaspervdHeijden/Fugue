@@ -10,7 +10,6 @@ use ReflectionMethod;
 use ReflectionClass;
 
 use function array_map;
-use function is_string;
 
 final class ClassResolver
 {
@@ -22,7 +21,7 @@ final class ClassResolver
      * @param Container     $container
      * @param CollectionMap $classToObjects
      *
-     * @return mixed    Instance of $className
+     * @return mixed        Instance of $className
      */
     public function resolve(
         string $className,
@@ -30,36 +29,26 @@ final class ClassResolver
         CollectionMap $classToObjects
     ) {
         $argumentClasses = $this->getArgumentClassesFromConstructor($className);
-        $objectsToLoad   = array_map(
-            static function (ReflectionClass $reflectionClass) use ($classToObjects): string {
+        $arguments       = array_map(
+            function (ReflectionClass $reflectionClass) use ($container, $classToObjects) {
                 $typeName = $reflectionClass->getName();
+
                 if ($classToObjects->containsKey($typeName)) {
                     return $classToObjects[$typeName];
+                } elseif ($container->isRegistered($typeName)) {
+                    return $container->resolve($typeName);
                 }
 
-                return $typeName;
+                throw CannotResolveClassException::forUnresolvedClass($typeName);
             },
             $argumentClasses
-        );
-
-        $arguments = array_map(
-            function ($objectToLoad) use ($container, $classToObjects) {
-                if (! is_string($objectToLoad)) {
-                    return $objectToLoad;
-                } elseif ($container->isRegistered($objectToLoad)) {
-                    return $container->resolve($objectToLoad);
-                } else {
-                    return $this->resolve($objectToLoad, $container, $classToObjects);
-                }
-            },
-            $objectsToLoad
         );
 
         return new $className(...$arguments);
     }
 
     /**
-     * @param string $className
+     * @param string $className The name of the class to resolve the constructor arguments for.
      * @return ReflectionClass[]
      */
     private function getArgumentClassesFromConstructor(string $className): array

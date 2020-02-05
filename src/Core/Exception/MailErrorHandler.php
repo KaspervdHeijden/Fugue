@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace Fugue\Core\Exception;
 
-use Fugue\Mailing\MailerService;
+use Fugue\Mailing\EmailSenderInterface;
 use Fugue\Mailing\HTMLMessage;
-use InvalidArgumentException;
 use Fugue\Mailing\Email;
-
-use function filter_var;
 
 final class MailErrorHandler extends ErrorHandler
 {
-    /** @var MailerService */
+    /** @var EmailSenderInterface */
     private $mailerService;
 
     /** @var string */
@@ -25,7 +22,7 @@ final class MailErrorHandler extends ErrorHandler
     public function __construct(
         string $recipientEmail,
         string $senderEmail,
-        MailerService $mailerService
+        EmailSenderInterface $mailerService
     ) {
         $this->recipientEmail = $recipientEmail;
         $this->mailerService  = $mailerService;

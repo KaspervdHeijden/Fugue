@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\Core;
 
+use Fugue\Container\ContainerDefinition;
 use Fugue\HTTP\Routing\RouteCollectionMap;
 use Fugue\Core\Runtime\RuntimeInterface;
 use Fugue\Core\Runtime\HttpRuntime;
@@ -46,9 +47,11 @@ final class RuntimeFactory
             return new CLIRuntime();
         }
 
+        $container = $kernel->getContainer();
         return new HttpRuntime(
-            $kernel,
-            new RouteCollectionMap($kernel->loadConfiguration('routes'))
+            $kernel->getOutputHandler(),
+            $container->resolve(RouteCollectionMap::class),
+            $container
         );
     }
 }

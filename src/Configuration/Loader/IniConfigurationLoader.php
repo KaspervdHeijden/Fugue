@@ -10,12 +10,11 @@ use function is_array;
 
 final class IniConfigurationLoader extends FileConfigurationLoader
 {
-    /** @var string */
-    private const FILENAME_SUFFIX = '.ini';
-
-    protected function getFilenameSuffix(): string
-    {
-        return self::FILENAME_SUFFIX;
+    protected function getFullPathForIdentifier(
+        string $directory,
+        string $identifier
+    ): string {
+        return "{$directory}/init/{$identifier}.conf.ini";
     }
 
     protected function loadConfigurationFromFile(string $fileName): ?iterable

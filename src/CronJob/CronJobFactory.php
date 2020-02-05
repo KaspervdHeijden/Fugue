@@ -14,8 +14,11 @@ final class CronJobFactory
      * @param string   $identifier The identifier to get the CronJobInterface for.
      * @return CronJobInterface    The CronJob.
      */
-    public function getCronJobFromIdentifier(string $identifier): CronJobInterface
-    {
-        throw new InvalidArgumentException("Identifier {$identifier} not recognized.");
+    public function getCronJobFromIdentifier(
+        string $identifier
+    ): CronJobInterface {
+        throw new InvalidArgumentException(
+            "Identifier {$identifier} not recognized."
+        );
     }
 }

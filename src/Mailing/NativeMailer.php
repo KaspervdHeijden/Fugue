@@ -6,7 +6,7 @@ namespace Fugue\Mailing;
 
 use function mail;
 
-final class NativeMailerService extends MailerService
+final class NativeMailer extends Mailer
 {
     protected function sendMail(
         string $to,

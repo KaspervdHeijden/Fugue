@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Fugue\Configuration\Loader;
 
 use Fugue\Collection\CollectionMap;
+use Fugue\Collection\Collection;
 
 use function is_readable;
 use function is_iterable;
@@ -20,10 +21,7 @@ abstract class FileConfigurationLoader implements ConfigurationLoaderInterface
         $this->directory = $directory;
     }
 
-    private function getFullPathForIdentifier(string $identifier): string
-    {
-        return "{$this->directory}/{$identifier}{$this->getFilenameSuffix()}";
-    }
+    abstract protected function getFullPathForIdentifier(string $directory, string $identifier): string;
 
     /**
      * Loads the configuration from disk.
@@ -33,18 +31,13 @@ abstract class FileConfigurationLoader implements ConfigurationLoaderInterface
      */
     abstract protected function loadConfigurationFromFile(string $fileName): ?iterable;
 
-    /**
-     * The suffix of the file recognized by the implementation.
-     */
-    abstract protected function getFilenameSuffix(): string;
-
     public function supports(string $identifier): bool
     {
-        $fileName = $this->getFullPathForIdentifier($identifier);
+        $fileName = $this->getFullPathForIdentifier($this->directory, $identifier);
         return is_file($fileName) && is_readable($fileName);
     }
 
-    public function load(string $identifier): CollectionMap
+    public function load(string $identifier): Collection
     {
         if (! $this->supports($identifier)) {
             throw ConfigurationLoadException::notSupportedIdentifier(
@@ -53,7 +46,7 @@ abstract class FileConfigurationLoader implements ConfigurationLoaderInterface
             );
         }
 
-        $fileName = $this->getFullPathForIdentifier($identifier);
+        $fileName = $this->getFullPathForIdentifier($this->directory, $identifier);
         $results  = $this->loadConfigurationFromFile($fileName);
 
         if (! is_iterable($results)) {

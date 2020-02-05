@@ -16,6 +16,7 @@ use Fugue\HTTP\Request;
 use Fugue\HTTP\Header;
 use Fugue\Core\Kernel;
 
+use Fugue\Core\Output\OutputHandlerInterface;
 use function method_exists;
 use function header_remove;
 use function headers_sent;
@@ -34,18 +35,23 @@ final class HttpRuntime implements RuntimeInterface
      */
     public const DEFAULT_CONTROLLER_METHOD = 'handleRequest';
 
+    /** @var OutputHandlerInterface */
+    private $outputHandler;
+
+    /** @var Container */
+    private $container;
+
     /** @var RouteCollectionMap */
     private $routeMap;
 
-    /** @var Kernel */
-    private $kernel;
-
     public function __construct(
-        Kernel $kernel,
-        RouteCollectionMap $routeMap
+        OutputHandlerInterface $outputHandler,
+        RouteCollectionMap $routeMap,
+        Container $container
     ) {
-        $this->routeMap = $routeMap;
-        $this->kernel   = $kernel;
+        $this->outputHandler = $outputHandler;
+        $this->container     = $container;
+        $this->routeMap      = $routeMap;
     }
 
     public function handle(Request $request): void
@@ -55,13 +61,12 @@ final class HttpRuntime implements RuntimeInterface
         $response    = $this->run($matchResult, $request);
 
         $this->sendHeaders($request, $response);
-        $this->kernel->getOutputHandler()
-                     ->write($response->getContent());
+        $this->outputHandler->write($response->getContent());
     }
 
     /**
-     * @param Request  $request  The Request
-     * @param Response $response The Response
+     * @param Request  $request  The Request.
+     * @param Response $response The Response.
      */
     private function sendHeaders(
         Request $request,
@@ -151,16 +156,12 @@ final class HttpRuntime implements RuntimeInterface
             $methodName = self::DEFAULT_CONTROLLER_METHOD;
         }
 
-        $mapping   = $this->kernel->loadConfiguration('object-mapping');
-        $container = $this->kernel->getContainer();
-        $mapping   = $mapping->merge(new CollectionMap([
-            RouteCollectionMap::class  => $this->routeMap,
-            Container::class           => $container,
-            Request::class             => $request,
-            Route::class               => $route,
-        ]));
+        $mapping = new CollectionMap([
+            Request::class => $request,
+            Route::class   => $route,
+        ]);
 
-        $instance = (new ClassResolver())->resolve($className, $container, $mapping);
+        $instance = (new ClassResolver())->resolve($className, $this->container, $mapping);
         if (! method_exists($instance, $methodName)) {
             throw InvalidRouteHandlerException::nonExistentClassFunction(
                 $className,
