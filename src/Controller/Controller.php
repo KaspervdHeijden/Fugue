@@ -21,6 +21,11 @@ abstract class Controller
     private const DEFAULT_HTML =
         '<p class="empty-page">You have encountered an empty page. Please notify your system administrator.</p>';
 
+    /**
+     * @var string Redirect page html.
+     */
+    private const REDIRECT_HTML = 'The resource you are trying to access can be found here: %s';
+
     /** @var TemplateAdapterFactory */
     private $templateFactory;
 
@@ -93,7 +98,7 @@ abstract class Controller
     }
 
     /**
-     * Generates a plaintext response.
+     * Generates a plain text response.
      *
      * @param string $text       The data to return as a JSON file.
      * @param int    $statusCode The status code for the response.
@@ -142,7 +147,7 @@ abstract class Controller
      * Generates a view for a redirect.
      *
      * @param string $url        The URL to redirect to.
-     * @param string $message    The message to show to the user.
+     * @param string $message    The message to show.
      * @param int    $statusCode The status code for the response. Defaults to "302 Moved Temporarily".
      *
      * @return Response          The generated response.
@@ -152,29 +157,27 @@ abstract class Controller
         string $message = '',
         $statusCode     = Response::HTTP_MOVED_TEMPORARILY
     ): Response {
-        $response = $this->renderView(
-            'redirectPage',
-            [
-                'message' => $message,
-                'url'     => $url,
-            ],
-            Response::CONTENT_TYPE_HTML,
-            $statusCode
-        );
+        if ($message === '') {
+            $message = sprintf(self::REDIRECT_HTML, $url);
+        }
 
-        $response->setHeader('Location', $url);
-        return $response;
+        return $this->createResponse(
+            $message,
+            Response::CONTENT_TYPE_PLAINTEXT,
+            $statusCode,
+            [Header::NAME_LOCATION => $url]
+        );
     }
 
     /**
      * Renders a view without a document context.
      *
-     * @param string $contentTemplate    The content template file.
-     * @param array  $variables          HashMap of variables to pass to the template.
-     * @param string $contentType        The content type of the response.
-     * @param int    $statusCode         The status code for the response.
+     * @param string $contentTemplate The content template file.
+     * @param array  $variables       HashMap of variables to pass to the template.
+     * @param string $contentType     The content type of the response.
+     * @param int    $statusCode      The status code for the response.
      *
-     * @return Response                  The generated content.
+     * @return Response               The generated content.
      */
     protected function renderView(
         string $contentTemplate,
@@ -192,24 +195,25 @@ abstract class Controller
             $statusCode
         );
     }
+
     protected function createResponse(
         string $content,
         string $contentType,
         int $statusCode,
         array $headers = []
     ): Response {
-        $headers = new HeaderBag();
+        $headerBag = new HeaderBag();
         foreach ($headers as $key => $value) {
-            $headers->setFromString($key, $value);
+            $headerBag->setFromString($key, $value);
         }
 
         if ($contentType !== '') {
-            $headers->setFromString(
+            $headerBag->setFromString(
                 Header::NAME_CONTENT_TYPE,
                 $contentType
             );
         }
 
-        return new Response($content, $statusCode, $headers);
+        return new Response($content, $statusCode, $headerBag);
     }
 }

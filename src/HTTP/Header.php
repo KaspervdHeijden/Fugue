@@ -10,8 +10,10 @@ use InvalidArgumentException;
 use function mb_strtolower;
 use function array_map;
 use function explode;
+use function implode;
 use function lcfirst;
 use function ucfirst;
+use function trim;
 
 final class Header
 {
@@ -29,6 +31,9 @@ final class Header
 
     /** @var string */
     public const NAME_CACHE_CONTROL = 'cache_control';
+
+    /** @var string */
+    public const NAME_LOCATION = 'location';
 
     /** @var string */
     public const NAME_EXPIRES = 'expires';
@@ -80,7 +85,7 @@ final class Header
 
     public function getValue(): string
     {
-        return implode(';', $this->parts->all());
+        return implode(';', $this->parts->toArray());
     }
 
     public function toHeaderString(): string

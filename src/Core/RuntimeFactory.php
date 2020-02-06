@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\Core;
 
-use Fugue\Container\ContainerDefinition;
+use Fugue\Logging\OutputLogger;
 use Fugue\HTTP\Routing\RouteCollectionMap;
 use Fugue\Core\Runtime\RuntimeInterface;
 use Fugue\Core\Runtime\HttpRuntime;
@@ -38,13 +38,13 @@ final class RuntimeFactory
     /**
      * Gets a RuntimeInterface from a request.
      *
-     * @param Kernel $kernel    The frameWork to use.
+     * @param Kernel $kernel    The kernel to use.
      * @return RuntimeInterface A RuntimeInterface suitable to handle the request.
      */
     public function getRuntime(Kernel $kernel): RuntimeInterface
     {
         if ($this->isCalledFromCLI()) {
-            return new CLIRuntime();
+            return new CLIRuntime(new OutputLogger($kernel->getOutputHandler()));
         }
 
         $container = $kernel->getContainer();

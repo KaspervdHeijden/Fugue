@@ -4,17 +4,10 @@ declare(strict_types=1);
 
 namespace Fugue\Core\Exception;
 
-final class EmptyErrorHandler implements ErrorHandlerInterface
+final class EmptyErrorHandler extends ErrorHandler
 {
-    public function handleError(
-        int $errorNumber,
-        string $errorMessage,
-        string $file,
-        int $lineNumber
-    ): void {
-    }
-
-    public function register(): void
+    protected function handle(UnhandledErrorException $exception): bool
     {
+        return false;
     }
 }

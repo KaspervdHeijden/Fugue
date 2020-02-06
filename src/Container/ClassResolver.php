@@ -48,7 +48,6 @@ final class ClassResolver
     }
 
     /**
-     * @param string $className The name of the class to resolve the constructor arguments for.
      * @return ReflectionClass[]
      */
     private function getArgumentClassesFromConstructor(string $className): array

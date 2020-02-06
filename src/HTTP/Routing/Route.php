@@ -146,7 +146,7 @@ final class Route
      *
      * @return string The Route's path match.
      */
-    public function getURLTemplate(): string
+    public function getUrlTemplate(): string
     {
         return $this->urlTemplate;
     }
@@ -195,7 +195,7 @@ final class Route
 
                 return "(?<{$matches[1]}>{$regex})";
             },
-            $this->getURLTemplate()
+            $this->urlTemplate
         ), '/'));
 
         return "#^{$regex}\/*$#";
@@ -207,14 +207,14 @@ final class Route
      * @param array $params List of variables to replace.
      * @return string       The URL that matches the path.
      */
-    public function getURL(array $params = []): string
+    public function getUrl(array $params = []): string
     {
         return preg_replace_callback(
             self::URL_TEMPLATE_REGEX,
             static function (array $matches) use ($params): string {
                 return mb_strtolower($params[$matches[1]] ?? '');
             },
-            $this->getURLTemplate()
+            $this->urlTemplate
         );
     }
 }

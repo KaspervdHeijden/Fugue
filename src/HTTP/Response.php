@@ -159,16 +159,16 @@ final class Response
     public const CONTENT_TYPE_PLAINTEXT  = 'text/plain';
 
     /** @var string */
-    public const CONTENT_TYPE_HTML       = 'text/html';
+    public const CONTENT_TYPE_HTML = 'text/html';
 
     /** @var string */
-    public const CONTENT_TYPE_CSS        = 'text/css';
+    public const CONTENT_TYPE_CSS = 'text/css';
 
     /** @var string */
-    public const CONTENT_TYPE_CSV        = 'text/csv';
+    public const CONTENT_TYPE_CSV = 'text/csv';
 
     /** @var string */
-    public const CONTENT_TYPE_PDF        = 'application/pdf';
+    public const CONTENT_TYPE_PDF = 'application/pdf';
     
     private const STATUS_CODE_MAPPING = [
         self::HTTP_CONTINUE => 'Continue',
@@ -258,6 +258,16 @@ final class Response
     public function setContent(string $content): void
     {
         $this->content = $content;
+    }
+
+    /**
+     * Sets the content.
+     *
+     * @param string $content The content for the request.
+     */
+    public function appendContent(string $content): void
+    {
+        $this->content .= $content;
     }
 
     public function getHeaders(): HeaderBag

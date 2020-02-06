@@ -6,5 +6,5 @@ namespace Fugue\Core\Output;
 
 interface OutputHandlerInterface
 {
-    public function write(string $text);
+    public function write(string $text): void;
 }

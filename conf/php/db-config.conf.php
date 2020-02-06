@@ -6,7 +6,7 @@ return [
     'timezone' => 'Europe/Amsterdam',
     'user'     => 'localhost',
     'charset'  => 'UTF-8',
+    'options'  => null,
     'dsn'      => '',
     'password' => '',
-    'options'  => null,
 ];

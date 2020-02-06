@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Fugue\Core\Exception;
 
 use Throwable;
+
 use function error_reporting;
 use function sprintf;
 
@@ -16,7 +17,7 @@ abstract class ErrorHandler implements ErrorHandlerInterface
     /**
      * Handle an UnhandledException.
      *
-     * @param UnhandledErrorException $exception The unhandled exception
+     * @param UnhandledErrorException $exception The unhandled exception.
      * @return bool                              TRUE to continue, FALSE to exit immediately.
      */
     abstract protected function handle(UnhandledErrorException $exception): bool;

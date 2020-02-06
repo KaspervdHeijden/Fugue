@@ -12,7 +12,7 @@ final class MySqlDateFormatter extends DateFormatter
             return '';
         }
 
-        $stamp = $this->getDateTime($date);
-        return $stamp->format('Y-m-d H:i:s');
+        $dateTime = $this->getDateTime($date);
+        return $dateTime->format('Y-m-d H:i:s');
     }
 }

@@ -21,7 +21,9 @@ final class ORMMapper
     public function __construct(string $className)
     {
         if ($className === '') {
-            throw new InvalidArgumentException('Classname should not be empty');
+            throw new InvalidArgumentException(
+                'Classname should not be empty.'
+            );
         }
 
         try {
@@ -33,14 +35,14 @@ final class ORMMapper
                 $constructor->getNumberOfRequiredParameters() > 0
             ) {
                 throw new LogicException(
-                    "Cannot instantiate a new {$className} because it requires arguments"
+                    "Cannot instantiate a new {$className} because it requires arguments."
                 );
             }
 
             $this->reflection = $reflection;
         } catch (ReflectionException $reflectionException) {
             throw new InvalidArgumentException(
-                "Could not load class '{$className}'",
+                "Could not load class '{$className}'.",
                 (int)$reflectionException->getCode(),
                 $reflectionException
             );
@@ -60,12 +62,6 @@ final class ORMMapper
         return true;
     }
 
-    /**
-     * @param mixed|null          $value
-     * @param ReflectionType|null $type
-     *
-     * @return mixed|null         The casted value.
-     */
     private function cast($value, ?ReflectionType $type)
     {
         if (! $type instanceof ReflectionType) {

@@ -59,5 +59,5 @@ return [
                 $container->resolve(OutputHandlerInterface::class)
             );
         }
-    )
+    ),
 ];

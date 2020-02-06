@@ -18,7 +18,6 @@ final class DutchPhoneNumberFormatter implements PhoneNumberFormatterInterface
             case '0':
                 return $this->format(mb_substr($phoneNumber, 2));
             case '6':
-                // Mobile numbers.
                 return '06 ' . mb_substr($phoneNumber, 2);
             case '9':
                 switch ($phoneNumber[2]) {

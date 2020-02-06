@@ -32,7 +32,7 @@ final class MultiLogger extends Logger
      *
      * @param LoggerInterface $logger The logger to add.
      */
-    public function addLogger(LoggerInterface $logger): void
+    public function add(LoggerInterface $logger): void
     {
         if ($this->getLoggerIndex($logger) === null) {
             $this->loggers[] = $logger;
@@ -54,7 +54,7 @@ final class MultiLogger extends Logger
      *
      * @param LoggerInterface $logger The logger to remove.
      */
-    public function removeLogger(LoggerInterface $logger): void
+    public function remove(LoggerInterface $logger): void
     {
         $index = $this->getLoggerIndex($logger);
         if (is_int($index)) {

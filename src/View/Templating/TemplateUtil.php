@@ -11,8 +11,9 @@ use Fugue\Core\Output\OutputHandlerInterface;
 use Fugue\HTTP\Routing\RouteCollectionMap;
 use Fugue\HTTP\Routing\Route;
 
-use function realpath;
-use function rtrim;
+use function htmlspecialchars;
+use function mb_strlen;
+use function mb_substr;
 
 final class TemplateUtil
 {
@@ -153,7 +154,7 @@ final class TemplateUtil
             return '';
         }
 
-        $url = $route->getURL($parameters);
+        $url = $route->getUrl($parameters);
         if ($output) {
             $this->escape($url);
         }
@@ -177,11 +178,5 @@ final class TemplateUtil
         }
 
         return $formattedPhoneNumber;
-    }
-
-    public function getTemplateRootDir(): string
-    {
-        $rootDir = rtrim(realpath(__DIR__ . '/../../../'), '/');
-        return "{$rootDir}/templates/";
     }
 }

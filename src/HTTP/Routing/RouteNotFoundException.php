@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Fugue\HTTP\Routing;
 
-use Fugue\HTTP\Request;
 use Fugue\Core\Exception\FugueException;
+use Fugue\HTTP\Request;
 
 final class RouteNotFoundException extends FugueException
 {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\Core\Runtime;
 
+use Fugue\Core\Output\OutputHandlerInterface;
 use Fugue\HTTP\Routing\RouteCollectionMap;
 use Fugue\HTTP\Routing\RouteMatchResult;
 use Fugue\HTTP\Routing\RouteMatcher;
@@ -14,9 +15,7 @@ use Fugue\HTTP\Routing\Route;
 use Fugue\HTTP\Response;
 use Fugue\HTTP\Request;
 use Fugue\HTTP\Header;
-use Fugue\Core\Kernel;
 
-use Fugue\Core\Output\OutputHandlerInterface;
 use function method_exists;
 use function header_remove;
 use function headers_sent;
@@ -57,17 +56,13 @@ final class HttpRuntime implements RuntimeInterface
     public function handle(Request $request): void
     {
         $matcher     = new RouteMatcher($this->routeMap);
-        $matchResult = $matcher->findForRequest($request);
+        $matchResult = $matcher->getForRequest($request);
         $response    = $this->run($matchResult, $request);
 
         $this->sendHeaders($request, $response);
         $this->outputHandler->write($response->getContent());
     }
 
-    /**
-     * @param Request  $request  The Request.
-     * @param Response $response The Response.
-     */
     private function sendHeaders(
         Request $request,
         Response $response
@@ -76,10 +71,11 @@ final class HttpRuntime implements RuntimeInterface
             return;
         }
 
-        header_remove();
+        $headers = $this->getHeaders($request, $response);
+        $code    = $response->getStatusCode();
 
-        $code = $response->getStatusCode();
-        foreach ($this->getHeaders($request, $response) as $header) {
+        header_remove();
+        foreach ($headers as $header) {
             header($header, true, $code);
         }
     }
@@ -108,7 +104,7 @@ final class HttpRuntime implements RuntimeInterface
                 static function (Header $header): string {
                     return $header->toHeaderString();
                 },
-                $headers->all()
+                $headers->toArray()
             )
         );
     }
@@ -123,15 +119,18 @@ final class HttpRuntime implements RuntimeInterface
                 return false;
         }
 
-        if ($request->isHeadRequest() || $response->isInformational() || $response->isRedirect()) {
-            return false;
+        switch (true) {
+            case $response->isInformational():
+            case $request->isHeadRequest():
+            case $response->isRedirect():
+                return false;
         }
 
         return true;
     }
 
     /**
-     * Gets the handler.
+     * Gets the handler to run.
      *
      * @param Route   $route   The route to run.
      * @param Request $request The originating request.
@@ -156,11 +155,7 @@ final class HttpRuntime implements RuntimeInterface
             $methodName = self::DEFAULT_CONTROLLER_METHOD;
         }
 
-        $mapping = new CollectionMap([
-            Request::class => $request,
-            Route::class   => $route,
-        ]);
-
+        $mapping  = new CollectionMap([Request::class => $request, Route::class => $route]);
         $instance = (new ClassResolver())->resolve($className, $this->container, $mapping);
         if (! method_exists($instance, $methodName)) {
             throw InvalidRouteHandlerException::nonExistentClassFunction(

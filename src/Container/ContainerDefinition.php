@@ -15,7 +15,7 @@ final class ContainerDefinition
     /** @var int */
     private $type;
 
-    private function __construct(string $name, $definition, int $type)
+    private function __construct(string $name, int $type, $definition)
     {
         $this->definition = $definition;
         $this->name       = $name;
@@ -27,28 +27,28 @@ final class ContainerDefinition
         return $this->name;
     }
 
-    public function getDefinition()
-    {
-        return $this->definition;
-    }
-
     public function getType(): int
     {
         return $this->type;
     }
 
+    public function getDefinition()
+    {
+        return $this->definition;
+    }
+
     public static function singleton(string $name, callable $definition): self
     {
-        return new self($name, $definition, Container::TYPE_SINGLETON);
+        return new self($name, Container::TYPE_SINGLETON, $definition);
     }
 
     public static function raw(string $name, $definition): self
     {
-        return new self($name, $definition, Container::TYPE_RAW);
+        return new self($name, Container::TYPE_RAW, $definition);
     }
 
     public static function factory(string $name, callable $definition): self
     {
-        return new self($name, $definition, Container::TYPE_FACTORY);
+        return new self($name, Container::TYPE_FACTORY, $definition);
     }
 }

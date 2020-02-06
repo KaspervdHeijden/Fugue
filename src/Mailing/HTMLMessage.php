@@ -114,7 +114,7 @@ final class HTMLMessage extends MailPart
      */
     public function generateTextPart(): TextMessage
     {
-        $doc       = new DOMDocument('1.0'); // @todo implement charset
+        $doc       = new DOMDocument('1.0');
         $activeTag = '';
         $content   = '';
 

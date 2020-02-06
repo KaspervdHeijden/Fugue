@@ -11,7 +11,6 @@ use ArrayAccess;
 use Traversable;
 use Countable;
 
-use InvalidArgumentException;
 use function array_key_exists;
 use function array_key_first;
 use function array_key_last;
@@ -27,11 +26,16 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     private const TYPE_MAPPING = [
         'resource' => 'is_resource',
         'callable' => 'is_callable',
+        'function' => 'is_callable',
         'string'   => 'is_string',
         'array'    => 'is_array',
         'float'    => 'is_float',
+        'double'   => 'is_float',
+        'real'     => 'is_float',
+        'boolean'  => 'is_bool',
         'bool'     => 'is_bool',
         'int'      => 'is_int',
+        'integer'  => 'is_int',
     ];
 
     /** @var mixed[] */
@@ -48,23 +52,6 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         }
     }
 
-    public static function forIterable(iterable $elements): self
-    {
-        foreach ($elements as $element) {
-            if (is_object($element)) {
-                return new static($elements, get_class($element));
-            }
-
-            foreach (self::TYPE_MAPPING as $type => $check) {
-                if ($check($element)) {
-                    return new static($elements, $type);
-                }
-            }
-        }
-
-        return new static();
-    }
-
     /**
      * Determines if this collection contains the supplied key.
      *
@@ -79,7 +66,8 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     public function merge(self $other): self
     {
         return new static(
-            array_merge($this->elements, $other->elements)
+            array_merge($this->elements, $other->elements),
+            $this->type
         );
     }
 
@@ -107,9 +95,9 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
      * Gets a value.
      *
      * @param string|int $key     The name of the value to get.
-     * @param mixed      $default A default, if the value does not exist.
+     * @param mixed      $default A default for if the value does not exist.
      *
-     * @return mixed              The value, or the default.
+     * @return mixed              The value found, or the default.
      */
     public function get($key, $default = null)
     {
@@ -143,11 +131,6 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         }
     }
 
-    /**
-     * Unset multiple values.
-     *
-     * @param string[]|int[] $keys The keys to unset.
-     */
     public function unset(...$keys): void
     {
         foreach ($keys as $key) {
@@ -158,20 +141,22 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     public function filter(callable $filter): self
     {
         return new static(
-            array_filter($this->elements, $filter)
+            array_filter($this->elements, $filter),
+            $this->type
         );
     }
 
     public function forEach(callable $filter): self
     {
         return new static(
-            array_map($filter, $this->elements)
+            array_map($filter, $this->elements),
+            $this->type
         );
     }
 
     /**
      * @param mixed $value The value to check.
-     * @return bool        TRUE if the value is acceptable, FALSE otherwise.
+     * @return bool        TRUE if the value is to be accepted, FALSE otherwise.
      */
     protected function checkValue($value): bool
     {
@@ -206,9 +191,9 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     /**
      * Gets the data in this collection as an array.
      *
-     * @return array The elements of this CustomArray as an array.
+     * @return array The elements of this Collection as an array.
      */
-    public function all(): array
+    public function toArray(): array
     {
         return $this->elements;
     }
@@ -240,18 +225,26 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
      * @param int      $offset The start of the subset index.
      * @param int|null $length The length of the subset, of NULL for all.
      *
-     * @return Collection       The subset collection
+     * @return Collection      The subset collection.
      */
     public function slice(int $offset, ?int $length = null): self
     {
-        return new static(array_slice(
-            $this->elements,
-            $offset,
-            $length,
-            true
-        ));
+        return new static(
+            array_slice(
+                $this->elements,
+                $offset,
+                $length,
+                true
+            ),
+            $this->type
+        );
     }
 
+    /**
+     * Gets the first element.
+     *
+     * @return mixed The first element in this collection, or NULL if this collection is empty.
+     */
     public function first()
     {
         $key = array_key_first($this->elements);
@@ -262,6 +255,11 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         return $this->elements[$key];
     }
 
+    /**
+     * Gets the last element.
+     *
+     * @return mixed The last element in this collection, or NULL if this collection is empty.
+     */
     public function last()
     {
         $key = array_key_last($this->elements);

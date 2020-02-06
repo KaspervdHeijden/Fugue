@@ -11,7 +11,9 @@ use PDOException;
 use PDO;
 
 use function is_resource;
+use function array_map;
 use function is_string;
+use function is_array;
 use function is_null;
 use function is_bool;
 use function is_int;
@@ -50,7 +52,7 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
         );
 
         if ($this->settings->getCharset() !== '') {
-            $this->pdo->query("SET NAMES {$this->settings->getCharset()}");
+            $this->pdo->query("SET NAMES '{$this->settings->getCharset()}'");
         }
 
         $timeZone = $this->settings->getTimezone();
@@ -72,7 +74,7 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
     private function throwExceptionFromArray(array $errorInfo): void
     {
         [$sqlState, $errorCode, $errorMessage] = $errorInfo;
-        $this->logger->error("{$errorCode} (SQLSTATE {$sqlState}): '{$errorMessage}'");
+        $this->logger->error("{$errorCode} SQLSTATE[{$sqlState}]: '{$errorMessage}'");
 
         throw new PDOException($errorMessage, $errorCode);
     }
@@ -130,7 +132,6 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
     public function query(string $sql, array $params = []): QueryResult
     {
         $stmt = $this->execute($sql, $params);
-
         return new QueryResult(
             $stmt->rowCount(),
             (string)$this->pdo->lastInsertId()

@@ -21,7 +21,13 @@ abstract class FileConfigurationLoader implements ConfigurationLoaderInterface
         $this->directory = $directory;
     }
 
-    abstract protected function getFullPathForIdentifier(string $directory, string $identifier): string;
+    /**
+     * Gets the full path of the filename for a specific identifier.
+     */
+    abstract protected function getFullPathForIdentifier(
+        string $directory,
+        string $identifier
+    ): string;
 
     /**
      * Loads the configuration from disk.

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Fugue\CronJob;
+namespace Fugue\Command;
 
-interface CronJobInterface
+interface CommandInterface
 {
     /**
-     * Calls the CronJob.
+     * Executes a command.
      *
      * @param string[] $arguments
      */

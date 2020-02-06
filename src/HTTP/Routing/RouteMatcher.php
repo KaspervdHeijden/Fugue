@@ -7,7 +7,9 @@ namespace Fugue\HTTP\Routing;
 use Fugue\HTTP\Request;
 use Fugue\HTTP\URL;
 
+use const ARRAY_FILTER_USE_KEY;
 use function array_filter;
+use function preg_match;
 use function in_array;
 
 final class RouteMatcher
@@ -24,7 +26,7 @@ final class RouteMatcher
      * Gives a value if this route matches the given request.
      *
      * @param Route  $route          The route to test.
-     * @param Url    $url            The URL path to match against.
+     * @param Url    $url            The url path to match against.
      *
      * @param string $method         The request method
      * @return RouteMatchResult|null The result of the match.
@@ -40,19 +42,17 @@ final class RouteMatcher
             return null;
         }
 
-        return new RouteMatchResult(
-            $route,
-            array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY)
-        );
+        $arguments = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+        return new RouteMatchResult($route, $arguments);
     }
 
     /**
-     * Finds the first route that matches the given request, and runs it.
+     * Gets the first route that matches the given request.
      *
      * @param Request $request  The request to run.
-     * @return RouteMatchResult The response generated from the first route that match the URL.
+     * @return RouteMatchResult The response generated from the first route that match the Url.
      */
-    public function findForRequest(Request $request): RouteMatchResult
+    public function getForRequest(Request $request): RouteMatchResult
     {
         $method = $request->getMethod();
         $url    = $request->getUrl();

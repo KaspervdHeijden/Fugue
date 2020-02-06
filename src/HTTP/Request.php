@@ -13,22 +13,22 @@ use function rtrim;
 final class Request
 {
     /** @var string */
-    public const METHOD_GET     = 'GET';
+    public const METHOD_GET = 'GET';
 
     /** @var string */
-    public const METHOD_POST    = 'POST';
+    public const METHOD_POST = 'POST';
 
     /** @var string */
-    public const METHOD_HEAD    = 'HEAD';
+    public const METHOD_HEAD = 'HEAD';
 
     /** @var string */
-    public const METHOD_DELETE  = 'DELETE';
+    public const METHOD_DELETE = 'DELETE';
 
     /** @var string */
-    public const METHOD_PUT     = 'PUT';
+    public const METHOD_PUT = 'PUT';
 
     /** @var string */
-    public const METHOD_PATCH   = 'PATCH';
+    public const METHOD_PATCH = 'PATCH';
 
     /** @var string */
     public const METHOD_OPTIONS = 'OPTIONS';
@@ -37,7 +37,7 @@ final class Request
     public const METHOD_CONNECT = 'CONNECT';
 
     /** @var string */
-    public const METHOD_TRACE   = 'TRACE';
+    public const METHOD_TRACE = 'TRACE';
 
     /** @var PropertyBag */
     private $server;
@@ -51,11 +51,11 @@ final class Request
     /** @var PropertyBag */
     private $post;
 
-    /** @var Url */
-    private $url;
-
     /** @var PropertyBag */
     private $get;
+
+    /** @var Url */
+    private $url;
 
     /**
      * Creates a request object.

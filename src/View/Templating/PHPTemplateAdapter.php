@@ -9,8 +9,7 @@ use LogicException;
 use function ob_get_clean;
 use function array_merge;
 use function is_readable;
-use function mb_substr;
-use function mb_strlen;
+use function preg_match;
 use function is_string;
 use function ob_start;
 use function extract;
@@ -21,18 +20,15 @@ final class PHPTemplateAdapter implements TemplateInterface
     /** @var string */
     private const SUBDIRECTORY_PHP = 'php/';
 
-    /** @var string */
-    private const FILE_EXTENSION   = '.php';
-
     /** @var TemplateUtil */
     private $templateUtil;
 
     /** @var string */
     private $rootDir;
 
-    public function __construct(TemplateUtil $templateUtil)
+    public function __construct(string $rootDir, TemplateUtil $templateUtil)
     {
-        $this->rootDir      = $templateUtil->getTemplateRootDir() . self::SUBDIRECTORY_PHP;
+        $this->rootDir      = $rootDir . self::SUBDIRECTORY_PHP;
         $this->templateUtil = $templateUtil;
     }
 
@@ -49,8 +45,8 @@ final class PHPTemplateAdapter implements TemplateInterface
         }
 
         $fullPath = "{$this->rootDir}/{$fileName}";
-        if (mb_substr($fullPath, -mb_strlen(self::FILE_EXTENSION)) !== self::FILE_EXTENSION) {
-            $fullPath .= self::FILE_EXTENSION;
+        if (! (bool)preg_match('/\.php$/', $fullPath)) {
+            $fullPath .= '.php';
         }
 
         if (! is_file($fullPath) || ! is_readable($fullPath)) {

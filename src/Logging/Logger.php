@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Fugue\Logging;
 
+use DateTimeImmutable;
+
 use function trim;
-use function date;
 
 abstract class Logger implements LoggerInterface
 {
@@ -16,10 +17,10 @@ abstract class Logger implements LoggerInterface
     public const TYPE_VERBOSE = 'VERBOSE';
 
     /** @var string */
-    public const TYPE_ERROR   = 'ERROR';
+    public const TYPE_ERROR = 'ERROR';
 
     /** @var string */
-    public const TYPE_INFO    = 'INFO';
+    public const TYPE_INFO = 'INFO';
 
     /** @var string */
     public const DEFAULT_DATE_FORMAT = 'Y-m-d H:i:s';
@@ -34,11 +35,14 @@ abstract class Logger implements LoggerInterface
      * @param string $message The message to format.
      *
      * @return string         The formatted message.
+     * @noinspection PhpDocMissingThrowsInspection
      */
     protected function getFormattedMessage(string $logType, string $message): string
     {
         $formattedLogType = ($logType) ? "[{$logType}]: " : '';
-        return date($this->getDateFormat()) . " {$formattedLogType}{$message}" . PHP_EOL;
+        $now              = new DateTimeImmutable();
+
+        return $now->format($this->getDateFormat()) . " {$formattedLogType}{$message}" . PHP_EOL;
     }
 
     /**

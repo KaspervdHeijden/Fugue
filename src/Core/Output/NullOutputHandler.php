@@ -6,7 +6,7 @@ namespace Fugue\Core\Output;
 
 final class NullOutputHandler implements OutputHandlerInterface
 {
-    public function write(string $text)
+    public function write(string $text): void
     {
     }
 }

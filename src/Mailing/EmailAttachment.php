@@ -10,7 +10,7 @@ final class EmailAttachment extends MailPart
     public const DISPOSITION_ATTACHMENT = 'attachment';
 
     /** @var string */
-    public const DISPOSITION_INLINE     = 'inline';
+    public const DISPOSITION_INLINE = 'inline';
 
     protected $transferEncoding;
 

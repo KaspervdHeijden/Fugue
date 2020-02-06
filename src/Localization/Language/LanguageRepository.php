@@ -7,9 +7,9 @@ namespace Fugue\Localization\Language;
 interface LanguageRepository
 {
     /**
-     * Gets all installed languages
+     * Gets all available languages.
      *
-     * @return Language[]
+     * @return Language[] The list of all available languages.
      */
     public function getLanguages(): array;
 

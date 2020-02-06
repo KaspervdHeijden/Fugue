@@ -7,7 +7,7 @@ namespace Fugue\Core\ClassLoader;
 interface ClassLoaderInterface
 {
     /**
-     * Attempts to load a class
+     * Attempts to load a class.
      *
      * @param string $className The fully qualified name of the class to load.
      */

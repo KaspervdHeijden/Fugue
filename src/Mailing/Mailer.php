@@ -19,7 +19,7 @@ abstract class Mailer implements EmailSenderInterface
     public const BOUNDARY_PREFIX = 'np';
 
     /** @var string */
-    public const MIME_VERSION    = '1.0';
+    public const MIME_VERSION = '1.0';
 
     /**
      * Generates a boundary.

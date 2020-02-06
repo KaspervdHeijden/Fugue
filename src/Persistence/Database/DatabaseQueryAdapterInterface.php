@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Fugue\Persistence\Database;
 
-/**
- * A generic database query adapter.
- */
 interface DatabaseQueryAdapterInterface
 {
     /**
@@ -26,7 +23,7 @@ interface DatabaseQueryAdapterInterface
      * @param string $sql       The SQL query to perform.
      * @param array  $params    Replaceable parameters.
      *
-     * @return object|null Instance of $className, or NULL if not found.
+     * @return object|null      An instance of $className, or NULL if not found.
      */
     public function fetchOne(string $className, string $sql, array $params = []);
 
@@ -37,7 +34,7 @@ interface DatabaseQueryAdapterInterface
      * @param string $sql       The SQL query to perform.
      * @param array  $params    Replaceable parameters.
      *
-     * @return object|null Instance of $className, or NULL if not found.
+     * @return object|null      An instance of $className, or NULL if not found.
      */
     public function fetchAll(string $className, string $sql, array $params = []);
 

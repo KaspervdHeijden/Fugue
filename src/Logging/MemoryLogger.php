@@ -14,7 +14,7 @@ final class MemoryLogger extends Logger
     /**
      * Gets all logs.
      *
-     * @return string[] The log messages logged so far.
+     * @return string[] All logged messages.
      */
     public function getLogs(): array
     {
@@ -22,9 +22,9 @@ final class MemoryLogger extends Logger
     }
 
     /**
-     * Clears all logs.
+     * Clears the log.
      */
-    public function clearLogs(): void
+    public function clear(): void
     {
         $this->logs = [];
     }

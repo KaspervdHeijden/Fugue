@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace Fugue\Core;
 
-use Fugue\Configuration\Loader\ConfigurationLoaderInterface;
 use Fugue\Core\ClassLoader\ClassLoaderInterface;
 use Fugue\Core\Exception\ErrorHandlerInterface;
 use Fugue\Core\Output\OutputHandlerInterface;
-use Fugue\Container\ContainerFactory;
+use Fugue\Container\ContainerLoader;
 use Fugue\Container\Container;
 
 final class Kernel
 {
-    /** @var ConfigurationLoaderInterface[] */
-    private $configLoaders;
+    /** @var ContainerLoader */
+    private $containerLoader;
 
     /** @var OutputHandlerInterface */
     private $outputHandler;
@@ -29,21 +28,21 @@ final class Kernel
     private $container;
 
     /**
-     * @param OutputHandlerInterface         $outputHandler Where to write output to.
-     * @param ErrorHandlerInterface          $errorHandler The error handler to use.
-     * @param ClassLoaderInterface           $classLoader The classloader to use.
-     * @param ConfigurationLoaderInterface[] $configLoaders Used to load configurations.
+     * @param OutputHandlerInterface $outputHandler   Where to write output to.
+     * @param ErrorHandlerInterface  $errorHandler    The error handler to use.
+     * @param ClassLoaderInterface   $classLoader     The classloader to use.
+     * @param ContainerLoader        $containerLoader Object to load a container.
      */
     public function __construct(
         OutputhandlerInterface $outputHandler,
         ErrorHandlerInterface $errorHandler,
         ClassLoaderInterface $classLoader,
-        array $configLoaders
+        ContainerLoader $containerLoader
     ) {
-        $this->configLoaders = $configLoaders;
-        $this->outputHandler = $outputHandler;
-        $this->errorHandler  = $errorHandler;
-        $this->classLoader   = $classLoader;
+        $this->containerLoader = $containerLoader;
+        $this->outputHandler   = $outputHandler;
+        $this->errorHandler    = $errorHandler;
+        $this->classLoader     = $classLoader;
 
         $errorHandler->register();
         $classLoader->register();
@@ -52,8 +51,7 @@ final class Kernel
     public function getContainer(): Container
     {
         if (! $this->container instanceof Container) {
-            $this->container = (new ContainerFactory(...$this->configLoaders))
-                                        ->createForKernel($this);
+            $this->container = $this->containerLoader->createForKernel($this);
         }
 
         return $this->container;

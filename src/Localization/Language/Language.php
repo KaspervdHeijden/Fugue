@@ -10,10 +10,10 @@ final class Language
     private $isoCode = '';
 
     /** @var string */
-    private $code    = '';
+    private $code = '';
 
     /** @var string */
-    private $name    = '';
+    private $name = '';
 
     public function getCode(): string
     {

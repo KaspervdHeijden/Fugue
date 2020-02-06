@@ -7,10 +7,10 @@ namespace Fugue\Permission;
 final class User
 {
     /** @var string */
-    private $passwordHash;
+    private $passwordHash = '';
 
     /** @var string */
-    private $login;
+    private $login = '';
 
     public function getPasswordHash(): string
     {

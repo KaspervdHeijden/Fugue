@@ -15,12 +15,10 @@ use function count;
 /**
  * Container class. This allows for lazy loading of objects within a defined scope.
  *
- * There are 3 ways to define a object:
+ * There are 3 ways to define an object:
  * 1. <var>TYPE_RAW</var>:       This just returns the $definition.
  * 2. <var>TYPE_SINGLETON</var>: This calls the $definition once, and returns it's return value, which is returned in any subsequent queries.
  * 3. <var>TYPE_FACTORY</var>:   The calls the $definition every time the field is accessed, and returns it's return value.
- *
- * While registering using ArrayAccess or dynamic properties is possible, it's type is always set to <var>TYPE_SINGLETON</var>.
  */
 final class Container implements Countable, ArrayAccess
 {
