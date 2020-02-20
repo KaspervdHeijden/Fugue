@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace Fugue\Core;
 
+use Fugue\Logging\LoggerInterface;
+use Fugue\Core\Exception\ExceptionHandlerInterface;
 use Fugue\Core\ClassLoader\ClassLoaderInterface;
-use Fugue\Core\Exception\ErrorHandlerInterface;
 use Fugue\Core\Output\OutputHandlerInterface;
 use Fugue\Container\ContainerLoader;
 use Fugue\Container\Container;
 
 final class Kernel
 {
+    /** @var ExceptionHandlerInterface */
+    private $exceptionHandler;
+
     /** @var ContainerLoader */
     private $containerLoader;
 
     /** @var OutputHandlerInterface */
     private $outputHandler;
-
-    /** @var ErrorHandlerInterface */
-    private $errorHandler;
 
     /** @var ClassLoaderInterface */
     private $classLoader;
@@ -27,25 +28,21 @@ final class Kernel
     /** @var Container */
     private $container;
 
-    /**
-     * @param OutputHandlerInterface $outputHandler   Where to write output to.
-     * @param ErrorHandlerInterface  $errorHandler    The error handler to use.
-     * @param ClassLoaderInterface   $classLoader     The classloader to use.
-     * @param ContainerLoader        $containerLoader Object to load a container.
-     */
-    public function __construct(
-        OutputhandlerInterface $outputHandler,
-        ErrorHandlerInterface $errorHandler,
-        ClassLoaderInterface $classLoader,
-        ContainerLoader $containerLoader
-    ) {
-        $this->containerLoader = $containerLoader;
-        $this->outputHandler   = $outputHandler;
-        $this->errorHandler    = $errorHandler;
-        $this->classLoader     = $classLoader;
+    /** @var LoggerInterface */
+    private $logger;
 
-        $errorHandler->register();
-        $classLoader->register();
+    public function __construct(
+        ExceptionHandlerInterface $exceptionHandler,
+        OutputhandlerInterface $outputHandler,
+        ClassLoaderInterface $classLoader,
+        ContainerLoader $containerLoader,
+        LoggerInterface $logger
+    ) {
+        $this->exceptionHandler = $exceptionHandler;
+        $this->containerLoader  = $containerLoader;
+        $this->outputHandler    = $outputHandler;
+        $this->classLoader      = $classLoader;
+        $this->logger           = $logger;
     }
 
     public function getContainer(): Container
@@ -60,5 +57,20 @@ final class Kernel
     public function getOutputHandler(): OutputHandlerInterface
     {
         return $this->outputHandler;
+    }
+
+    public function getExceptionHandler(): ExceptionHandlerInterface
+    {
+        return $this->exceptionHandler;
+    }
+
+    public function getClassLoader(): ClassLoaderInterface
+    {
+        return $this->classLoader;
+    }
+
+    public function getLogger(): LoggerInterface
+    {
+        return $this->logger;
     }
 }

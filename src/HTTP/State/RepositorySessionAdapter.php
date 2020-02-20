@@ -9,6 +9,11 @@ final class RepositorySessionAdapter implements SessionAdapterInterface
     /** @var SessionRepositoryInterface */
     private $sessionRepository;
 
+    public function __construct(SessionRepositoryInterface $sessionRepository)
+    {
+        $this->sessionRepository = $sessionRepository;
+    }
+
     public function start(array $settings): void
     {
     }

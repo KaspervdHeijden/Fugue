@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Fugue\Localization\Formatting\Date;
 
+use function is_string;
+
 final class DutchDateFormatter extends DateFormatter
 {
     /**
@@ -13,15 +15,26 @@ final class DutchDateFormatter extends DateFormatter
      */
     private const DATE_FORMAT = 'cccc d LLLL yyyy';
 
-    public function format($date): string
+    /** @var string */
+    private const LANG_CODE_NL = 'nl_NL';
+
+    public function format(string $date): string
     {
-        if (! $date) {
+        if ($date === '') {
             return '';
         }
 
         $stamp     = $this->getDateTime($date);
-        $formatter = $this->getFormatter('nl_NL', self::DATE_FORMAT);
+        $formatter = $this->getFormatter(
+            self::LANG_CODE_NL,
+            self::DATE_FORMAT
+        );
 
-        return $formatter->format($stamp);
+        $formattedDate = $formatter->format($stamp);
+        if (! is_string($formattedDate)) {
+            return '';
+        }
+
+        return $formattedDate;
     }
 }

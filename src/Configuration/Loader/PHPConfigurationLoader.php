@@ -15,7 +15,7 @@ final class PHPConfigurationLoader extends FileConfigurationLoader
         return "{$directory}/php/{$identifier}.conf.php";
     }
 
-    protected function loadConfigurationFromFile(string $fileName): ?iterable
+    protected function loadFromFile(string $fileName): ?iterable
     {
         /** @noinspection PhpIncludeInspection */
         $result = require_once $fileName;

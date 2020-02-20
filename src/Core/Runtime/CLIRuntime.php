@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Fugue\Core\Runtime;
 
 use Fugue\Command\InvalidCommandException;
-use Fugue\Logging\LoggerInterface;
 use Fugue\Command\CommandFactory;
 use Fugue\HTTP\Request;
 
@@ -14,12 +13,12 @@ use function count;
 
 final class CLIRuntime implements RuntimeInterface
 {
-    /** @var LoggerInterface */
-    private $logger;
+    /** @var CommandFactory */
+    private $commandFactory;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(CommandFactory $commandFactory)
     {
-        $this->logger = $logger;
+        $this->commandFactory = $commandFactory;
     }
 
     public function handle(Request $request): void
@@ -29,9 +28,7 @@ final class CLIRuntime implements RuntimeInterface
             throw InvalidCommandException::forMissingIdentifier();
         }
 
-        $factory = new CommandFactory($this->logger);
-        $command = $factory->getForIdentifier((string)$argv[1]);
-
+        $command = $this->commandFactory->getForIdentifier((string)$argv[1]);
         $command->run(array_slice($argv, 2));
     }
 }

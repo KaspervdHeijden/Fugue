@@ -9,10 +9,8 @@ interface DateFormatterInterface
     /**
      * Formats a date.
      *
-     * @param mixed $date A date value to format.
-     *                    It can either be a string in MySQL date format,
-     *                    or an integer representing a UNIX timestamp.
+     * @param string $date A date value to format.
      * @return string     The formatted date.
      */
-    public function format($date): string;
+    public function format(string $date): string;
 }

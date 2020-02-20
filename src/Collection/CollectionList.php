@@ -10,7 +10,11 @@ class CollectionList extends Collection
 {
     protected function checkKey($key): bool
     {
-        if (! is_int($key)) {
+        if (! parent::checkKey($key)) {
+            return false;
+        }
+
+        if ($key !== null && ! is_int($key)) {
             return false;
         }
 

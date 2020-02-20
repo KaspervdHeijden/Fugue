@@ -1,4 +1,4 @@
-# Disabling MultiViews prevents a resource being accessed without it's extension.
+# Disabling MultiViews prevents a resource being accessed without it's extension
 <IfModule mod_negotiation.c>
     Options -MultiViews
 </IfModule>
@@ -6,6 +6,7 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Route every request through the fugue front controller.
-    RewriteRule ^ fugue.php [QSA,L]
+    # Route requests for non-existant files through the fugue front controller
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ web.php [QSA,L]
 </IfModule>

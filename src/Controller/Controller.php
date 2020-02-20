@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Fugue\Controller;
 
 use Fugue\View\Templating\TemplateAdapterFactory;
-use Fugue\Core\Runtime\RuntimeInterface;
 use Fugue\HTTP\HeaderBag;
 use Fugue\HTTP\Response;
 use Fugue\HTTP\Header;
@@ -15,17 +14,6 @@ use function json_encode;
 
 abstract class Controller
 {
-    /**
-     * @var string Default html if no content will be rendered.
-     */
-    private const DEFAULT_HTML =
-        '<p class="empty-page">You have encountered an empty page. Please notify your system administrator.</p>';
-
-    /**
-     * @var string Redirect page html.
-     */
-    private const REDIRECT_HTML = 'The resource you are trying to access can be found here: %s';
-
     /** @var TemplateAdapterFactory */
     private $templateFactory;
 
@@ -37,10 +25,10 @@ abstract class Controller
     private function getTemplateVariables(string $title, array $variables): array
     {
         $defaults = [
-            'charset'    => RuntimeInterface::CHARSET,
-            'content'    => self::DEFAULT_HTML,
+            'charset'    => 'utf-8',
             'pageTitle'  => $title,
             'message'    => '',
+            'content'    => '',
         ];
 
         return array_merge($defaults, $variables);
@@ -88,8 +76,10 @@ abstract class Controller
      *
      * @return Response         The generated response.
      */
-    protected function createJSONResponse(array $data, int $statusCode = Response::HTTP_OK): Response
-    {
+    protected function createJSONResponse(
+        array $data,
+        int $statusCode = Response::HTTP_OK
+    ): Response {
         return $this->createResponse(
             json_encode($data),
             Response::CONTENT_TYPE_JAVASCRIPT,
@@ -155,10 +145,10 @@ abstract class Controller
     protected function createRedirectResponse(
         string $url,
         string $message = '',
-        $statusCode     = Response::HTTP_MOVED_TEMPORARILY
+        int $statusCode = Response::HTTP_MOVED_TEMPORARILY
     ): Response {
         if ($message === '') {
-            $message = sprintf(self::REDIRECT_HTML, $url);
+            $message = "The resource you are trying to access can be found here: '{$url}'.";
         }
 
         return $this->createResponse(

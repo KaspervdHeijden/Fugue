@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Fugue\Container;
 
-use Fugue\Configuration\ConfigurationNotFoundException;
 use Fugue\Configuration\Loader\ConfigurationLoaderInterface;
 use Fugue\Persistence\Database\DatabaseConnectionSettings;
+use Fugue\Configuration\ConfigurationNotFoundException;
 use Fugue\Core\Output\OutputHandlerInterface;
 use Fugue\HTTP\Routing\RouteCollectionMap;
 use Fugue\Collection\Collection;
@@ -31,7 +31,7 @@ final class ContainerLoader
         $this->configLoaders = $configLoaders;
     }
 
-    private function loadConfiguration(string $identifier): Collection
+    private function load(string $identifier): Collection
     {
         foreach ($this->configLoaders as $loader) {
             if ($loader->supports($identifier)) {
@@ -44,14 +44,12 @@ final class ContainerLoader
 
     private function loadRoutes(): RouteCollectionMap
     {
-        return new RouteCollectionMap(
-            $this->loadConfiguration(self::CONFIG_ID_ROUTES)
-        );
+        return new RouteCollectionMap($this->load(self::CONFIG_ID_ROUTES));
     }
 
     private function getDatabaseConnectionSettings(): DatabaseConnectionSettings
     {
-        $mapping = $this->loadConfiguration(self::CONFIG_ID_DATABASE_CONFIG);
+        $mapping = $this->load(self::CONFIG_ID_DATABASE_CONFIG);
         return new DatabaseConnectionSettings(
             $mapping['dsn'],
             $mapping['user'],

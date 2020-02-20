@@ -21,8 +21,10 @@ abstract class DateFormatter implements DateFormatterInterface
      *
      * @return IntlDateFormatter    A formatter in the supplied language.
      */
-    protected function getFormatter(string $languageCode, string $format): IntlDateFormatter
-    {
+    protected function getFormatter(
+        string $languageCode,
+        string $format
+    ): IntlDateFormatter {
         if (! $this->formatter instanceof IntlDateFormatter) {
             $this->formatter = new IntlDateFormatter(
                 $languageCode,
@@ -37,12 +39,8 @@ abstract class DateFormatter implements DateFormatterInterface
         return $this->formatter;
     }
 
-    final protected function getDateTime($date): DateTimeInterface
+    final protected function getDateTime(string $date): DateTimeInterface
     {
-        if ($date instanceof DateTimeInterface) {
-            return $date;
-        }
-
         /** @noinspection PhpUnhandledExceptionInspection */
         return new DateTimeImmutable($date);
     }

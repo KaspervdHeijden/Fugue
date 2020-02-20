@@ -15,4 +15,12 @@ interface TemplateInterface
      * @return string              The generated content from the template.
      */
     public function render(string $templateName, array $variables): string;
+
+    /**
+     * Gets a value if an implementation excepts and supports a template.
+     *
+     * @return bool TRUE if the implementation supports the given template,
+     *              FALSE otherwise.
+     */
+    public function supports(string $name): bool;
 }

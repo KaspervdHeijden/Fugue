@@ -9,10 +9,10 @@ use function round;
 
 final class EnglishNumberFormatter implements NumberFormatterInterface
 {
-    public function format($number, int $precision): string
+    public function format(float $number, int $precision): string
     {
         return (string)number_format(
-            round($number, $precision),
+            (float)round($number, $precision),
             $precision,
             '.',
             ''

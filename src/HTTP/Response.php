@@ -251,19 +251,9 @@ final class Response
     }
 
     /**
-     * Sets the content.
+     * Appends content.
      *
-     * @param string $content The content for the request.
-     */
-    public function setContent(string $content): void
-    {
-        $this->content = $content;
-    }
-
-    /**
-     * Sets the content.
-     *
-     * @param string $content The content for the request.
+     * @param string $content The content to append.
      */
     public function appendContent(string $content): void
     {

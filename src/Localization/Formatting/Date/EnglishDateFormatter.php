@@ -9,13 +9,13 @@ final class EnglishDateFormatter extends DateFormatter
     /** @var string */
     private const DATE_FORMAT = 'l, F jS Y';
 
-    public function format($date): string
+    public function format(string $date): string
     {
-        if (! $date) {
+        if ($date === '') {
             return '';
         }
 
-        $dateTime = $this->getDateTime($date);
-        return $dateTime->format(self::DATE_FORMAT);
+        return $this->getDateTime($date)
+                    ->format(self::DATE_FORMAT);
     }
 }

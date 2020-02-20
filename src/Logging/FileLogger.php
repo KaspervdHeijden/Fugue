@@ -6,24 +6,47 @@ namespace Fugue\Logging;
 
 use InvalidArgumentException;
 use RuntimeException;
-use LogicException;
 
 use function mb_strtolower;
 use function is_resource;
+use function in_array;
 use function fwrite;
 use function fclose;
 use function fopen;
 
 final class FileLogger extends Logger
 {
+    /** @var string */
+    public const DEFAULT_MODE = 'a';
+
+    /** @var string[] */
+    public const VALID_MODES = [
+        'a+',
+        'x+',
+        'w+',
+        'c+',
+        'a',
+        'x',
+        'w',
+        'c',
+    ];
+
     /** @var resource|null */
     private $filePointer;
 
     /** @var string */
-    private $filename = '';
+    private $filename;
 
     /** @var string */
-    private $mode = 'a';
+    private $mode;
+
+    public function __construct(
+        string $filename,
+        string $mode = self::DEFAULT_MODE
+    ) {
+        $this->setFilename($filename);
+        $this->setMode($mode);
+    }
 
     /**
      * Gets the filename this logger logs to.
@@ -32,12 +55,6 @@ final class FileLogger extends Logger
      */
     public function getFilename(): string
     {
-        if ($this->filename === '') {
-            throw new LogicException(
-                'No filename given for FileLogger.'
-            );
-        }
-
         return $this->filename;
     }
 
@@ -52,32 +69,28 @@ final class FileLogger extends Logger
             $this->close();
         }
 
-        $this->filename = (string)$filename;
+        if ($filename === '') {
+            throw new InvalidArgumentException(
+                'Empty filename not allowed.'
+            );
+        }
+
+        $this->filename = $filename;
     }
 
     /**
      * Sets the FileOpen mode.
      *
-     * @see   fopen()      For values of $mode.
      * @param string $mode The file open mode. Must be w, w+, a, a+, x, x+, c or c+.
+     * @see   fopen()      For values of $mode.
      */
-    public function setFileOpenMode(string $mode): void
+    public function setMode(string $mode): void
     {
         $value = mb_strtolower((string)$mode);
-        switch ($value) {
-            case 'a+':
-            case 'x+':
-            case 'w+':
-            case 'c+':
-            case 'a':
-            case 'x':
-            case 'w':
-            case 'c':
-                break;
-            default:
-                throw new InvalidArgumentException(
-                    "Invalid file opening mode ({$mode}) for logger file."
-                );
+        if (! in_array($value, self::VALID_MODES, true)) {
+            throw new InvalidArgumentException(
+                "Invalid file opening mode ({$mode}) for logger file."
+            );
         }
 
         $this->mode = $value;
@@ -86,10 +99,10 @@ final class FileLogger extends Logger
     /**
      * Gets the FileOpen mode.
      *
-     * @see fopen() for values of $mode.
      * @return string The file open mode.
+     * @see    fopen() for values of $mode.
      */
-    public function getFileOpenMode(): string
+    public function getMode(): string
     {
         return $this->mode;
     }
@@ -102,12 +115,11 @@ final class FileLogger extends Logger
     private function getFilePointer()
     {
         if (! is_resource($this->filePointer)) {
-            $filename = $this->getFilename();
-            $pointer  = fopen($filename, $this->getFileOpenMode());
+            $pointer = fopen($this->filename, $this->mode);
 
             if (! is_resource($pointer)) {
                 throw new RuntimeException(
-                    "Could not open '{$filename}' for logging."
+                    "Could not open '{$this->filename}' for logging."
                 );
             }
 
@@ -122,7 +134,7 @@ final class FileLogger extends Logger
      */
     public function close(): void
     {
-        if (! is_resource($this->filePointer)) {
+        if (is_resource($this->filePointer)) {
             fclose($this->filePointer);
             $this->filePointer = null;
         }
@@ -135,6 +147,13 @@ final class FileLogger extends Logger
 
     protected function log(string $logType, string $message): void
     {
-        fwrite($this->getFilePointer(), $this->getFormattedMessage($logType, $message));
+        $formattedMessage = $this->getFormattedMessage($logType, $message);
+        $resource         = $this->getFilePointer();
+
+        if (fwrite($resource, $formattedMessage) === false) {
+            throw new RuntimeException(
+                "Could not write to '{$this->filename}'."
+            );
+        }
     }
 }

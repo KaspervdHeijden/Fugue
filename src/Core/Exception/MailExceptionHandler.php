@@ -7,8 +7,11 @@ namespace Fugue\Core\Exception;
 use Fugue\Mailing\EmailSenderInterface;
 use Fugue\Mailing\HTMLMessage;
 use Fugue\Mailing\Email;
+use Throwable;
 
-final class MailErrorHandler extends ErrorHandler
+use function basename;
+
+final class MailExceptionHandler extends ExceptionHandler
 {
     /** @var EmailSenderInterface */
     private $mailerService;
@@ -29,13 +32,13 @@ final class MailErrorHandler extends ErrorHandler
         $this->senderEmail    = $senderEmail;
     }
 
-    private function getSubject(UnhandledErrorException $exception): string
+    private function getSubject(Throwable $exception): string
     {
         $fileName = basename($exception->getFile());
         return "Exception @ {$fileName}:{$exception->getLine()}";
     }
 
-    protected function handle(UnhandledErrorException $exception): bool
+    public function handle(Throwable $exception): void
     {
         $email = new Email(
             $this->senderEmail,
@@ -49,6 +52,5 @@ final class MailErrorHandler extends ErrorHandler
         );
 
         $this->mailerService->send($email);
-        return false;
     }
 }

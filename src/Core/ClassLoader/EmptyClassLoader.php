@@ -9,8 +9,4 @@ final class EmptyClassLoader implements ClassLoaderInterface
     public function loadClass(string $className): void
     {
     }
-
-    public function register(): void
-    {
-    }
 }

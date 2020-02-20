@@ -9,10 +9,10 @@ interface NumberFormatterInterface
     /**
      * Formats a number.
      *
-     * @param mixed $number    A numeric value to format.
+     * @param float $number    A numeric value to format.
      * @param int   $precision The precision to use.
      *
      * @return string          The formatted number.
      */
-    public function format($number, int $precision): string;
+    public function format(float $number, int $precision): string;
 }

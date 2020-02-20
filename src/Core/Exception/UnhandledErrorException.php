@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace Fugue\Core\Exception;
 
+use Throwable;
+
 final class UnhandledErrorException extends FugueException
 {
     public static function create(
-        int $errorNumber,
-        string $errorMessage,
-        string $fileName,
-        int $lineNumber
+        int $code,
+        string $message,
+        string $file,
+        int $line,
+        Throwable $previous = null
     ): self {
-        $exception       = new static($errorMessage, $errorNumber, null);
-        $exception->line = $lineNumber;
-        $exception->file = $fileName;
+        $exception       = new static($message, $code, $previous);
+        $exception->line = $line;
+        $exception->file = $file;
 
         return $exception;
     }

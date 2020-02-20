@@ -101,6 +101,12 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
      */
     public function get($key, $default = null)
     {
+        if (! $this->checkKey($key)) {
+            throw new UnexpectedValueException(
+                'Invalid key for ' . static::class
+            );
+        }
+
         return $this->elements[$key] ?? $default;
     }
 
@@ -134,6 +140,12 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     public function unset(...$keys): void
     {
         foreach ($keys as $key) {
+            if (! $this->checkKey($key)) {
+                throw new UnexpectedValueException(
+                    'Invalid key for ' . static::class
+                );
+            }
+
             unset($this->elements[$key]);
         }
     }
@@ -146,11 +158,11 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         );
     }
 
-    public function forEach(callable $filter): self
+    public function forEach(callable $filter, ?string $type = null): self
     {
         return new static(
             array_map($filter, $this->elements),
-            $this->type
+            ($type !== null) ? $type : $this->type
         );
     }
 
@@ -168,7 +180,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
             return (self::TYPE_MAPPING[$this->type])($value);
         }
 
-        return $value instanceof $this->type;
+        return ($value instanceof $this->type);
     }
 
     /**

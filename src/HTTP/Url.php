@@ -38,7 +38,9 @@ final class Url
         if ($this->parts === null) {
             $parts = parse_url($this->url);
             if (! is_array($parts)) {
-                throw new RuntimeException("Could not parse URL '{$this->url}'");
+                throw new RuntimeException(
+                    "Could not parse URL '{$this->url}'."
+                );
             }
 
             $this->parts = $parts;

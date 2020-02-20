@@ -17,7 +17,7 @@ final class IniConfigurationLoader extends FileConfigurationLoader
         return "{$directory}/init/{$identifier}.conf.ini";
     }
 
-    protected function loadConfigurationFromFile(string $fileName): ?iterable
+    protected function loadFromFile(string $fileName): ?iterable
     {
         $results = parse_ini_file($fileName, true, INI_SCANNER_TYPED);
         if (! is_array($results)) {

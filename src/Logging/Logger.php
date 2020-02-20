@@ -11,6 +11,12 @@ use function trim;
 abstract class Logger implements LoggerInterface
 {
     /** @var string */
+    public const DEFAULT_DATE_FORMAT = 'Y-m-d H:i:s';
+
+    /** @var string */
+    private $dateFormat = self::DEFAULT_DATE_FORMAT;
+
+    /** @var string */
     public const TYPE_WARNING = 'WARNING';
 
     /** @var string */
@@ -22,12 +28,6 @@ abstract class Logger implements LoggerInterface
     /** @var string */
     public const TYPE_INFO = 'INFO';
 
-    /** @var string */
-    public const DEFAULT_DATE_FORMAT = 'Y-m-d H:i:s';
-
-    /** @var string */
-    private $dateFormat = self::DEFAULT_DATE_FORMAT;
-
     /**
      * Formats a message.
      *
@@ -37,12 +37,16 @@ abstract class Logger implements LoggerInterface
      * @return string         The formatted message.
      * @noinspection PhpDocMissingThrowsInspection
      */
-    protected function getFormattedMessage(string $logType, string $message): string
-    {
+    protected function getFormattedMessage(
+        string $logType,
+        string $message
+    ): string {
         $formattedLogType = ($logType) ? "[{$logType}]: " : '';
         $now              = new DateTimeImmutable();
 
-        return $now->format($this->getDateFormat()) . " {$formattedLogType}{$message}" . PHP_EOL;
+        return $now->format($this->getDateFormat()) .
+                " {$formattedLogType}{$message}" .
+                PHP_EOL;
     }
 
     /**
@@ -71,7 +75,10 @@ abstract class Logger implements LoggerInterface
      * @param string $logType The log type.
      * @param string $message The message to log.
      */
-    abstract protected function log(string $logType, string $message): void;
+    abstract protected function log(
+        string $logType,
+        string $message
+    ): void;
 
     /**
      * Calls the log function after trimming the message.
@@ -79,8 +86,10 @@ abstract class Logger implements LoggerInterface
      * @param string $logType The log type.
      * @param string $message The message to log.
      */
-    protected function callLogIfNotEmpty(string $logType, string $message): void
-    {
+    protected function callLogIfNotEmpty(
+        string $logType,
+        string $message
+    ): void {
         $msg = trim($message);
         if ($msg !== '') {
             $this->log($logType, $msg);

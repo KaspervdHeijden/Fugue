@@ -4,12 +4,18 @@ declare(strict_types=1);
 
 namespace Fugue\View\Templating;
 
-use LogicException;
+use Fugue\Localization\Formatting\Number\NumberFormatterInterface;
+use Fugue\Localization\Formatting\Date\DateFormatterInterface;
+use Fugue\Core\Output\OutputHandlerInterface;
+use Fugue\HTTP\Routing\RouteCollectionMap;
+use Fugue\HTTP\Routing\Route;
 
+use function htmlspecialchars;
 use function ob_get_clean;
-use function array_merge;
 use function is_readable;
 use function preg_match;
+use function mb_strlen;
+use function mb_substr;
 use function is_string;
 use function ob_start;
 use function extract;
@@ -17,51 +23,179 @@ use function is_file;
 
 final class PHPTemplateAdapter implements TemplateInterface
 {
-    /** @var string */
-    private const SUBDIRECTORY_PHP = 'php/';
+    /** @var NumberFormatterInterface */
+    private $numberFormatter;
 
-    /** @var TemplateUtil */
-    private $templateUtil;
+    /** @var DateFormatterInterface */
+    private $dateFormatter;
+
+    /** @var OutputHandlerInterface */
+    private $outputHandler;
+
+    /** @var RouteCollectionMap */
+    private $routeMap;
 
     /** @var string */
     private $rootDir;
 
-    public function __construct(string $rootDir, TemplateUtil $templateUtil)
-    {
-        $this->rootDir      = $rootDir . self::SUBDIRECTORY_PHP;
-        $this->templateUtil = $templateUtil;
+    public function __construct(
+        NumberFormatterInterface $numberFormatter,
+        DateFormatterInterface $dateFormatter,
+        OutputHandlerInterface $outputHandler,
+        RouteCollectionMap $routeMap,
+        string $rootDir
+    ) {
+        $this->numberFormatter = $numberFormatter;
+        $this->dateFormatter = $dateFormatter;
+        $this->outputHandler = $outputHandler;
+        $this->routeMap = $routeMap;
+        $this->rootDir = $rootDir;
     }
 
     /**
-     * Adds an extension to the template file, if missing.
+     * Outputs an escaped value.
      *
-     * @param string $fileName The template filename to get the full path for.
-     * @return string          The full path to the template.
+     * @param mixed $text   The text to escape.
+     * @param bool  $output Whether to output the escaped text. Defaults to TRUE.
+     *
+     * @return string       The escaped version of the supplied text.
      */
-    private function getFullPath(string $fileName): string
+    public function escape($text, bool $output = true): string
     {
-        if ($fileName === '') {
-            throw new LogicException('Template filename should not be empty.');
+        $escapedText = htmlspecialchars((string)$text, ENT_HTML5 | ENT_QUOTES);
+        if ($output) {
+            $this->output($escapedText);
         }
 
-        $fullPath = "{$this->rootDir}/{$fileName}";
-        if (! (bool)preg_match('/\.php$/', $fullPath)) {
-            $fullPath .= '.php';
+        return $escapedText;
+    }
+
+    /**
+     * Outputs a formatted numeric value.
+     *
+     * @param mixed $numericValue The number to format.
+     * @param int   $precision    The precision.
+     * @param bool  $output       Whether or or not to output the result.
+     *
+     * @return string             The formatted number.
+     * @noinspection PhpUnused
+     */
+    public function number($numericValue, int $precision = 2, bool $output = true): string
+    {
+        $formattedNumber = $this->numberFormatter->format((float)$numericValue, $precision);
+        if ($output) {
+            $this->escape($formattedNumber);
         }
 
-        if (! is_file($fullPath) || ! is_readable($fullPath)) {
-            throw new LogicException("Template file not found: '{$fullPath}'.");
+        return $formattedNumber;
+    }
+
+    /**
+     * Outputs a formatted date.
+     *
+     * @param mixed $dateValue A date or datetime.
+     * @param bool  $output    Whether or or not to output the result.
+     *
+     * @return string          The formatted date.
+     */
+    public function date($dateValue, bool $output = true): string
+    {
+        $formattedDate = $this->dateFormatter->format((string)$dateValue);
+        if ($output) {
+            $this->escape($formattedDate);
         }
 
-        return $fullPath;
+        return $formattedDate;
+    }
+
+    /**
+     * Directly outputs text.
+     *
+     * @param mixed $text The string to output directly.
+     */
+    public function output($text): void
+    {
+        $this->outputHandler->write((string)$text);
+    }
+
+    /**
+     * Shortens a long string.
+     *
+     * @param mixed $longString The string to shorten.
+     * @param int   $maxLength  The maximum length of the resulting string.
+     * @param bool  $output     Whether or or not to output the result.
+     *
+     * @return string           The optionally shorted text.
+     * @noinspection PhpUnused
+     */
+    public function shorten($longString, int $maxLength = 32, bool $output = true): string
+    {
+        $length = mb_strlen((string)$longString);
+        if ($length < $maxLength) {
+            $shortString = (string)$longString;
+        } elseif ($length >= 3) {
+            $shortString = mb_substr((string)$longString, 0, $maxLength - 3) . '...';
+        } else {
+            $shortString = mb_substr((string)$longString, 0, $maxLength);
+        }
+
+        if ($output) {
+            $this->escape($shortString);
+        }
+
+        return $shortString;
+    }
+
+    /**
+     * Displays a route URL.
+     *
+     * @param string $routeName  The name of the route.
+     * @param array  $parameters The parameters for the route.
+     * @param bool   $output     Whether or not to output the result.
+     *
+     * @return string            The URL.
+     * @noinspection PhpUnused
+     */
+    public function route(string $routeName, array $parameters = [], bool $output = true): string
+    {
+        $route = $this->routeMap->get($routeName);
+        if (! $route instanceof Route) {
+            return '';
+        }
+
+        $url = $route->getUrl($parameters);
+        if ($output) {
+            $this->escape($url);
+        }
+
+        return $url;
+    }
+
+    public function supports(string $name): bool
+    {
+        if (! (bool)preg_match('/\.php$/', $name)) {
+            return false;
+        }
+
+        $fileName = "{$this->rootDir}/{$name}";
+        if (! is_file($fileName) || ! is_readable($fileName)) {
+            return false;
+        }
+
+        return true;
     }
 
     public function render(string $templateName, array $variables): string
     {
-        $variables        = array_merge($variables, ['view' => $this->templateUtil]);
-        $fullTemplatePath = $this->getFullPath($templateName);
+        if (! $this->supports($templateName)) {
+            throw InvalidTemplateException::forUnrecognizedTemplateName($templateName);
+        }
 
-        return (static function (string $templateFileName, array $templateVariables): string {
+        $variables['view'] = $this;
+        return (static function (
+            string $templateFileName,
+            array $templateVariables
+        ): string {
             ob_start();
 
             extract($templateVariables);
@@ -76,6 +210,6 @@ final class PHPTemplateAdapter implements TemplateInterface
             }
 
             return $content;
-        })($fullTemplatePath, $variables);
+        })("{$this->rootDir}/{$templateName}", $variables);
     }
 }

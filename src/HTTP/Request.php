@@ -88,9 +88,9 @@ final class Request
     public function getUrl(): Url
     {
         if (! $this->url instanceof Url) {
-            $host     = rtrim($this->server->getString('HTTP_HOST'), '/');
-            $path     = $this->server->getString('REQUEST_URI');
-            $protocol = ($this->isSecure()) ? 'https' : 'http';
+            $host      = rtrim($this->server->getString('HTTP_HOST'), '/');
+            $path      = $this->server->getString('REQUEST_URI');
+            $protocol  = ($this->isSecure()) ? 'https' : 'http';
 
             $this->url = new Url("{$protocol}://{$host}{$path}");
         }
@@ -107,10 +107,10 @@ final class Request
     {
         $https = $this->server->getString('HTTPS', '');
         if ($https === '') {
-            return ($this->server->getInt('SERVER_PORT', 80) === 443);
+            return $this->server->getInt('SERVER_PORT', 80) === 443;
         }
 
-        return ((int)$https !== 0 && strcasecmp($https, 'off') !== 0);
+        return (int)$https !== 0 && strcasecmp($https, 'off') !== 0;
     }
 
     /**

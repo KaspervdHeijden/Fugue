@@ -35,11 +35,15 @@ abstract class FileConfigurationLoader implements ConfigurationLoaderInterface
      * @param string $fileName The filename to load.
      * @return iterable|null   Should return an iterable, or NULL on failure.
      */
-    abstract protected function loadConfigurationFromFile(string $fileName): ?iterable;
+    abstract protected function loadFromFile(string $fileName): ?iterable;
 
     public function supports(string $identifier): bool
     {
-        $fileName = $this->getFullPathForIdentifier($this->directory, $identifier);
+        $fileName = $this->getFullPathForIdentifier(
+            $this->directory,
+            $identifier
+        );
+
         return is_file($fileName) && is_readable($fileName);
     }
 
@@ -53,7 +57,7 @@ abstract class FileConfigurationLoader implements ConfigurationLoaderInterface
         }
 
         $fileName = $this->getFullPathForIdentifier($this->directory, $identifier);
-        $results  = $this->loadConfigurationFromFile($fileName);
+        $results  = $this->loadFromFile($fileName);
 
         if (! is_iterable($results)) {
             throw ConfigurationLoadException::configurationNotIterable($identifier);
