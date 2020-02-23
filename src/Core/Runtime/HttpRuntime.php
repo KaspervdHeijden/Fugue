@@ -92,7 +92,7 @@ final class HttpRuntime implements RuntimeInterface
         ]);
 
         if ($this->shouldSendContentLength($request, $response)) {
-            $headers->setFromString(
+            $headers->setFromKeyValue(
                 Header::NAME_CONTENT_LENGTH,
                 (string)strlen($response->getContent())
             );

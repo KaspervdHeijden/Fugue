@@ -14,6 +14,8 @@ use function json_encode;
 
 abstract class Controller
 {
+    public const CHARSET = 'utf-8';
+
     /** @var TemplateAdapterFactory */
     private $templateFactory;
 
@@ -22,10 +24,13 @@ abstract class Controller
         $this->templateFactory = $templateFactory;
     }
 
-    private function getTemplateVariables(string $title, array $variables): array
-    {
+    private function getTemplateVariables(
+        string $title,
+        array $variables,
+        string $charset = self::CHARSET
+    ): array {
         $defaults = [
-            'charset'    => 'utf-8',
+            'charset'    => $charset,
             'pageTitle'  => $title,
             'message'    => '',
             'content'    => '',
@@ -55,10 +60,11 @@ abstract class Controller
         string $contentTemplate,
         string $documentTemplate,
         array $variables = [],
-        int $statusCode  = Response::HTTP_OK
+        int $statusCode  = Response::HTTP_OK,
+        string $charset  = self::CHARSET
     ): Response {
         $view                 = $this->templateFactory->getForTemplate($contentTemplate);
-        $variables            = $this->getTemplateVariables($title, $variables);
+        $variables            = $this->getTemplateVariables($title, $variables, $charset);
         $variables['content'] = $view->render($contentTemplate, $variables);
 
         return $this->createResponse(
@@ -194,11 +200,11 @@ abstract class Controller
     ): Response {
         $headerBag = new HeaderBag();
         foreach ($headers as $key => $value) {
-            $headerBag->setFromString($key, $value);
+            $headerBag->setFromKeyValue($key, $value);
         }
 
         if ($contentType !== '') {
-            $headerBag->setFromString(
+            $headerBag->setFromKeyValue(
                 Header::NAME_CONTENT_TYPE,
                 $contentType
             );
