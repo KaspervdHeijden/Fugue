@@ -4,16 +4,21 @@ declare(strict_types=1);
 
 namespace Fugue\Caching;
 
-use function array_key_exists;
+use Redis;
 
-final class MemoryCache implements CacheInterface
+final class RedisCache implements CacheInterface
 {
-    /** @var mixed[] */
-    private $items = [];
+    /** @var Redis */
+    private $redis;
+
+    public function __construct(Redis $redis)
+    {
+        $this->redis = $redis;
+    }
 
     public function hasValueForKey(string $key): bool
     {
-        return array_key_exists($key, $this->items);
+        return $this->redis->exists($key);
     }
 
     public function retrieve(string $key)
@@ -22,11 +27,11 @@ final class MemoryCache implements CacheInterface
             throw ValueNotFoundException::forKey($key);
         }
 
-        return $this->items[$key];
+        return $this->redis->get($key);
     }
 
     public function store(string $key, $value): void
     {
-        $this->items[$key] = $value;
+        $this->redis->set($key, $value);
     }
 }

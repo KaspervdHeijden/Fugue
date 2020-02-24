@@ -17,8 +17,10 @@ interface CacheInterface
     /**
      * Retrieves a value from cache.
      *
-     * @param string $key The key of the item to retrieve.
-     * @return mixed|null The value, or NULL if not found.
+     * @param string $key             The key of the item to retrieve.
+     *
+     * @return mixed                  The value for the given key.
+     * @throws ValueNotFoundException If no value is found for the given key.
      */
     public function retrieve(string $key);
 

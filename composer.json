@@ -18,9 +18,11 @@
         "ext-json": "*",
         "ext-hash": "*",
         "ext-date": "*",
+        "ext-redis": "*",
         "ext-libxml": "*",
         "ext-session": "*",
         "ext-mbstring": "*",
+        "ext-memcached": "*",
         "ext-simplexml": "*"
     }
 }
