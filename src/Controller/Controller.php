@@ -200,11 +200,11 @@ abstract class Controller
     ): Response {
         $headerBag = new HeaderBag();
         foreach ($headers as $key => $value) {
-            $headerBag->setFromKeyValue($key, $value);
+            $headerBag->set($key, $value);
         }
 
         if ($contentType !== '') {
-            $headerBag->setFromKeyValue(
+            $headerBag->set(
                 Header::NAME_CONTENT_TYPE,
                 $contentType
             );

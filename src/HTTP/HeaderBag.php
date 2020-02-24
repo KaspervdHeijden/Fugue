@@ -19,23 +19,26 @@ final class HeaderBag extends CollectionMap
     ): void {
         if ($enableCaching) {
             if ($lastModified > 0) {
-                $this->setFromKeyValue('last_modified', $lastModified->format('D, d M Y H:i:s') . ' GTM');
+                $this->set('last_modified', $lastModified->format('D, d M Y H:i:s') . ' GTM');
             }
 
-            $this->setFromKeyValue('cache_control', 'private' . ($maxAge > 0 ? ",max-age={$maxAge}" : ''));
+            $this->set('cache_control', 'private' . ($maxAge > 0 ? ",max-age={$maxAge}" : ''));
             $this->unset('expires', 'pragma');
         } else {
-            $this->setFromKeyValue('expires', (new DateTimeImmutable('-3 hours'))->format('D, d M Y H:i:s') . ' GTM');
-            $this->setFromKeyValue('cache_control', 'no-store,no-cache');
-            $this->setFromKeyValue('pragma', 'no-cache');
+            $this->set('expires', (new DateTimeImmutable('-3 hours'))->format('D, d M Y H:i:s') . ' GTM');
+            $this->set('cache_control', 'no-store,no-cache');
+            $this->set('pragma', 'no-cache');
             $this->unset('last_modified');
         }
     }
 
-    public function setFromKeyValue(string $key, string $value): void
+    public function set($value, $key = null): void
     {
-        $header = new Header($key, $value);
-        $this->set($header, $header->getKey());
+        if (is_string($value)) {
+            parent::set(new Header((string)$key, $value), $key);
+        } else {
+            parent::set($value, $key);
+        }
     }
 
     protected function checkKey($key): bool

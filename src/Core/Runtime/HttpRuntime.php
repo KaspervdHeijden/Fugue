@@ -37,6 +37,9 @@ final class HttpRuntime implements RuntimeInterface
     /** @var OutputHandlerInterface */
     private $outputHandler;
 
+    /** @var ClassResolver */
+    private $classResolver;
+
     /** @var Container */
     private $container;
 
@@ -46,9 +49,11 @@ final class HttpRuntime implements RuntimeInterface
     public function __construct(
         OutputHandlerInterface $outputHandler,
         RouteCollectionMap $routeMap,
+        ClassResolver $classResolver,
         Container $container
     ) {
         $this->outputHandler = $outputHandler;
+        $this->classResolver = $classResolver;
         $this->container     = $container;
         $this->routeMap      = $routeMap;
     }
@@ -92,7 +97,7 @@ final class HttpRuntime implements RuntimeInterface
         ]);
 
         if ($this->shouldSendContentLength($request, $response)) {
-            $headers->setFromKeyValue(
+            $headers->set(
                 Header::NAME_CONTENT_LENGTH,
                 (string)strlen($response->getContent())
             );
@@ -151,12 +156,21 @@ final class HttpRuntime implements RuntimeInterface
             throw InvalidRouteHandlerException::nonExistentClass($className);
         }
 
+        $mapping  = [Request::class => $request, Route::class => $route];
+        $instance = $this->classResolver->resolve(
+            $className,
+            $this->container,
+            new CollectionMap($mapping)
+        );
+
+        if ($methodName === '' && is_callable($instance)) {
+            return $instance;
+        }
+
         if (($methodName ?? '') === '') {
             $methodName = self::DEFAULT_CONTROLLER_METHOD;
         }
 
-        $mapping  = new CollectionMap([Request::class => $request, Route::class => $route]);
-        $instance = (new ClassResolver())->resolve($className, $this->container, $mapping);
         if (! method_exists($instance, $methodName)) {
             throw InvalidRouteHandlerException::nonExistentClassFunction(
                 $className,

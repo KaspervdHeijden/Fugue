@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Fugue Front controller
+ * Fugue HTTP handler controller
  * _______  __    __    _______  __    __   _______
  * |   ____||  |  |  |  /  _____||  |  |  | |   ____|
  * |  |__   |  |  |  | |  |  __  |  |  |  | |  |__
@@ -29,6 +29,7 @@ require_once __DIR__ . '/../src/bootstrap.inc.php';
         return new HttpRuntime(
             $this->getOutputHandler(),
             $container->resolve(RouteCollectionMap::class),
+            $this->getClassResolver(),
             $container
         );
     }

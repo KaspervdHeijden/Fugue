@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Fugue\Container;
 
 use Fugue\Collection\CollectionMap;
+use Fugue\Caching\CacheInterface;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionClass;
@@ -13,8 +14,13 @@ use function array_map;
 
 final class ClassResolver
 {
-    /** @var ReflectionClass[][] */
-    private $classCache = [];
+    /** @var CacheInterface */
+    private $cache;
+
+    public function __construct(CacheInterface $cache)
+    {
+        $this->cache = $cache;
+    }
 
     /**
      * @param string        $className
@@ -30,7 +36,7 @@ final class ClassResolver
     ) {
         $argumentClasses = $this->getArgumentClassesFromConstructor($className);
         $arguments       = array_map(
-            function (ReflectionClass $reflectionClass) use ($container, $classToObjects) {
+            static function (ReflectionClass $reflectionClass) use ($container, $classToObjects) {
                 $typeName = $reflectionClass->getName();
 
                 if ($classToObjects->containsKey($typeName)) {
@@ -52,8 +58,8 @@ final class ClassResolver
      */
     private function getArgumentClassesFromConstructor(string $className): array
     {
-        if (isset($this->classCache[$className])) {
-            return $this->classCache[$className];
+        if ($this->cache->hasValueForKey($className)) {
+            return $this->cache->retrieve($className);
         }
 
         try {
@@ -83,7 +89,7 @@ final class ClassResolver
                 );
             }
 
-            $this->classCache[$className] = $classes;
+            $this->cache->store($className, $classes);
             return $classes;
         } catch (ReflectionException $reflectionException) {
             throw InvalidClassException::forClassName($className);

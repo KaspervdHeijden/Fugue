@@ -15,9 +15,11 @@ use Fugue\Core\Output\OutputHandlerInterface;
 use Fugue\Core\Output\StandardOutputHandler;
 use Fugue\Core\Runtime\RuntimeInterface;
 use Fugue\Container\ContainerLoader;
+use Fugue\Container\ClassResolver;
 use Fugue\Logging\LoggerInterface;
 use Fugue\Collection\PropertyBag;
 use Fugue\Logging\OutputLogger;
+use Fugue\Caching\MemoryCache;
 use Fugue\HTTP\Request;
 use Throwable;
 
@@ -97,6 +99,11 @@ abstract class FrontController
         }
 
         exit($code < 1 ? 1 : $code);
+    }
+
+    protected function getClassResolver(): ClassResolver
+    {
+        return new ClassResolver(new MemoryCache());
     }
 
     protected function getClassLoader(): ClassLoaderInterface

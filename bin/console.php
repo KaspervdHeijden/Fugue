@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Fugue Front controller
+ * Fugue CLI controller
  * _______  __    __    _______  __    __   _______
  * |   ____||  |  |  |  /  _____||  |  |  | |   ____|
  * |  |__   |  |  |  | |  |  __  |  |  |  | |  |__
@@ -27,7 +27,9 @@ require_once __DIR__ . '/../src/bootstrap.inc.php';
     {
         $factory = new CommandFactory(
             $this->getExceptionHandler(),
-            $this->getLogger()
+            $this->getClassResolver(),
+            $this->getLogger(),
+            $this->getKernel()->getContainer()
         );
 
         return new CLIRuntime($factory);
