@@ -47,7 +47,9 @@ final class Header
     public function __construct(string $key, string $value)
     {
         if ($key === '') {
-            throw new InvalidArgumentException('header name must not be empty.');
+            throw new InvalidArgumentException(
+                'Header name must not be empty.'
+            );
         }
 
         $parts = new CollectionMap([], 'string');

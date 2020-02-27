@@ -14,7 +14,7 @@ final class RepositorySessionAdapter implements SessionAdapterInterface
         $this->sessionRepository = $sessionRepository;
     }
 
-    public function start(array $settings): void
+    public function start(SessionSettings $settings): void
     {
     }
 

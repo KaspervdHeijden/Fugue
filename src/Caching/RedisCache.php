@@ -18,7 +18,7 @@ final class RedisCache implements CacheInterface
 
     public function hasValueForKey(string $key): bool
     {
-        return $this->redis->exists($key);
+        return (bool)$this->redis->exists($key);
     }
 
     public function retrieve(string $key)

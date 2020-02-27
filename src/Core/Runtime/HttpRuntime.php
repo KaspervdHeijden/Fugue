@@ -61,7 +61,7 @@ final class HttpRuntime implements RuntimeInterface
     public function handle(Request $request): void
     {
         $matcher     = new RouteMatcher($this->routeMap);
-        $matchResult = $matcher->getForRequest($request);
+        $matchResult = $matcher->getRouteForRequest($request);
         $response    = $this->run($matchResult, $request);
 
         $this->sendHeaders($request, $response);

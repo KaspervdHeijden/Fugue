@@ -9,13 +9,13 @@ final class QueryResult
     /** @var int */
     private $numberOfAffectedRows;
 
-    /** @var string */
-    private $lastInsertedId;
+    /** @var string|null */
+    private $insertedId;
 
-    public function __construct(int $numberOfAffectedRows, string $lastInsertedId)
+    public function __construct(int $numberOfAffectedRows, ?string $insertedId)
     {
         $this->numberOfAffectedRows = $numberOfAffectedRows;
-        $this->lastInsertedId       = $lastInsertedId;
+        $this->insertedId           = $insertedId;
     }
 
     public function getNumberOfAffectedRows(): int
@@ -23,8 +23,8 @@ final class QueryResult
         return $this->numberOfAffectedRows;
     }
 
-    public function getLastInsertedId(): string
+    public function getInsertedId(): ?string
     {
-        return $this->lastInsertedId;
+        return $this->insertedId;
     }
 }

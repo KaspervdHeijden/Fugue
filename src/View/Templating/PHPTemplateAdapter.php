@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\View\Templating;
 
+use Fugue\HTTP\Routing\RouteMatcher;
 use Fugue\Localization\Formatting\Number\NumberFormatterInterface;
 use Fugue\Localization\Formatting\Date\DateFormatterInterface;
 use Fugue\Core\Output\OutputHandlerInterface;
@@ -46,10 +47,10 @@ final class PHPTemplateAdapter implements TemplateInterface
         string $rootDir
     ) {
         $this->numberFormatter = $numberFormatter;
-        $this->dateFormatter = $dateFormatter;
-        $this->outputHandler = $outputHandler;
-        $this->routeMap = $routeMap;
-        $this->rootDir = $rootDir;
+        $this->dateFormatter   = $dateFormatter;
+        $this->outputHandler   = $outputHandler;
+        $this->routeMap        = $routeMap;
+        $this->rootDir         = $rootDir;
     }
 
     /**
@@ -80,9 +81,16 @@ final class PHPTemplateAdapter implements TemplateInterface
      * @return string             The formatted number.
      * @noinspection PhpUnused
      */
-    public function number($numericValue, int $precision = 2, bool $output = true): string
-    {
-        $formattedNumber = $this->numberFormatter->format((float)$numericValue, $precision);
+    public function number(
+        $numericValue,
+        int $precision = 2,
+        bool $output = true
+    ): string {
+        $formattedNumber = $this->numberFormatter->format(
+            (float)$numericValue,
+            $precision
+        );
+
         if ($output) {
             $this->escape($formattedNumber);
         }
@@ -128,8 +136,11 @@ final class PHPTemplateAdapter implements TemplateInterface
      * @return string           The optionally shorted text.
      * @noinspection PhpUnused
      */
-    public function shorten($longString, int $maxLength = 32, bool $output = true): string
-    {
+    public function shorten(
+        $longString,
+        int $maxLength = 32,
+        bool $output = true
+    ): string {
         $length = mb_strlen((string)$longString);
         if ($length < $maxLength) {
             $shortString = (string)$longString;
@@ -156,14 +167,14 @@ final class PHPTemplateAdapter implements TemplateInterface
      * @return string            The URL.
      * @noinspection PhpUnused
      */
-    public function route(string $routeName, array $parameters = [], bool $output = true): string
-    {
-        $route = $this->routeMap->get($routeName);
-        if (! $route instanceof Route) {
-            return '';
-        }
+    public function route(
+        string $routeName,
+        array $parameters = [],
+        bool $output = true
+    ): string {
+        $matcher = new RouteMatcher($this->routeMap);
+        $url     = $matcher->getUrl($routeName, $parameters);
 
-        $url = $route->getUrl($parameters);
         if ($output) {
             $this->escape($url);
         }
@@ -185,8 +196,10 @@ final class PHPTemplateAdapter implements TemplateInterface
         return true;
     }
 
-    public function render(string $templateName, array $variables): string
-    {
+    public function render(
+        string $templateName,
+        array $variables
+    ): string {
         if (! $this->supports($templateName)) {
             throw InvalidTemplateException::forUnrecognizedTemplateName($templateName);
         }

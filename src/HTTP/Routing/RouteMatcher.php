@@ -8,18 +8,58 @@ use Fugue\HTTP\Request;
 use Fugue\HTTP\URL;
 
 use const ARRAY_FILTER_USE_KEY;
+use function preg_replace_callback;
+use function mb_strtolower;
 use function array_filter;
+use function str_replace;
 use function preg_match;
 use function in_array;
+use function rtrim;
 
 final class RouteMatcher
 {
+    /**
+     * @var string The regular expression used to parse the URL templates.
+     */
+    public const URL_TEMPLATE_REGEX = '#\{([a-z_][a-z0-9_]+)(\:[sif])?\}#iu';
+
     /** @var RouteCollectionMap */
     private $routeMap;
 
     public function __construct(RouteCollectionMap $routeMap)
     {
         $this->routeMap = $routeMap;
+    }
+
+    /**
+     * Gets the regular expression used for matching a URL.
+     *
+     * @param Route $route The route to get the regular expression for.
+     * @return string      The regular expression.
+     */
+    private function getRegex(Route $route): string
+    {
+        $regex = str_replace('/', '/+', rtrim(preg_replace_callback(
+            self::URL_TEMPLATE_REGEX,
+            static function (array $matches): string {
+                switch (isset($matches[2]) && $matches[2] !== '' ? mb_strtolower($matches[2][1]) : 's') {
+                    case 'i':
+                        $regex = '\d+';
+                        break;
+                    case 'f':
+                        $regex = '\d+(\.\d+)?';
+                        break;
+                    default:
+                        $regex = '[^/]+?';
+                        break;
+                }
+
+                return "(?<{$matches[1]}>{$regex})";
+            },
+            $route->getUrlTemplate()
+        ), '/'));
+
+        return "#^{$regex}\/*$#";
     }
 
     /**
@@ -31,14 +71,17 @@ final class RouteMatcher
      * @param string $method         The request method
      * @return RouteMatchResult|null The result of the match.
      */
-    private function match(Route $route, Url $url, string $method): ?RouteMatchResult
-    {
+    private function match(
+        Route $route,
+        Url $url,
+        string $method
+    ): ?RouteMatchResult {
         if (! in_array($route->getMethod(), [null, $method], true)) {
             return null;
         }
 
         $matches = [];
-        if (! (bool)preg_match($route->getRegex(), $url->getPath(), $matches)) {
+        if (! (bool)preg_match($this->getRegex($route), $url->getPath(), $matches)) {
             return null;
         }
 
@@ -47,13 +90,38 @@ final class RouteMatcher
     }
 
     /**
+     * Gets the URL.
+     *
+     * @param string $routeName The name of the route.
+     * @param array  $params    List of variables to replace.
+     *
+     * @return string           The URL that matches the path.
+     */
+    public function getUrl(string $routeName, array $parameters): string
+    {
+        $route = $this->routeMap->get($routeName);
+        if (! $route instanceof Route) {
+            return '';
+        }
+
+        return preg_replace_callback(
+            self::URL_TEMPLATE_REGEX,
+            static function (array $matches) use ($parameters): string {
+                return mb_strtolower($params[$matches[1]] ?? '');
+            },
+            $route->getUrlTemplate()
+        );
+    }
+
+    /**
      * Gets the first route that matches the given request.
      *
      * @param Request $request  The request to run.
      * @return RouteMatchResult The response generated from the first route that match the Url.
      */
-    public function getForRequest(Request $request): RouteMatchResult
-    {
+    public function getRouteForRequest(
+        Request $request
+    ): RouteMatchResult {
         $method = $request->getMethod();
         $url    = $request->getUrl();
 

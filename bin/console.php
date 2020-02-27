@@ -26,9 +26,7 @@ require_once __DIR__ . '/../src/bootstrap.inc.php';
     protected function createRuntime(): RuntimeInterface
     {
         $factory = new CommandFactory(
-            $this->getExceptionHandler(),
             $this->getClassResolver(),
-            $this->getLogger(),
             $this->getKernel()->getContainer()
         );
 

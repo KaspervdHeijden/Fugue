@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\HTTP;
 
-use RuntimeException;
+use UnexpectedValueException;
 
 use function parse_url;
 use function is_array;
@@ -38,7 +38,7 @@ final class Url
         if ($this->parts === null) {
             $parts = parse_url($this->url);
             if (! is_array($parts)) {
-                throw new RuntimeException(
+                throw new UnexpectedValueException(
                     "Could not parse URL '{$this->url}'."
                 );
             }

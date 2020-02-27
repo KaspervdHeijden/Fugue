@@ -13,9 +13,9 @@ interface SessionAdapterInterface
      * Starts the session. Should only be called if the
      * session has not been started before.
      *
-     * @param array $settings Session config settings.
+     * @param SessionSettings $settings Session config settings.
      */
-    public function start(array $settings): void;
+    public function start(SessionSettings $settings): void;
 
     /**
      * Gets a session property.

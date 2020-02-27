@@ -131,17 +131,22 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
 
     public function query(string $sql, array $params = []): QueryResult
     {
-        $stmt = $this->execute($sql, $params);
+        $stmt       = $this->execute($sql, $params);
+        $insertedId = (string)$this->pdo->lastInsertId();
+
         return new QueryResult(
-            $stmt->rowCount(),
-            (string)$this->pdo->lastInsertId()
+            (int)$stmt->rowCount(),
+            ($insertedId === '') ? null : $insertedId
         );
     }
 
-    public function fetchOne(string $className, string $sql, array $params = [])
-    {
-        $stmt   = $this->execute($sql, $params);
+    public function fetchOne(
+        string $className,
+        string $sql,
+        array $params = []
+    ) {
         $mapper = $this->getMapper($className);
+        $stmt   = $this->execute($sql, $params);
         $record = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (! is_array($record)) {
@@ -151,8 +156,11 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
         return $mapper->recordToObjectInstance($record);
     }
 
-    public function fetchAll(string $className, string $sql, array $params = [])
-    {
+    public function fetchAll(
+        string $className,
+        string $sql,
+        array $params = []
+    ): array {
         $mapper  = $this->getMapper($className);
         $stmt    = $this->execute($sql, $params);
         $records = $stmt->fetchAll(PDO::FETCH_ASSOC);

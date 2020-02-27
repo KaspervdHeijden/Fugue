@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Fugue\Core;
 
-use Fugue\Logging\LoggerInterface;
 use Fugue\Core\Exception\ExceptionHandlerInterface;
 use Fugue\Core\ClassLoader\ClassLoaderInterface;
 use Fugue\Core\Output\OutputHandlerInterface;
 use Fugue\Container\ContainerLoader;
+use Fugue\Logging\LoggerInterface;
 use Fugue\Container\Container;
 
 final class Kernel

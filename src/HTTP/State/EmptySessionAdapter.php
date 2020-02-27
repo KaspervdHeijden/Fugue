@@ -24,7 +24,7 @@ final class EmptySessionAdapter implements SessionAdapterInterface
     {
     }
 
-    public function start(array $settings): void
+    public function start(SessionSettings $settings): void
     {
     }
 

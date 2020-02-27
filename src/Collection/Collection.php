@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Fugue\Collection;
 
-use UnexpectedValueException;
 use IteratorAggregate;
 use ArrayIterator;
 use ArrayAccess;
@@ -14,6 +13,7 @@ use Countable;
 use function array_key_exists;
 use function array_key_first;
 use function array_key_last;
+use function array_reduce;
 use function array_search;
 use function array_merge;
 use function array_slice;
@@ -22,7 +22,7 @@ use function count;
 
 abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
 {
-    /** @var callable[] */
+    /** @var callable[]|string[] */
     private const TYPE_MAPPING = [
         'resource' => 'is_resource',
         'callable' => 'is_callable',
@@ -41,11 +41,13 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     /** @var mixed[] */
     private $elements = [];
 
-    /** @var string */
+    /** @var string|null */
     private $type;
 
-    public function __construct(iterable $elements = [], ?string $type = null)
-    {
+    public function __construct(
+        iterable $elements = [],
+        ?string $type      = null
+    ) {
         $this->type = $type;
         foreach ($elements as $key => $value) {
             $this->set($value, $key);
@@ -55,8 +57,8 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     /**
      * Determines if this collection contains the supplied key.
      *
-     * @param string|int $key The key to test for.
-     * @return bool           TRUE if the key exists in this Map, FALSE otherwise.
+     * @param string|int|null $key The key to test for.
+     * @return bool                TRUE if the key exists in this Map, FALSE otherwise.
      */
     public function containsKey($key): bool
     {
@@ -102,9 +104,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     public function get($key, $default = null)
     {
         if (! $this->checkKey($key)) {
-            throw new UnexpectedValueException(
-                'Invalid key for ' . static::class
-            );
+            throw InvalidTypeException::forKey(static::class);
         }
 
         return $this->elements[$key] ?? $default;
@@ -119,15 +119,11 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     public function set($value, $key = null): void
     {
         if (! $this->checkKey($key)) {
-            throw new UnexpectedValueException(
-                'Invalid key for ' . static::class
-            );
+            throw InvalidTypeException::forKey(static::class);
         }
 
         if (! $this->checkValue($value)) {
-            throw new UnexpectedValueException(
-                'Invalid value for ' . static::class
-            );
+            throw InvalidTypeException::forValue(static::class);
         }
 
         if ($key === null) {
@@ -141,21 +137,60 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     {
         foreach ($keys as $key) {
             if (! $this->checkKey($key)) {
-                throw new UnexpectedValueException(
-                    'Invalid key for ' . static::class
-                );
+                throw InvalidTypeException::forKey(static::class);
             }
 
             unset($this->elements[$key]);
         }
     }
 
+    /**
+     * Filters the collection given a filter method.
+     *
+     * @param callable The filter method.
+     * @return static  A new collection based on the
+     *                 return values of the filter method.
+     */
     public function filter(callable $filter): self
     {
         return new static(
             array_filter($this->elements, $filter),
             $this->type
         );
+    }
+
+    /**
+     * Returns true if the calls to given method returns the expected result for all elements.
+     *
+     * This implementation stops at the first failure.
+     *
+     * @param callable $conditionMethod The method performing the test on the elements.
+     * @param mixed    $expectedResult  The expected result.
+     *
+     * @return bool                     TRUE if all method calls return TRUE, FALSE otherwise.
+     */
+    public function every(callable $conditionMethod, $expectedResult = true): bool
+    {
+        foreach ($this->elements as $element) {
+            if ($conditionMethod($element) !== $expectedResult) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Performs a reduce where this collection elements are reduced to a single value.
+     *
+     * @param callable $combinator   Method returns a single value given two elements.
+     * @param mixed    $initialValue The initial value to use.
+     *
+     * @return mixed   The single reduced value.
+     */
+    public function reduce(callable $combinator, $initialValue = null)
+    {
+        return array_reduce($this->elements, $combinator, $initialValue);
     }
 
     public function forEach(callable $filter, ?string $type = null): self
@@ -167,6 +202,8 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
+     * Checks if the given value type is acceptable.
+     *
      * @param mixed $value The value to check.
      * @return bool        TRUE if the value is to be accepted, FALSE otherwise.
      */
@@ -184,8 +221,10 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
+     * Checks if the given key type is acceptable.
+     *
      * @param string|int|null $key The key to check.
-     * @return bool                TRUE if the value is acceptable, FALSE otherwise.
+     * @return bool                TRUE if the key is acceptable, FALSE otherwise.
      */
     protected function checkKey($key): bool
     {
@@ -193,7 +232,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Clears this collection.
+     * Clears the collection.
      */
     public function clear(): void
     {
@@ -203,7 +242,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     /**
      * Gets the data in this collection as an array.
      *
-     * @return array The elements of this Collection as an array.
+     * @return array The elements of this collection as an array.
      */
     public function toArray(): array
     {

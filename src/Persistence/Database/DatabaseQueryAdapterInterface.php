@@ -25,7 +25,11 @@ interface DatabaseQueryAdapterInterface
      *
      * @return object|null      An instance of $className, or NULL if not found.
      */
-    public function fetchOne(string $className, string $sql, array $params = []);
+    public function fetchOne(
+        string $className,
+        string $sql,
+        array $params = []
+    );
 
     /**
      * Fetches one record in to a class.
@@ -34,9 +38,13 @@ interface DatabaseQueryAdapterInterface
      * @param string $sql       The SQL query to perform.
      * @param array  $params    Replaceable parameters.
      *
-     * @return object|null      An instance of $className, or NULL if not found.
+     * @return object[]         An array of instances of $className.
      */
-    public function fetchAll(string $className, string $sql, array $params = []);
+    public function fetchAll(
+        string $className,
+        string $sql,
+        array $params = []
+    ): array;
 
     /**
      * Fetches the first column of the first record.
@@ -46,5 +54,8 @@ interface DatabaseQueryAdapterInterface
      *
      * @return int|bool|string|null The value of the first column of the first row.
      */
-    public function fetchValue(string $sql, array $params = []);
+    public function fetchValue(
+        string $sql,
+        array $params = []
+    );
 }

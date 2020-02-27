@@ -10,7 +10,7 @@ interface CacheInterface
      * Determines if a value is set for the given key.
      *
      * @param string $key The key to test for.
-     * @return bool TRUE if a value si set for the given key, FALSE otherwise.
+     * @return bool       TRUE if a value si set for the given key, FALSE otherwise.
      */
     public function hasValueForKey(string $key): bool;
 

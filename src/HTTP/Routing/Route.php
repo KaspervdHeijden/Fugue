@@ -13,11 +13,6 @@ use function trim;
 
 final class Route
 {
-    /**
-     * @var string The regular expression used to parse the URL templates.
-     */
-    private const URL_TEMPLATE_REGEX = '#\{([a-z_][a-z0-9_]+)(\:[sif])?\}#iu';
-
     /** @var string */
     private $urlTemplate;
 
@@ -169,52 +164,5 @@ final class Route
     public function getHandler()
     {
         return $this->handler;
-    }
-
-    /**
-     * Gets the regular expression used for matching a URL.
-     *
-     * @return string The regular expression.
-     */
-    public function getRegex(): string
-    {
-        $regex = str_replace('/', '/+', rtrim(preg_replace_callback(
-            self::URL_TEMPLATE_REGEX,
-            static function (array $matches): string {
-                switch (isset($matches[2]) && $matches[2] !== '' ? mb_strtolower($matches[2][1]) : 's') {
-                    case 'i':
-                        $regex = '\d+';
-                        break;
-                    case 'f':
-                        $regex = '\d+(\.\d+)?';
-                        break;
-                    default:
-                        $regex = '[^/]+?';
-                        break;
-                }
-
-                return "(?<{$matches[1]}>{$regex})";
-            },
-            $this->urlTemplate
-        ), '/'));
-
-        return "#^{$regex}\/*$#";
-    }
-
-    /**
-     * Gets the URL.
-     *
-     * @param array $params List of variables to replace.
-     * @return string       The URL that matches the path.
-     */
-    public function getUrl(array $params = []): string
-    {
-        return preg_replace_callback(
-            self::URL_TEMPLATE_REGEX,
-            static function (array $matches) use ($params): string {
-                return mb_strtolower($params[$matches[1]] ?? '');
-            },
-            $this->urlTemplate
-        );
     }
 }

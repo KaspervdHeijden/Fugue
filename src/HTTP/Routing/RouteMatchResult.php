@@ -12,6 +12,10 @@ final class RouteMatchResult
     /** @var Route */
     private $route;
 
+    /**
+     * @param Route    $route
+     * @param string[] $arguments
+     */
     public function __construct(Route $route, array $arguments)
     {
         $this->arguments = $arguments;
