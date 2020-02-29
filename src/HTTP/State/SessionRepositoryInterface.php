@@ -40,5 +40,5 @@ interface SessionRepositoryInterface
     /**
      * Clears all values.
      */
-    public function removeAll(): void;
+    public function clear(): void;
 }

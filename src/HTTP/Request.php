@@ -54,8 +54,17 @@ final class Request
     /** @var PropertyBag */
     private $get;
 
+    /** @var string */
+    private $protocol = null;
+
+    /** @var string */
+    private $method = null;
+
+    /** @var bool */
+    private $secure = null;
+
     /** @var Url */
-    private $url;
+    private $url = null;
 
     /**
      * Creates a request object.
@@ -105,12 +114,16 @@ final class Request
      */
     public function isSecure(): bool
     {
-        $https = $this->server->getString('HTTPS', '');
-        if ($https === '') {
-            return $this->server->getInt('SERVER_PORT', 80) === 443;
+        if ($this->secure === null) {
+            $https = $this->server->getString('HTTPS', '');
+            if ($https === '') {
+                $this->secure = $this->server->getInt('SERVER_PORT', 80) === 443;
+            } else {
+                $this->secure = (int)$https !== 0 && strcasecmp($https, 'off') !== 0;
+            }
         }
 
-        return (int)$https !== 0 && strcasecmp($https, 'off') !== 0;
+        return $this->secure;
     }
 
     /**
@@ -120,7 +133,14 @@ final class Request
      */
     public function getProtocol(): string
     {
-        return mb_strtoupper($this->server->get('SERVER_PROTOCOL', 'HTTP/1.0'));
+        if ($this->protocol === null) {
+            $this->protocol = mb_strtoupper($this->server->get(
+                'SERVER_PROTOCOL',
+                'HTTP/1.0'
+            ));
+        }
+
+        return $this->protocol;
     }
 
     /**
@@ -130,7 +150,14 @@ final class Request
      */
     public function getMethod(): string
     {
-        return mb_strtoupper($this->server->getString('REQUEST_METHOD', self::METHOD_GET));
+        if ($this->method === null) {
+            $this->method = mb_strtoupper($this->server->getString(
+                'REQUEST_METHOD',
+                self::METHOD_GET
+            ));
+        }
+
+        return $this->method;
     }
 
     /**

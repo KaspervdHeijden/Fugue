@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Fugue\HTTP\Routing;
 
 use Fugue\HTTP\Request;
-use Fugue\HTTP\URL;
 
 use const ARRAY_FILTER_USE_KEY;
 use function preg_replace_callback;
@@ -56,7 +55,7 @@ final class RouteMatcher
 
                 return "(?<{$matches[1]}>{$regex})";
             },
-            $route->getUrlTemplate()
+            $route->getUrl()
         ), '/'));
 
         return "#^{$regex}\/*$#";
@@ -65,23 +64,24 @@ final class RouteMatcher
     /**
      * Gives a value if this route matches the given request.
      *
-     * @param Route  $route          The route to test.
-     * @param Url    $url            The url path to match against.
+     * @param Route   $route         The route to test.
+     * @param Request $request       The url path to match against.
      *
-     * @param string $method         The request method
      * @return RouteMatchResult|null The result of the match.
      */
     private function match(
         Route $route,
-        Url $url,
-        string $method
+        Request $request
     ): ?RouteMatchResult {
-        if (! in_array($route->getMethod(), [null, $method], true)) {
+        if (! in_array($route->getMethod(), [null, $request->getMethod()], true)) {
             return null;
         }
 
+        $path    = $request->getUrl()->getPath();
+        $regex   = $this->getRegex($route);
         $matches = [];
-        if (! (bool)preg_match($this->getRegex($route), $url->getPath(), $matches)) {
+
+        if (! (bool)preg_match($regex, $path, $matches)) {
             return null;
         }
 
@@ -97,8 +97,10 @@ final class RouteMatcher
      *
      * @return string           The URL that matches the path.
      */
-    public function getUrl(string $routeName, array $parameters): string
-    {
+    public function getUrl(
+        string $routeName,
+        array $parameters
+    ): string {
         $route = $this->routeMap->get($routeName);
         if (! $route instanceof Route) {
             return '';
@@ -109,7 +111,7 @@ final class RouteMatcher
             static function (array $matches) use ($parameters): string {
                 return mb_strtolower($params[$matches[1]] ?? '');
             },
-            $route->getUrlTemplate()
+            $route->getUrl()
         );
     }
 
@@ -119,14 +121,10 @@ final class RouteMatcher
      * @param Request $request  The request to run.
      * @return RouteMatchResult The response generated from the first route that match the Url.
      */
-    public function getRouteForRequest(
-        Request $request
-    ): RouteMatchResult {
-        $method = $request->getMethod();
-        $url    = $request->getUrl();
-
+    public function getRouteForRequest(Request $request): RouteMatchResult
+    {
         foreach ($this->routeMap as $route) {
-            $result = $this->match($route, $url, $method);
+            $result = $this->match($route, $request);
             if ($result instanceof RouteMatchResult) {
                 return $result;
             }

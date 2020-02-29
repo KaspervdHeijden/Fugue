@@ -40,7 +40,7 @@ final class RepositorySessionAdapter implements SessionAdapterInterface
 
     public function clear(): void
     {
-        $this->sessionRepository->removeAll();
+        $this->sessionRepository->clear();
     }
 
     public function close(): void

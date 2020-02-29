@@ -6,16 +6,11 @@ namespace Fugue\HTTP\Routing;
 
 use Fugue\HTTP\Request;
 
-use function preg_replace_callback;
-use function mb_strtolower;
 use function mb_strtoupper;
 use function trim;
 
 final class Route
 {
-    /** @var string */
-    private $urlTemplate;
-
     /** @var callable|string */
     private $handler;
 
@@ -24,6 +19,29 @@ final class Route
 
     /** @var string */
     private $name;
+
+    /** @var string */
+    private $url;
+
+    /**
+     * Creates a Route.
+     *
+     * @param string $name             The name of the Route
+     * @param string $url              The path match.
+     * @param string|null $method      The method used.
+     * @param callable|string $handler The handler to perform.
+     */
+    private function __construct(
+        string $name,
+        string $url,
+        ?string $method,
+        $handler
+    ) {
+        $this->method      = ((string)$method !== '' ) ? mb_strtoupper(trim($method)) : null;
+        $this->handler     = $handler;
+        $this->name        = $name;
+        $this->url         = $url;
+    }
 
     /**
      * Binds a handler to a route, using an URL template.
@@ -38,92 +56,88 @@ final class Route
      *  and are passed as an argument to the controller handler function. E.g.:<br>
      * <code>/product/{id}</code> matches <i>/product/what-ever</i>, and "what-ever" is passed to the controller.
      *
-     * @param string          $urlTemplate The url template that matches the path.
-     * @param callable|string $handler     The Handler to run.
-     * @param string          $name        The name of the Route.
-     * @param string          $method      The method used for the match.
+     * @param string          $url     The url template that matches the path.
+     * @param callable|string $handler The Handler to run.
+     * @param string          $name    The name of the Route.
+     * @param string          $method  The method used for the match.
      *
-     * @return Route                       The added Route.
+     * @return Route                   The added Route.
      */
-    public static function any(string $urlTemplate, $handler, string $name, string $method): Route
-    {
-        return new static($name, $urlTemplate, $method, $handler);
+    public static function any(
+        string $url,
+        $handler,
+        string $name,
+        string $method
+    ): Route {
+        return new static($name, $url, $method, $handler);
     }
 
     /**
      * Binds a GET handler to a route.
      *
-     * @param string          $urlTemplate The url template that matches the path.
-     * @param callable|string $handler     The Handler to run.
-     * @param string          $name        The name of the Route.
+     * @param string          $url     The url template that matches the path.
+     * @param callable|string $handler The Handler to run.
+     * @param string          $name    The name of the Route.
      *
-     * @return Route                       The added Route.
+     * @return Route                   The added Route.
      */
-    public static function get(string $urlTemplate, $handler, string $name = ''): Route
-    {
-        return self::any($urlTemplate, $handler, $name, Request::METHOD_GET);
+    public static function get(
+        string $url,
+        $handler,
+        string $name
+    ): Route {
+        return self::any($url, $handler, $name, Request::METHOD_GET);
     }
 
     /**
      * Binds a POST handler to a route.
      *
-     * @param string          $urlTemplate The url template that matches the path.
-     * @param callable|string $handler     The Handler to run.
-     * @param string          $name        The name of the Route.
+     * @param string          $url     The url template that matches the path.
+     * @param callable|string $handler The Handler to run.
+     * @param string          $name    The name of the Route.
      *
-     * @return Route                       The added Route.
+     * @return Route                   The added Route.
      */
-    public static function post(string $urlTemplate, $handler, string $name = ''): Route
-    {
-        return self::any($urlTemplate, $handler, $name, Request::METHOD_POST);
+    public static function post(
+        string $url,
+        $handler,
+        string $name
+    ): Route {
+        return self::any($url, $handler, $name, Request::METHOD_POST);
     }
 
     /**
      * Binds a PUT handler to a route.
      *
-     * @param string          $urlTemplate The url template that matches the path.
-     * @param callable|string $handler     The Handler to run.
-     * @param string          $name        The name of the Route.
+     * @param string          $url     The url template that matches the path.
+     * @param callable|string $handler The Handler to run.
+     * @param string          $name    The name of the Route.
      *
-     * @return Route                       The added Route.
+     * @return Route                   The added Route.
      */
-    public static function put(string $urlTemplate, $handler, string $name = ''): Route
-    {
-        return self::any($urlTemplate, $handler, $name, Request::METHOD_PUT);
+    public static function put(
+        string $url,
+        $handler,
+        string $name
+    ): Route {
+        return self::any($url, $handler, $name, Request::METHOD_PUT);
     }
 
     /**
      * Binds a DELETE handler to a route.
      *
-     * @param string          $urlTemplate The url template that matches the path.
-     * @param callable|string $handler     The handler to run.
-     * @param string          $name        The name of the Route.
+     * @param string          $url     The url template that matches the path.
+     * @param callable|string $handler The handler to run.
+     * @param string          $name    The name of the Route.
      *
-     * @return Route                       The added Route.
+     * @return Route                   The added Route.
      */
-    public static function delete(string $urlTemplate, $handler, string $name = ''): Route
-    {
-        return self::any($urlTemplate, $handler, $name, Request::METHOD_DELETE);
-    }
-
-    /**
-     * Creates a Route.
-     *
-     * @param string $name             The name of the Route
-     * @param string $urlTemplate      The path match.
-     * @param string|null $method      The method used.
-     * @param callable|string $handler The handler to perform.
-     */
-    private function __construct(
-        string $name,
-        string $urlTemplate,
-        ?string $method,
-        $handler
-    ) {
-        $this->method      = ((string)$method !== '' ) ? mb_strtoupper(trim($method)) : null;
-        $this->urlTemplate = $urlTemplate;
-        $this->handler     = $handler;
-        $this->name        = $name;
+    public static function delete(
+        string $url,
+        $handler,
+        string $name
+    ): Route {
+        return self::any($url, $handler, $name, Request::METHOD_DELETE);
     }
 
     /**
@@ -141,9 +155,9 @@ final class Route
      *
      * @return string The Route's path match.
      */
-    public function getUrlTemplate(): string
+    public function getUrl(): string
     {
-        return $this->urlTemplate;
+        return $this->url;
     }
 
     /**
