@@ -24,18 +24,23 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
 {
     /** @var callable[]|string[] */
     private const TYPE_MAPPING = [
-        'resource' => 'is_resource',
-        'callable' => 'is_callable',
-        'function' => 'is_callable',
-        'string'   => 'is_string',
-        'array'    => 'is_array',
-        'float'    => 'is_float',
-        'double'   => 'is_float',
-        'real'     => 'is_float',
-        'boolean'  => 'is_bool',
-        'bool'     => 'is_bool',
-        'int'      => 'is_int',
-        'integer'  => 'is_int',
+        'countable' => 'is_countable',
+        'resource'  => 'is_resource',
+        'callable'  => 'is_callable',
+        'function'  => 'is_callable',
+        'iterable'  => 'is_iterable',
+        'numeric'   => 'is_numeric',
+        'scalar'    => 'is_scalar',
+        'object'    => 'is_object',
+        'string'    => 'is_string',
+        'array'     => 'is_array',
+        'float'     => 'is_float',
+        'double'    => 'is_float',
+        'real'      => 'is_float',
+        'boolean'   => 'is_bool',
+        'bool'      => 'is_bool',
+        'int'       => 'is_int',
+        'integer'   => 'is_int',
     ];
 
     /** @var mixed[] */
@@ -160,7 +165,8 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Returns true if the calls to given method returns the expected result for all elements.
+     * Returns true if the calls to given method
+     * returns the expected result for all elements.
      *
      * This implementation stops at the first failure.
      *
@@ -169,8 +175,10 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
      *
      * @return bool                     TRUE if all method calls return TRUE, FALSE otherwise.
      */
-    public function every(callable $conditionMethod, $expectedResult = true): bool
-    {
+    public function every(
+        callable $conditionMethod,
+        $expectedResult = true
+    ): bool {
         foreach ($this->elements as $element) {
             if ($conditionMethod($element) !== $expectedResult) {
                 return false;
@@ -181,20 +189,29 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Performs a reduce where this collection elements are reduced to a single value.
+     * Performs a reduce where this collection
+     * elements are reduced to a single value.
      *
      * @param callable $combinator   Method returns a single value given two elements.
      * @param mixed    $initialValue The initial value to use.
      *
      * @return mixed   The single reduced value.
      */
-    public function reduce(callable $combinator, $initialValue = null)
-    {
-        return array_reduce($this->elements, $combinator, $initialValue);
+    public function reduce(
+        callable $combinator,
+        $initialValue = null
+    ) {
+        return array_reduce(
+            $this->elements,
+            $combinator,
+            $initialValue
+        );
     }
 
-    public function forEach(callable $filter, ?string $type = null): self
-    {
+    public function forEach(
+        callable $filter,
+        ?string $type = null
+    ): self {
         return new static(
             array_map($filter, $this->elements),
             ($type !== null) ? $type : $this->type

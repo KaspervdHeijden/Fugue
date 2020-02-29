@@ -14,7 +14,7 @@ final class IniConfigurationLoader extends FileConfigurationLoader
         string $directory,
         string $identifier
     ): string {
-        return "{$directory}/init/{$identifier}.conf.ini";
+        return "{$directory}/ini/{$identifier}.conf.ini";
     }
 
     protected function loadFromFile(string $fileName): ?iterable

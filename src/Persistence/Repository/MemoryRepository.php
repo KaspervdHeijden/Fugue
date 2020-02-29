@@ -11,9 +11,9 @@ abstract class MemoryRepository
     /** @var CollectionMap */
     private $map;
 
-    public function __construct(CollectionMap $map)
+    public function __construct(?CollectionMap $map = null)
     {
-        $this->map = $map;
+        $this->map = ($map instanceof CollectionMap) ? $map : new CollectionMap();
     }
 
     protected function getMap(): CollectionMap

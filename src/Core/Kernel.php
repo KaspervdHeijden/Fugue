@@ -48,7 +48,8 @@ final class Kernel
     public function getContainer(): Container
     {
         if (! $this->container instanceof Container) {
-            $this->container = $this->containerLoader->createForKernel($this);
+            $this->container = $this->containerLoader
+                                    ->createForKernel($this);
         }
 
         return $this->container;

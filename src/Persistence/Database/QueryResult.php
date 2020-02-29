@@ -12,8 +12,10 @@ final class QueryResult
     /** @var string|null */
     private $insertedId;
 
-    public function __construct(int $numberOfAffectedRows, ?string $insertedId)
-    {
+    public function __construct(
+        int $numberOfAffectedRows,
+        ?string $insertedId
+    ) {
         $this->numberOfAffectedRows = $numberOfAffectedRows;
         $this->insertedId           = $insertedId;
     }

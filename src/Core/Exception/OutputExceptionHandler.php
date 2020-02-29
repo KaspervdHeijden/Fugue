@@ -19,6 +19,7 @@ final class OutputExceptionHandler extends ExceptionHandler
 
     public function handle(Throwable $exception): void
     {
-        $this->output->write($this->formatExceptionMessage($exception));
+        $message = $this->formatExceptionMessage($exception);
+        $this->output->write($message);
     }
 }

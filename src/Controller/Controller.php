@@ -144,7 +144,8 @@ abstract class Controller
      *
      * @param string $url        The URL to redirect to.
      * @param string $message    The message to show.
-     * @param int    $statusCode The status code for the response. Defaults to "302 Moved Temporarily".
+     * @param int    $statusCode The status code for the response.
+     *                           Defaults to "302 Moved Temporarily".
      *
      * @return Response          The generated response.
      */

@@ -14,7 +14,10 @@ interface DatabaseQueryAdapterInterface
      *
      * @return QueryResult      The result of the query.
      */
-    public function query(string $sql, array $params = []): QueryResult;
+    public function query(
+        string $sql,
+        array $params = []
+    ): QueryResult;
 
     /**
      * Fetches one record in to a class.
