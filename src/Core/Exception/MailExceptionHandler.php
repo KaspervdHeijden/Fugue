@@ -41,14 +41,12 @@ final class MailExceptionHandler extends ExceptionHandler
     public function handle(Throwable $exception): void
     {
         $email = new Email(
+            $this->recipientEmail,
             $this->senderEmail,
             $this->getSubject($exception),
-            new HTMLMessage($this->formatExceptionMessage($exception))
-        );
-
-        $email->addRecipient(
-            $this->recipientEmail,
-            Email::RECIPIENT_TYPE_TO
+            new HTMLMessage($this->formatExceptionMessage($exception)),
+            null,
+            []
         );
 
         $this->mailerService->send($email);

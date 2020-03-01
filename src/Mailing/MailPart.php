@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\Mailing;
 
-use LogicException;
+use UnexpectedValueException;
 
 use function quoted_printable_encode;
 use function base64_encode;
@@ -25,31 +25,26 @@ abstract class MailPart
     /**
      * @var string The 7bit body encoding.
      */
-    public const TRANSFER_ENCODING_7BIT   = '7bit';
+    public const TRANSFER_ENCODING_7BIT = '7bit';
 
     /**
      * @var string No transfer encoding.
      */
-    public const TRANSFER_ENCODING_NONE   = '';
+    public const TRANSFER_ENCODING_NONE = '';
 
     /**
      * @var int The maximum line length of an 64 encoded body.
      */
-    public const BASE64_MAX_LINE_LENGTH   = 76;
+    public const BASE64_MAX_LINE_LENGTH = 76;
 
     /**
      * @var string Newline sequence for an email body.
      */
-    public const NEWLINE        = "\r\n";
+    public const NEWLINE = "\r\n";
 
     /** @var string */
-    private $body               = '';
+    private $body = '';
 
-    /**
-     * Instantiates a HTML Mail part.
-     *
-     * @param string $body The plain text message.
-     */
     public function __construct(string $body)
     {
         $this->body = $body;
@@ -69,24 +64,9 @@ abstract class MailPart
      */
     abstract public function getTransferEncoding(): string;
 
-    /**
-     * Gets the body contents.
-     *
-     * @return string The content body of this mail part.
-     */
     final public function getBody(): string
     {
         return $this->body;
-    }
-
-    /**
-     * Sets the body.
-     *
-     * @param string $body The body.
-     */
-    public function setBody(string $body): void
-    {
-        $this->body = $body;
     }
 
     /**
@@ -109,8 +89,8 @@ abstract class MailPart
             case self::TRANSFER_ENCODING_QUOTED_PRINTABLE:
                 return quoted_printable_encode($this->body);
             default:
-                throw new LogicException(
-                    "Unrecognized transfer encoding ({$this->transferEncoding})."
+                throw new UnexpectedValueException(
+                    "Unrecognized transfer encoding '{$this->transferEncoding}'."
                 );
         }
     }

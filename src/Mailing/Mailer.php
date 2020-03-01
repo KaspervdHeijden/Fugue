@@ -75,7 +75,7 @@ abstract class Mailer implements EmailSenderInterface
                     break;
                 default:
                     throw new UnexpectedValueException(
-                        "Unrecognised recipient type ({$recipient['type']})."
+                        "Unrecognized recipient type ({$recipient['type']})."
                     );
             }
         }
@@ -190,11 +190,12 @@ abstract class Mailer implements EmailSenderInterface
         }
 
         if (! $textPart instanceof TextMessage && ! $htmlPart instanceof HTMLMessage) {
-            throw new UnexpectedValueException('No message part defined.');
+            throw new RuntimeException('No message part defined.');
         }
 
         $boundary    = $this->generateBoundary();
         $attachments = $email->getAttachments();
+
         $headersList = $this->getHeaders($email, $boundary);
         $subject     = $headersList['Subject'];
         $mailTo      = $headersList['To'];
