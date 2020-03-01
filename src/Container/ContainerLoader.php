@@ -76,7 +76,7 @@ final class ContainerLoader
                 DatabaseConnectionSettings::class,
                 [$this, 'getDatabaseConnectionSettings']
             ),
-            ...$this->loadConfiguration(self::CONFIG_ID_SERVICES)->toArray()
+            ...$this->load(self::CONFIG_ID_SERVICES)->toArray()
         );
     }
 }

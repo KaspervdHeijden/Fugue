@@ -6,17 +6,20 @@ namespace Fugue\Container;
 
 final class ContainerDefinition
 {
-    /** @var string */
-    private $name;
-
     /** @var mixed */
     private $definition;
+
+    /** @var string */
+    private $name;
 
     /** @var int */
     private $type;
 
-    private function __construct(string $name, int $type, $definition)
-    {
+    private function __construct(
+        string $name,
+        int $type,
+        $definition
+    ) {
         $this->definition = $definition;
         $this->name       = $name;
         $this->type       = $type;
@@ -37,18 +40,44 @@ final class ContainerDefinition
         return $this->definition;
     }
 
-    public static function singleton(string $name, callable $definition): self
-    {
-        return new self($name, Container::TYPE_SINGLETON, $definition);
+    public static function singleton(
+        string $name,
+        callable $definition
+    ): self {
+        return new self(
+            $name,
+            Container::TYPE_SINGLETON,
+            $definition
+        );
     }
 
-    public static function raw(string $name, $definition): self
-    {
-        return new self($name, Container::TYPE_RAW, $definition);
+    /**
+     * Returns a raw Container value definition.
+     *
+     * @param string $name      The name for the service.
+     * @param mixed $definition The service/object to register.
+     *
+     * @return static           The created container definition.
+     */
+    public static function raw(
+        string $name,
+        $definition
+    ): self {
+        return new self(
+            $name,
+            Container::TYPE_RAW,
+            $definition
+        );
     }
 
-    public static function factory(string $name, callable $definition): self
-    {
-        return new self($name, Container::TYPE_FACTORY, $definition);
+    public static function factory(
+        string $name,
+        callable $definition
+    ): self {
+        return new self(
+            $name,
+            Container::TYPE_FACTORY,
+            $definition
+        );
     }
 }

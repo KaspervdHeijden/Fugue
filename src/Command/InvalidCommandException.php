@@ -13,8 +13,18 @@ final class InvalidCommandException extends FugueException
         return new self('No cron identifier given.');
     }
 
-    public static function forUnknownIdentifier(string $identifier): self
+    public static function forUnknownIdentifier(
+        string $identifier
+    ): self {
+        return new self(
+            "Cron identifier '{$identifier}' not recognized."
+        );
+    }
+
+    public static function forInvalidClassType(string $identifier): self
     {
-        return new self("Cron identifier '{$identifier}' not recognized.");
+        return new self(
+            "Object instance for identifier '{$identifier}' does not implement CommandInterface."
+        );
     }
 }

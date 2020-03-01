@@ -28,14 +28,20 @@ final class CommandFactory
 
     public function getForIdentifier(string $identifier): CommandInterface
     {
-        if (class_exists($identifier)) {
-            return $this->classResolver->resolve(
-                $identifier,
-                $this->container,
-                new CollectionMap()
-            );
+        if (! class_exists($identifier)) {
+            throw InvalidCommandException::forUnknownIdentifier($identifier);
         }
 
-        throw InvalidCommandException::forUnknownIdentifier($identifier);
+        $command = $this->classResolver->resolve(
+            $identifier,
+            $this->container,
+            new CollectionMap()
+        );
+
+        if (! $command instanceof CommandInterface) {
+            throw InvalidCommandException::forInvalidClassType($identifier);
+        }
+
+        return $command;
     }
 }

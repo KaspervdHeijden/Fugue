@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Fugue\Localization\Formatting\Number\NumberFormatterInterface;
+use Fugue\Localization\Formatting\Number\EnglishNumberFormatter;
 use Fugue\Localization\Formatting\Date\DateFormatterInterface;
 use Fugue\Persistence\Database\DatabaseQueryAdapterInterface;
 use Fugue\Localization\Formatting\Date\EnglishDateFormatter;
@@ -12,10 +13,11 @@ use Fugue\Container\ContainerDefinition;
 use Fugue\Container\Container;
 use Fugue\Logging\EmptyLogger;
 
+/** @return ContainerDefinition[] */
 return [
     ContainerDefinition::raw(
         NumberFormatterInterface::class,
-        new EnglishDateFormatter()
+        new EnglishNumberFormatter()
     ),
 
     ContainerDefinition::raw(
