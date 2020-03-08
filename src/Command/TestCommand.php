@@ -4,10 +4,20 @@ declare(strict_types=1);
 
 namespace Fugue\Command;
 
-final class TestCommand extends Command
+use Fugue\Logging\LoggerInterface;
+
+final class TestCommand implements CommandInterface
 {
-    protected function execute(array $arguments): void
+    /** @var LoggerInterface */
+    private $logger;
+
+    public function __construct(LoggerInterface $logger)
     {
-        $this->getLogger()->info('OK');
+        $this->logger = $logger;
+    }
+
+    public function run(array $arguments): void
+    {
+        $this->logger->info('OK');
     }
 }
