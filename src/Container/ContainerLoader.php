@@ -8,12 +8,10 @@ use Fugue\Configuration\Loader\ConfigurationLoaderInterface;
 use Fugue\Persistence\Database\DatabaseConnectionSettings;
 use Fugue\Configuration\ConfigurationNotFoundException;
 use Fugue\Core\Exception\ExceptionHandlerInterface;
-use Fugue\Core\Exception\OutputExceptionHandler;
 use Fugue\Core\Output\OutputHandlerInterface;
 use Fugue\HTTP\Routing\RouteCollectionMap;
 use Fugue\Logging\LoggerInterface;
 use Fugue\Collection\Collection;
-use Fugue\Logging\OutputLogger;
 use Fugue\Core\Kernel;
 
 final class ContainerLoader
@@ -72,6 +70,14 @@ final class ContainerLoader
                 OutputHandlerInterface::class,
                 $kernel->getOutputHandler()
             ),
+            ContainerDefinition::raw(
+                LoggerInterface::class,
+                $kernel->getLogger()
+            ),
+            ContainerDefinition::raw(
+                ExceptionHandlerInterface::class,
+                $kernel->getExceptionHandler()
+            ),
             ContainerDefinition::singleton(
                 RouteCollectionMap::class,
                 [$this, 'loadRoutes']
@@ -79,14 +85,6 @@ final class ContainerLoader
             ContainerDefinition::singleton(
                 DatabaseConnectionSettings::class,
                 [$this, 'getDatabaseConnectionSettings']
-            ),
-            ContainerDefinition::raw(
-                LoggerInterface::class,
-                new OutputLogger($kernel->getOutputHandler())
-            ),
-            ContainerDefinition::raw(
-                ExceptionHandlerInterface::class,
-                new OutputExceptionHandler($kernel->getOutputHandler())
             ),
             ...$this->load(self::CONFIG_ID_SERVICES)->toArray()
         );
