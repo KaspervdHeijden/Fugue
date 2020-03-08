@@ -20,4 +20,9 @@ class CollectionList extends Collection
 
         return true;
     }
+
+    public static function forValues(...$values): self
+    {
+        return new static($values);
+    }
 }

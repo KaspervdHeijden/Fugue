@@ -4,136 +4,100 @@ declare(strict_types=1);
 
 namespace Fugue\Mailing;
 
+use Fugue\Mailing\MailPart\PlainTextMessage;
+use Fugue\Mailing\MailPart\HtmlTextMessage;
+use Fugue\Mailing\Recipient\RecipientList;
+use Fugue\Mailing\MailPart\AttachmentList;
+use Fugue\Mailing\Recipient\EmailAddress;
+use Fugue\Mailing\MailPart\TextMessage;
 use InvalidArgumentException;
-use RuntimeException;
-
-use const  FILTER_VALIDATE_EMAIL;
-use function mb_strtolower;
-use function filter_var;
-use function trim;
 
 final class Email
 {
-    /** @var int */
-    public const RECIPIENT_TYPE_TO  = 0;
+    /** @var AttachmentList */
+    private $attachments;
 
-    /** @var int */
-    public const RECIPIENT_TYPE_BCC = 1;
+    /** @var RecipientList */
+    private $recipients;
 
-    /** @var int */
-    public const RECIPIENT_TYPE_CC  = 2;
-
-    /** @var EmailAttachment[] */
-    private $attachments = [];
-
-    /** @var string[] */
-    private $recipients = [];
-
-    /** @var HTMLMessage|null */
-    private $htmlMessage;
-
-    /** @var TextMessage|null */
+    /** @var TextMessage */
     private $textMessage;
 
     /** @var string */
     private $subject;
 
-    /** @var string */
+    /** @var EmailAddress|null */
     private $replyTo;
 
-    /** @var string */
+    /** @var EmailAddress */
     private $from;
 
     public function __construct(
-        string $to,
-        string $from,
+        RecipientList $recipients,
+        TextMessage $textMessage,
         string $subject,
-        ?HTMLMessage $htmlMessage,
-        ?TextMessage $textMessage,
-        array $attachments = []
+        EmailAddress $from,
+        ?EmailAddress $replyTo       = null,
+        ?AttachmentList $attachments = null
     ) {
-        if (
-            ! $htmlMessage instanceof HTMLMessage &&
-            ! $textMessage instanceof TextMessage
-        ) {
-            throw new RuntimeException(
-                'At least either a HTMLMessage or a TextMessage should be given.'
-            );
-        }
-
-        $this->htmlMessage = $htmlMessage;
-        $this->textMessage = $textMessage;
-
-        $this->subject = trim($subject);
-        if ($this->subject === '') {
+        if ($subject === '') {
             throw new InvalidArgumentException(
                 'Subject must not be empty.'
             );
         }
 
-        foreach ($attachments as $attachment) {
-            $this->addAttachment($attachment);
-        }
-
-        $this->addRecipient($to, self::RECIPIENT_TYPE_TO);
-
-        $fromEmail     = $this->validateEmailAddress($from);
-        $this->replyTo = $fromEmail;
-        $this->from    = $fromEmail;
+        $this->attachments = $attachments ?: new AttachmentList();
+        $this->textMessage = $textMessage;
+        $this->recipients  = $recipients;
+        $this->subject     = $subject;
+        $this->replyTo     = $replyTo;
+        $this->from        = $from;
     }
 
-    /**
-     * Checks if an email address is valid.
-     *
-     * @param string $emailAddress      The email address to check.
-     *
-     * @throws InvalidArgumentException If the email address is empty or invalid.
-     * @return string                   The valid email address.
-     */
-    private function validateEmailAddress(string $emailAddress): string
+    public static function forText(
+        string $to,
+        string $subject,
+        string $text,
+        string $from
+    ): self {
+        return new static(
+            RecipientList::forValues(new EmailAddress($to)),
+            new PlainTextMessage($text),
+            $subject,
+            new EmailAddress($from)
+        );
+    }
+
+    public static function forHtml(
+        string $to,
+        string $subject,
+        string $text,
+        string $from
+    ): self {
+        return new static(
+            RecipientList::forValues(new EmailAddress($to)),
+            new HtmlTextMessage($text),
+            $subject,
+            new EmailAddress($from)
+        );
+    }
+
+    public function getRecipients(): RecipientList
     {
-        if ($emailAddress === '') {
-            throw new InvalidArgumentException(
-                'The supplied email address must not be empty.'
-            );
-        }
-
-        $email = filter_var($emailAddress, FILTER_VALIDATE_EMAIL);
-        if ($email === false) {
-            throw new InvalidArgumentException(
-                'The supplied email address is invalid.'
-            );
-        }
-
-        return mb_strtolower((string)$email);
+        return $this->recipients;
     }
 
-    public function addRecipient(
-        string $emailAddress,
-        int $type = self::RECIPIENT_TYPE_TO
-    ): void {
-        $this->recipients[$this->validateEmailAddress($emailAddress)] = $type;
-    }
-
-    public function getRecipients(): array
+    public function getTextMessage(): TextMessage
     {
-        $recipients = [];
-        foreach ($this->recipients as $recipient => $type) {
-            $recipients[] = [
-                'email' => $recipient,
-                'type'  => $type,
-            ];
-        }
-
-        return $recipients;
+        return $this->textMessage;
     }
 
-    public function getFrom(): string
+    public function getFrom(): EmailAddress
     {
         return $this->from;
     }
 
-    public function getReplyTo(): string
+    public function getReplyTo(): ?EmailAddress
     {
         return $this->replyTo;
     }
@@ -143,27 +107,7 @@ final class Email
         return $this->subject;
     }
 
-    public function getHTMLMessage(): ?HTMLMessage
-    {
-        return $this->htmlMessage;
-    }
-
-    public function getTextMessage(): ?TextMessage
-    {
-        return $this->textMessage;
-    }
-
-    public function addAttachment(EmailAttachment $attachment): void
-    {
-        $this->attachments[] = $attachment;
-    }
-
-    /**
-     * Gets the attachments for this email.
-     *
-     * @return EmailAttachment[] All attachments of this email.
-     */
-    public function getAttachments(): array
+    public function getAttachments(): AttachmentList
     {
         return $this->attachments;
     }

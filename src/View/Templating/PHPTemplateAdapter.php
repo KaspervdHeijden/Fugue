@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Fugue\View\Templating;
 
-use Fugue\HTTP\Routing\RouteMatcher;
 use Fugue\Localization\Formatting\Number\NumberFormatterInterface;
 use Fugue\Localization\Formatting\Date\DateFormatterInterface;
 use Fugue\Core\Output\OutputHandlerInterface;
 use Fugue\HTTP\Routing\RouteCollectionMap;
-use Fugue\HTTP\Routing\Route;
+use Fugue\HTTP\Routing\RouteMatcher;
 
 use function htmlspecialchars;
 use function ob_get_clean;

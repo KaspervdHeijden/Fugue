@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Fugue\Core\Exception;
 
 use Fugue\Mailing\EmailSenderInterface;
-use Fugue\Mailing\HTMLMessage;
+use Fugue\Mailing\RecipientList;
+use Fugue\Mailing\EmailAddress;
+use Fugue\Mailing\ToRecipient;
+use Fugue\Mailing\TextMessage;
+use Fugue\HTTP\Response;
 use Fugue\Mailing\Email;
 use Throwable;
 
@@ -41,12 +45,13 @@ final class MailExceptionHandler extends ExceptionHandler
     public function handle(Throwable $exception): void
     {
         $email = new Email(
-            $this->recipientEmail,
-            $this->senderEmail,
+            RecipientList::forValues(new ToRecipient(new EmailAddress($this->recipientEmail))),
+            new TextMessage(
+                $this->formatExceptionMessage($exception),
+                Response::CONTENT_TYPE_PLAINTEXT
+            ),
             $this->getSubject($exception),
-            new HTMLMessage($this->formatExceptionMessage($exception)),
-            null,
-            []
+            new EmailAddress($this->senderEmail)
         );
 
         $this->mailerService->send($email);

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fugue\Mailing;
+namespace Fugue\Mailing\Mailer;
 
 final class EmptyMailer extends Mailer
 {

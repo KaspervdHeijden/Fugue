@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fugue\Mailing;
+namespace Fugue\Mailing\MailPart;
 
 use UnexpectedValueException;
 
@@ -43,37 +43,39 @@ abstract class MailPart
     public const NEWLINE = "\r\n";
 
     /** @var string */
-    private $body = '';
+    private $transferEncoding;
 
-    public function __construct(string $body)
-    {
-        $this->body = $body;
+    /** @var string */
+    private $contentType;
+
+    /** @var string */
+    private $body;
+
+    public function __construct(
+        string $body,
+        string $contentType,
+        string $transferEncoding = self::TRANSFER_ENCODING_QUOTED_PRINTABLE
+    ) {
+        $this->transferEncoding = $transferEncoding;
+        $this->contentType      = $contentType;
+        $this->body             = $body;
     }
 
-    /**
-     * Gets the content type of this mail part.
-     *
-     * @return string The content type.
-     */
-    abstract public function getContentType(): string;
+    final public function getContentType(): string
+    {
+        return $this->contentType;
+    }
 
-    /**
-     * Gets the encoding type of this mail part.
-     *
-     * @return string The encoding type.
-     */
-    abstract public function getTransferEncoding(): string;
+    final public function getTransferEncoding(): string
+    {
+        return $this->transferEncoding;
+    }
 
     final public function getBody(): string
     {
         return $this->body;
     }
 
-    /**
-     * Returns the body, encoded by the transfer encoding.
-     *
-     * @return string The encoded body.
-     */
     public function getEncodedBody(): string
     {
         switch ($this->transferEncoding) {

@@ -2,20 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Fugue\Mailing;
+namespace Fugue\Mailing\MailPart;
 
-final class EmailAttachment extends MailPart
+final class Attachment extends MailPart
 {
     /** @var string */
     public const DISPOSITION_ATTACHMENT = 'attachment';
 
     /** @var string */
     public const DISPOSITION_INLINE = 'inline';
-
-    protected $transferEncoding;
-
-    /** @var string */
-    protected $contentType;
 
     /** @var string */
     private $disposition;
@@ -39,39 +34,17 @@ final class EmailAttachment extends MailPart
         string $transferEncoding = MailPart::TRANSFER_ENCODING_BASE64,
         string $disposition      = self::DISPOSITION_ATTACHMENT
     ) {
-        $this->transferEncoding = $transferEncoding;
-        $this->contentType      = $contentType;
+        parent::__construct($body, $contentType, $transferEncoding);
+
         $this->disposition      = $disposition;
         $this->fileName         = $fileName;
-
-        parent::__construct($body);
     }
 
-    public function getTransferEncoding(): string
-    {
-        return $this->transferEncoding;
-    }
-
-    public function getContentType(): string
-    {
-        return $this->contentType;
-    }
-
-    /**
-     * Gets the filename of this attachment.
-     *
-     * @return string The filename.
-     */
     public function getFileName(): string
     {
         return $this->fileName;
     }
 
-    /**
-     * Gets the disposition of this attachment.
-     *
-     * @return string The disposition.
-     */
     public function getDisposition(): string
     {
         return $this->disposition;

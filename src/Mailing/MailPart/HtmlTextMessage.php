@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Fugue\Mailing;
+namespace Fugue\Mailing\MailPart;
 
 use Fugue\HTTP\Response;
 use DOMDocument;
 use DOMNode;
+
+use const XML_ELEMENT_NODE;
+use const XML_TEXT_NODE;
 
 use function libxml_use_internal_errors;
 use function mb_strtolower;
@@ -15,30 +18,36 @@ use function mb_strlen;
 use function in_array;
 use function trim;
 
-final class HTMLMessage extends MailPart
+final class HtmlTextMessage extends TextMessage
 {
-    /**
-     * @var int Default line length for HR elements.
-     */
-    private const DEFAULT_LINE_LENGTH = 32;
+    /** @var string[] */
+    private const BLOCK_ELEMENTS = ['blockquote', 'footer', 'header', 'aside', 'code', 'div', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr'];
 
     /** @var string[] */
-    private $blockElements = ['blockquote', 'footer', 'header', 'aside', 'code', 'div', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr'];
+    private const HEADER_ELEMENTS = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 
     /** @var string[] */
-    private $headerElements = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+    private const INLINE_ELEMENTS = ['font', 'span', 'b', 'i', 'u', 's'];
 
     /** @var string[] */
-    private $inlineElements = ['font', 'span', 'b', 'i', 'u', 's'];
+    private const BREAK_ELEMENTS = ['br', 'wbr'];
 
     /** @var string[] */
-    private $breakElements  = ['br', 'wbr'];
+    private const SKIP_ELEMENTS = ['head'];
 
     /** @var string[] */
-    private $skipElements   = ['head'];
+    private const LINE_ELEMENTS = ['hr'];
 
-    /** @var string[] */
-    private $lineElements   = ['hr'];
+    public function __construct(
+        string $body,
+        string $transferEncoding = self::TRANSFER_ENCODING_QUOTED_PRINTABLE
+    ) {
+        parent::__construct(
+            $body,
+            Response::CONTENT_TYPE_HTML,
+            $transferEncoding
+        );
+    }
 
     /**
      * Finds text content within HTML.
@@ -52,27 +61,29 @@ final class HTMLMessage extends MailPart
         string &$content,
         string $activeTag
     ): void {
+        $activeTag = mb_strtolower($activeTag);
+
         foreach ($node->childNodes as $childNode) {
             switch ($childNode->nodeType) {
                 case XML_TEXT_NODE:
                     $textContent = (string)$childNode->nodeValue;
 
                     if ($textContent !== '') {
-                        if (in_array($activeTag, $this->headerElements, true)) {
+                        if (in_array($activeTag, self::HEADER_ELEMENTS, true)) {
                             $line     = str_repeat('-', mb_strlen($textContent));
                             $content .= $textContent . MailPart::NEWLINE . $line . MailPart::NEWLINE;
-                        } elseif (in_array($activeTag, $this->blockElements, true)) {
+                        } elseif (in_array($activeTag, self::BLOCK_ELEMENTS, true)) {
                             $content .= $textContent;
-                        } elseif (in_array($activeTag, $this->inlineElements, true)) {
+                        } elseif (in_array($activeTag, self::INLINE_ELEMENTS, true)) {
                             $content .= $textContent;
                         }
                     }
 
-                    if (in_array($activeTag, $this->breakElements, true)) {
+                    if (in_array($activeTag, self::BREAK_ELEMENTS, true)) {
                         $content .= MailPart::NEWLINE;
                     }
 
-                    if (in_array($activeTag, $this->lineElements, true)) {
+                    if (in_array($activeTag, self::LINE_ELEMENTS, true)) {
                         $content .= str_repeat('-', self::DEFAULT_LINE_LENGTH) . MailPart::NEWLINE;
                     }
 
@@ -81,14 +92,14 @@ final class HTMLMessage extends MailPart
                     $newActiveTag = mb_strtolower($childNode->nodeName);
 
                     if (
-                        in_array($activeTag, $this->blockElements, true) &&
-                        in_array($newActiveTag, $this->blockElements, true)
+                        in_array($activeTag, self::BLOCK_ELEMENTS, true) &&
+                        in_array($newActiveTag, self::BLOCK_ELEMENTS, true)
                     ) {
                         $content .= MailPart::NEWLINE;
                     }
 
                     $activeTag = $newActiveTag;
-                    if (! in_array($activeTag, $this->skipElements, true)) {
+                    if (! in_array($activeTag, self::SKIP_ELEMENTS, true)) {
                         $this->findTextNodesFromNode($childNode, $content, $activeTag);
                     }
 
@@ -97,22 +108,7 @@ final class HTMLMessage extends MailPart
         }
     }
 
-    public function getTransferEncoding(): string
-    {
-        return MailPart::TRANSFER_ENCODING_QUOTED_PRINTABLE;
-    }
-
-    public function getContentType(): string
-    {
-        return Response::CONTENT_TYPE_HTML;
-    }
-
-    /**
-     * Generates a plain text version of this HTML message part.
-     *
-     * @return TextMessage The plain text version of this HTML message.
-     */
-    public function generateTextPart(): TextMessage
+    public function generatePlainTextMessage(): PlainTextMessage
     {
         $doc       = new DOMDocument('1.0');
         $activeTag = '';
@@ -123,6 +119,9 @@ final class HTMLMessage extends MailPart
         $doc->loadHTML("<?xml>{$this->getBody()}");
 
         $this->findTextNodesFromNode($doc, $content, $activeTag);
-        return new TextMessage(trim($content));
+        return new PlainTextMessage(
+            trim($content),
+            $this->getTransferEncoding()
+        );
     }
 }
