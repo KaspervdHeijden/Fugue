@@ -7,9 +7,13 @@ namespace Fugue\Container;
 use Fugue\Configuration\Loader\ConfigurationLoaderInterface;
 use Fugue\Persistence\Database\DatabaseConnectionSettings;
 use Fugue\Configuration\ConfigurationNotFoundException;
+use Fugue\Core\Exception\ExceptionHandlerInterface;
+use Fugue\Core\Exception\OutputExceptionHandler;
 use Fugue\Core\Output\OutputHandlerInterface;
 use Fugue\HTTP\Routing\RouteCollectionMap;
+use Fugue\Logging\LoggerInterface;
 use Fugue\Collection\Collection;
+use Fugue\Logging\OutputLogger;
 use Fugue\Core\Kernel;
 
 final class ContainerLoader
@@ -42,12 +46,12 @@ final class ContainerLoader
         throw ConfigurationNotFoundException::forIdentifier($identifier);
     }
 
-    private function loadRoutes(): RouteCollectionMap
+    public function loadRoutes(): RouteCollectionMap
     {
         return new RouteCollectionMap($this->load(self::CONFIG_ID_ROUTES));
     }
 
-    private function getDatabaseConnectionSettings(): DatabaseConnectionSettings
+    public function getDatabaseConnectionSettings(): DatabaseConnectionSettings
     {
         $mapping = $this->load(self::CONFIG_ID_DATABASE_CONFIG);
         return new DatabaseConnectionSettings(
@@ -75,6 +79,14 @@ final class ContainerLoader
             ContainerDefinition::singleton(
                 DatabaseConnectionSettings::class,
                 [$this, 'getDatabaseConnectionSettings']
+            ),
+            ContainerDefinition::raw(
+                LoggerInterface::class,
+                new OutputLogger($kernel->getOutputHandler())
+            ),
+            ContainerDefinition::raw(
+                ExceptionHandlerInterface::class,
+                new OutputExceptionHandler($kernel->getOutputHandler())
             ),
             ...$this->load(self::CONFIG_ID_SERVICES)->toArray()
         );

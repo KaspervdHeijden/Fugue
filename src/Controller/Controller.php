@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Fugue\Controller;
 
 use Fugue\View\Templating\TemplateAdapterFactory;
+use Fugue\Collection\PropertyBag;
 use Fugue\HTTP\HeaderBag;
 use Fugue\HTTP\Response;
 use Fugue\HTTP\Header;
@@ -14,7 +15,7 @@ use function json_encode;
 
 abstract class Controller
 {
-    public const CHARSET = 'utf-8';
+    public const DEFAULT_CHARSET = 'utf-8';
 
     /** @var TemplateAdapterFactory */
     private $templateFactory;
@@ -27,8 +28,8 @@ abstract class Controller
     private function getTemplateVariables(
         string $title,
         array $variables,
-        string $charset = self::CHARSET
-    ): array {
+        string $charset = self::DEFAULT_CHARSET
+    ): PropertyBag {
         $defaults = [
             'charset'    => $charset,
             'pageTitle'  => $title,
@@ -36,7 +37,7 @@ abstract class Controller
             'content'    => '',
         ];
 
-        return array_merge($defaults, $variables);
+        return new PropertyBag(array_merge($defaults, $variables));
     }
 
     final protected function getTemplateFactory(): TemplateAdapterFactory
@@ -52,20 +53,22 @@ abstract class Controller
      * @param string $documentTemplate The document outline template file.
      * @param array  $variables        HashMap of variables to pass to the template.
      * @param int    $statusCode       The status code for the response.
+     * @param string $contentKey       The key in variables for the content.
      *
-     * @return Response               The generated response.
+     * @return Response                The generated response.
      */
     protected function createDocumentResponse(
         string $title,
         string $contentTemplate,
         string $documentTemplate,
-        array $variables = [],
-        int $statusCode  = Response::HTTP_OK,
-        string $charset  = self::CHARSET
+        array $variables   = [],
+        int $statusCode    = Response::HTTP_OK,
+        string $charset    = self::DEFAULT_CHARSET,
+        string $contentKey = 'content'
     ): Response {
-        $view                 = $this->templateFactory->getForTemplate($contentTemplate);
-        $variables            = $this->getTemplateVariables($title, $variables, $charset);
-        $variables['content'] = $view->render($contentTemplate, $variables);
+        $view                   = $this->templateFactory->getForTemplate($contentTemplate);
+        $variables              = $this->getTemplateVariables($title, $variables, $charset);
+        $variables[$contentKey] = $view->render($contentTemplate, $variables);
 
         return $this->createResponse(
             $view->render($documentTemplate, $variables),

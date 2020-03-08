@@ -11,6 +11,9 @@ use function is_file;
 final class DefaultClassLoader implements ClassLoaderInterface
 {
     /** @var string */
+    private const FILE_NAME_EXTENSION = '.php';
+
+    /** @var string */
     private $rootNamespace;
 
     /** @var string */
@@ -27,10 +30,10 @@ final class DefaultClassLoader implements ClassLoaderInterface
     private function classNameToFileName(string $className): string
     {
         return str_replace(
-            ['\\', $this->rootNamespace],
-            ['/', $this->rootDir],
+            ['\\', "{$this->rootNamespace}/"],
+            ['/', "{$this->rootDir}/"],
             $className
-        );
+        ) . self::FILE_NAME_EXTENSION;
     }
 
     public function loadClass(string $className): void

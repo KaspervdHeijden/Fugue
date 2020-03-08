@@ -18,6 +18,7 @@ use function array_search;
 use function array_merge;
 use function array_slice;
 use function array_keys;
+use function is_string;
 use function count;
 
 abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
@@ -226,7 +227,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
      */
     protected function checkValue($value): bool
     {
-        if ($this->type === null) {
+        if (! is_string($this->type)) {
             return true;
         }
 

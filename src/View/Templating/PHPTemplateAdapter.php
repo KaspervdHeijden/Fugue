@@ -9,6 +9,7 @@ use Fugue\Localization\Formatting\Date\DateFormatterInterface;
 use Fugue\Core\Output\OutputHandlerInterface;
 use Fugue\HTTP\Routing\RouteCollectionMap;
 use Fugue\HTTP\Routing\RouteMatcher;
+use Fugue\Collection\PropertyBag;
 
 use function htmlspecialchars;
 use function ob_get_clean;
@@ -197,13 +198,13 @@ final class PHPTemplateAdapter implements TemplateInterface
 
     public function render(
         string $templateName,
-        array $variables
+        PropertyBag $variables
     ): string {
         if (! $this->supports($templateName)) {
             throw InvalidTemplateException::forUnrecognizedTemplateName($templateName);
         }
 
-        $variables['view'] = $this;
+        $templateVariables = array_merge($variables->toArray(), ['view' => $this]);
         return (static function (
             string $templateFileName,
             array $templateVariables
@@ -222,6 +223,6 @@ final class PHPTemplateAdapter implements TemplateInterface
             }
 
             return $content;
-        })("{$this->rootDir}/{$templateName}", $variables);
+        })("{$this->rootDir}/{$templateName}", $templateVariables);
     }
 }

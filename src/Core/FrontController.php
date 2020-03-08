@@ -29,6 +29,7 @@ use function set_error_handler;
 use function mb_regex_encoding;
 use function mb_http_output;
 use function mb_http_input;
+use function realpath;
 use function ini_set;
 use function rtrim;
 
@@ -74,7 +75,7 @@ abstract class FrontController
         $this->charset       = $charset;
     }
 
-    final protected function handleUnexpectedException(
+    final public function handleUnexpectedException(
         int $code,
         string $message,
         string $file,
@@ -106,11 +107,16 @@ abstract class FrontController
         return new ClassResolver(new MemoryCache());
     }
 
+    private function getRootDir(string $path): string
+    {
+        return  realpath(rtrim(__DIR__, '/') . "/..{$path}");
+    }
+
     protected function getClassLoader(): ClassLoaderInterface
     {
         if (! $this->classLoader instanceof ClassLoaderInterface) {
             $this->classLoader = new DefaultClassLoader(
-                rtrim(__DIR__, '/'),
+                $this->getRootDir(''),
                 self::ROOT_NAMESPACE
             );
         }
@@ -160,7 +166,7 @@ abstract class FrontController
                 $this->getExceptionHandler(),
                 $this->getOutputHandler(),
                 $this->getClassLoader(),
-                new ContainerLoader($this->getConfigurationLoaders(__DIR__ . self::CONF_DIR_PATH)),
+                new ContainerLoader(...$this->getConfigurationLoaders($this->getRootDir(self::CONF_DIR_PATH))),
                 $this->getLogger()
             );
         }
