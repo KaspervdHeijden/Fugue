@@ -9,7 +9,7 @@ fi
 echo 'Checking for PHP syntax errors...';
 
 phpFiles=$(find "${dirName}" -type f -name '*.php' -and ! -wholename '*/vendor/*' 2>/dev/null);
-output=$(echo "${phpFiles}" | grep 'Errors parsing ' | cut -c16-);
+output=$(echo "${phpFiles}" | xargs -I{} php -l {} | grep 'Errors parsing ' | cut -c16-);
 if [ -n "${output}" ]; then
   echo "${output}" | xargs -I{} echo ' - {}' >&2;
   exit 6;

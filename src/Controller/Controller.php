@@ -66,12 +66,13 @@ abstract class Controller
         string $charset    = self::DEFAULT_CHARSET,
         string $contentKey = 'content'
     ): Response {
+
         $view                   = $this->templateFactory->getForTemplate($contentTemplate);
         $variables              = $this->getTemplateVariables($title, $variables, $charset);
-        $variables[$contentKey] = $view->render($contentTemplate, $variables);
+        $variables[$contentKey] = $view->render($contentTemplate, new PropertyBag($variables));
 
         return $this->createResponse(
-            $view->render($documentTemplate, $variables),
+            $view->render($documentTemplate, new PropertyBag($variables)),
             Response::CONTENT_TYPE_HTML,
             $statusCode
         );
@@ -187,7 +188,7 @@ abstract class Controller
     ): Response {
         $content = $this->templateFactory
                         ->getForTemplate($contentTemplate)
-                        ->render($contentTemplate, $variables);
+                        ->render($contentTemplate, new PropertyBag($variables));
 
         return $this->createResponse(
             $content,
