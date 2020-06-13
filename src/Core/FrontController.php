@@ -17,7 +17,6 @@ use Fugue\Core\Runtime\RuntimeInterface;
 use Fugue\Container\ContainerLoader;
 use Fugue\Container\ClassResolver;
 use Fugue\Logging\LoggerInterface;
-use Fugue\Collection\PropertyBag;
 use Fugue\Logging\OutputLogger;
 use Fugue\Caching\MemoryCache;
 use Fugue\HTTP\Request;
@@ -25,8 +24,8 @@ use Throwable;
 
 use function spl_autoload_register;
 use function mb_internal_encoding;
-use function set_error_handler;
 use function mb_regex_encoding;
+use function set_error_handler;
 use function mb_http_output;
 use function mb_http_input;
 use function realpath;
@@ -73,6 +72,8 @@ abstract class FrontController
         $this->displayErrors = $displayErrors;
         $this->errorLevel    = $errorLevel;
         $this->charset       = $charset;
+
+        $this->initializeGlobalState();
     }
 
     final public function handleUnexpectedException(
@@ -82,7 +83,7 @@ abstract class FrontController
         int $line
     ): void {
         try {
-            if (($this->getErrorLevel() & $code) === 0) {
+            if (($this->errorLevel & $code) === 0) {
                 return;
             }
 
@@ -174,21 +175,16 @@ abstract class FrontController
         return $this->kernel;
     }
 
-    final protected function getErrorLevel(): int
-    {
-        return $this->errorLevel;
-    }
-
     abstract protected function createRuntime(): RuntimeInterface;
 
     /**
      * This method mutates global runtime state,
      * and should therefore be called only once.
      */
-    protected function initializeGlobalState(): void
+    private function initializeGlobalState(): void
     {
         ini_set('display_errors', ($this->displayErrors) ? '1' : '0');
-        ini_set('error_reporting', (string)$this->getErrorLevel());
+        ini_set('error_reporting', (string)$this->errorLevel);
         ini_set('default_charset', $this->charset);
 
         mb_internal_encoding($this->charset);
@@ -200,22 +196,8 @@ abstract class FrontController
         set_error_handler([$this, 'handleUnexpectedException']);
     }
 
-    public function handleRequest(
-        array $get,
-        array $post,
-        array $cookie,
-        array $files,
-        array $server
-    ): void {
-        $this->initializeGlobalState();
-        $this->createRuntime()->handle(
-            new Request(
-                new PropertyBag($get),
-                new PropertyBag($post),
-                new PropertyBag($cookie),
-                new PropertyBag($files),
-                new PropertyBag($server)
-            )
-        );
+    public function handleRequest(Request $request): void
+    {
+        $this->createRuntime()->handle($request);
     }
 }

@@ -17,7 +17,9 @@ declare(strict_types=1);
 use Fugue\HTTP\Routing\RouteCollectionMap;
 use Fugue\Core\Runtime\RuntimeInterface;
 use Fugue\Core\Runtime\HttpRuntime;
+use Fugue\Collection\PropertyBag;
 use Fugue\Core\FrontController;
+use Fugue\HTTP\Request;
 
 require_once __DIR__ . '/../src/bootstrap.inc.php';
 
@@ -33,4 +35,10 @@ require_once __DIR__ . '/../src/bootstrap.inc.php';
             $container
         );
     }
-})->handleRequest($_GET, $_POST, $_COOKIE, $_FILES, $_SERVER);
+})->handleRequest(new Request(
+    new PropertyBag($_GET),
+    new PropertyBag($_POST),
+    new PropertyBag($_COOKIE),
+    new PropertyBag($_FILES),
+    new PropertyBag($_SERVER)
+));

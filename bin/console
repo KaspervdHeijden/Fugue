@@ -18,7 +18,9 @@ declare(strict_types=1);
 use Fugue\Core\Runtime\RuntimeInterface;
 use Fugue\Core\Runtime\CLIRuntime;
 use Fugue\Command\CommandFactory;
+use Fugue\Collection\PropertyBag;
 use Fugue\Core\FrontController;
+use Fugue\HTTP\Request;
 
 require_once __DIR__ . '/../src/bootstrap.inc.php';
 
@@ -33,4 +35,10 @@ require_once __DIR__ . '/../src/bootstrap.inc.php';
 
         return new CLIRuntime($factory);
     }
-})->handleRequest([], [], [], [], $_SERVER);
+})->handleRequest(new Request(
+    new PropertyBag(),
+    new PropertyBag(),
+    new PropertyBag(),
+    new PropertyBag(),
+    new PropertyBag($_SERVER)
+));

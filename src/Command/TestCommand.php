@@ -11,7 +11,7 @@ final class TestCommand implements CommandInterface
     /** @var LoggerInterface */
     private $logger;
 
-    public function __construct(LoggerInterface $logger)
+     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
