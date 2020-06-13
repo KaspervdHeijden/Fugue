@@ -10,8 +10,7 @@ use function session_start;
 
 final class NativeSessionAdapter implements SessionAdapterInterface
 {
-    /** @var bool */
-    private $started = false;
+    private bool $started = false;
 
     public function start(SessionSettings $settings): void
     {

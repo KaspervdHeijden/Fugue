@@ -6,23 +6,17 @@ namespace Fugue\Persistence\Database;
 
 final class DatabaseConnectionSettings
 {
-    /** @var string */
-    private $password;
+    private string $password;
 
-    /** @var string */
-    private $timezone;
+    private string $timezone;
 
-    /** @var array|null */
-    private $options;
+    private ?array $options;
 
-    /** @var string */
-    private $charset;
+    private string $charset;
 
-    /** @var string */
-    private $user;
+    private string $user;
 
-    /** @var string */
-    private $dsn;
+    private string $dsn;
 
     public function __construct(
         string $dsn,

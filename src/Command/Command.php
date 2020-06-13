@@ -13,14 +13,11 @@ use function explode;
 
 abstract class Command implements CommandInterface
 {
-    /** @var ExceptionHandlerInterface */
-    private $exceptionHandler;
+    private ExceptionHandlerInterface $exceptionHandler;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
     final public function __construct(
         LoggerInterface $logger,
@@ -46,16 +43,18 @@ abstract class Command implements CommandInterface
         return $this->name;
     }
 
-    public function run(array $arguments): void
+    public function run(array $arguments): int
     {
         try {
             $this->logger->verbose("Starting {$this->name}");
             $this->execute($arguments);
             $this->logger->verbose("Completed {$this->name}");
         } catch (Throwable $throwable) {
-            $this->logger->error("Exception during {$this->name}: {$throwable->getMessage()}");
             $this->exceptionHandler->handle($throwable);
+            return (int)($throwable->getCode() ?: 1);
         }
+
+        return 0;
     }
 
     /**

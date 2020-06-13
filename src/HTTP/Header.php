@@ -38,11 +38,9 @@ final class Header
     /** @var string */
     public const NAME_EXPIRES = 'expires';
 
-    /** @var string[] */
-    private $parts;
+    private CollectionMap $parts;
 
-    /** @var string */
-    private $key;
+    private string $key;
 
     public function __construct(string $key, string $value)
     {

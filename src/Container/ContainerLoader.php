@@ -26,7 +26,7 @@ final class ContainerLoader
     private const CONFIG_ID_ROUTES = 'routes';
 
     /** @var ConfigurationLoaderInterface[] */
-    private $configLoaders;
+    private array $configLoaders;
 
     public function __construct(ConfigurationLoaderInterface ...$configLoaders)
     {

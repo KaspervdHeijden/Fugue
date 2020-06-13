@@ -20,14 +20,11 @@ use function is_int;
 
 final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterface
 {
-    /** @var DatabaseConnectionSettings */
-    private $settings;
+    private DatabaseConnectionSettings $settings;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /** @var PDO */
-    private $pdo;
+    private PDO $pdo;
 
     public function __construct(
         DatabaseConnectionSettings $settings,

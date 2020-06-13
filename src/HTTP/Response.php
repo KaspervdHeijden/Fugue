@@ -214,14 +214,11 @@ final class Response
         self::HTTP_HTTP_VERSION_NOT_SUPPORTED => 'HTTP Version Not supported',
     ];
 
-    /** @var int */
-    private $statusCode;
+    private HeaderBag $headers;
 
-    /** @var HeaderBag */
-    private $headers;
+    private string $content;
 
-    /** @var string */
-    private $content;
+    private int $statusCode;
 
     /**
      * Creates a new Response object.

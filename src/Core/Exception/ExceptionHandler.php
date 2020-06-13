@@ -13,7 +13,7 @@ abstract class ExceptionHandler implements ExceptionHandlerInterface
     protected function formatExceptionMessage(Throwable $exception): string
     {
         return sprintf(
-            "Unhandled exception caught by %s::%s.\n\nFile: %s:%d\nMessage: %s",
+            "Unhandled exception caught by %s::%s.\n\nFile: %s:%d\nMessage: %s\n",
             static::class,
             __FUNCTION__,
             $exception->getFile(),

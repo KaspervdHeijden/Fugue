@@ -8,17 +8,21 @@ use Fugue\Core\Output\OutputHandlerInterface;
 
 final class OutputLogger extends Logger
 {
-    /** @var OutputHandlerInterface */
-    private $outputHandler;
+    private OutputHandlerInterface $outputHandler;
 
-    public function __construct(OutputHandlerInterface $outputHandler)
+    private bool $logVerbose;
+
+    public function __construct(OutputHandlerInterface $outputHandler, bool $logVerbose)
     {
         $this->outputHandler = $outputHandler;
+        $this->logVerbose    = $logVerbose;
     }
 
     public function verbose(string $message): void
     {
-        $this->callLogIfNotEmpty(self::TYPE_VERBOSE, $message);
+        if ($this->logVerbose) {
+            $this->callLogIfNotEmpty(self::TYPE_VERBOSE, $message);
+        }
     }
 
     protected function log(string $logType, string $message): void

@@ -7,7 +7,7 @@ namespace Fugue\View\Templating;
 final class TemplateAdapterFactory
 {
     /** @var TemplateInterface[] */
-    private $templates;
+    private array $templates;
 
     public function __construct(TemplateInterface ...$templateInterfaces)
     {

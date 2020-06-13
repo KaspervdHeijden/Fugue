@@ -30,14 +30,12 @@ final class StreamWriter implements WriterInterface
         'c',
     ];
 
-    /** @var string */
-    private $filename;
+    private string $filename;
 
     /** @var resource|null */
     private $handle;
 
-    /** @var string */
-    private $mode;
+    private string $mode;
 
     public function __construct(
         string $filename,

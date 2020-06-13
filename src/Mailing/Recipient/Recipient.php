@@ -6,8 +6,7 @@ namespace Fugue\Mailing\Recipient;
 
 abstract class Recipient
 {
-    /** @var EmailAddress */
-    private $emailAddress;
+    private EmailAddress $emailAddress;
 
     public function __construct(EmailAddress $emailAddress)
     {

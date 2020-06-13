@@ -15,8 +15,7 @@ use function ucfirst;
 
 final class ORMMapper
 {
-    /** @var ReflectionClass */
-    private $reflection;
+    private ReflectionClass $reflection;
 
     public function __construct(string $className)
     {

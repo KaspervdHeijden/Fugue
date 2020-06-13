@@ -13,8 +13,7 @@ abstract class Logger implements LoggerInterface
     /** @var string */
     public const DEFAULT_DATE_FORMAT = 'Y-m-d H:i:s';
 
-    /** @var string */
-    private $dateFormat = self::DEFAULT_DATE_FORMAT;
+    private string $dateFormat = self::DEFAULT_DATE_FORMAT;
 
     /** @var string */
     public const TYPE_WARNING = 'WARNING';
@@ -35,7 +34,6 @@ abstract class Logger implements LoggerInterface
      * @param string $message The message to format.
      *
      * @return string         The formatted message.
-     * @noinspection PhpDocMissingThrowsInspection
      */
     protected function getFormattedMessage(
         string $logType,

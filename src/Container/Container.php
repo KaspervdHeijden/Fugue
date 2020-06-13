@@ -38,7 +38,7 @@ final class Container implements Countable, ArrayAccess
     public const TYPE_FACTORY = 2;
 
     /** @var ContainerDefinition[] */
-    private $definitions = [];
+    private array $definitions = [];
 
     public function __construct(ContainerDefinition ...$definitions)
     {

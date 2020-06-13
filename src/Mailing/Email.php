@@ -14,23 +14,17 @@ use InvalidArgumentException;
 
 final class Email
 {
-    /** @var AttachmentList */
-    private $attachments;
+    private AttachmentList $attachments;
 
-    /** @var RecipientList */
-    private $recipients;
+    private RecipientList $recipients;
 
-    /** @var TextMessage */
-    private $textMessage;
+    private TextMessage $textMessage;
 
-    /** @var string */
-    private $subject;
+    private ?EmailAddress $replyTo = null;
 
-    /** @var EmailAddress|null */
-    private $replyTo;
+    private EmailAddress $from;
 
-    /** @var EmailAddress */
-    private $from;
+    private string $subject;
 
     public function __construct(
         RecipientList $recipients,

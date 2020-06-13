@@ -10,7 +10,7 @@ use function is_int;
 final class MultiLogger extends Logger
 {
     /** @var LoggerInterface[] */
-    private $loggers = [];
+    private array $loggers = [];
 
     public function __construct(LoggerInterface ...$loggers)
     {

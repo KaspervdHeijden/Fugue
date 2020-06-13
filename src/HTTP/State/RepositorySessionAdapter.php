@@ -6,8 +6,7 @@ namespace Fugue\HTTP\State;
 
 final class RepositorySessionAdapter implements SessionAdapterInterface
 {
-    /** @var SessionRepositoryInterface */
-    private $sessionRepository;
+    private SessionRepositoryInterface $sessionRepository;
 
     public function __construct(SessionRepositoryInterface $sessionRepository)
     {

@@ -44,11 +44,9 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         'integer'   => 'is_int',
     ];
 
-    /** @var mixed[] */
-    private $elements = [];
+    private array $elements = [];
 
-    /** @var string|null */
-    private $type;
+    private ?string $type;
 
     public function __construct(
         iterable $elements = [],

@@ -39,32 +39,24 @@ final class Request
     /** @var string */
     public const METHOD_TRACE = 'TRACE';
 
-    /** @var PropertyBag */
-    private $server;
+    private PropertyBag $server;
 
-    /** @var PropertyBag */
-    private $cookie;
+    private PropertyBag $cookie;
 
-    /** @var PropertyBag */
-    private $files;
+    private PropertyBag $files;
 
-    /** @var PropertyBag */
-    private $post;
+    private PropertyBag $post;
 
-    /** @var PropertyBag */
-    private $get;
+    private PropertyBag $get;
 
-    /** @var string */
-    private $protocol = null;
+    private ?string $protocol = null;
 
-    /** @var string */
-    private $method = null;
+    private ?string $method = null;
 
-    /** @var bool */
-    private $secure = null;
+    private ?bool $secure = null;
 
     /** @var Url */
-    private $url = null;
+    private ?Url $url = null;
 
     /**
      * Creates a request object.

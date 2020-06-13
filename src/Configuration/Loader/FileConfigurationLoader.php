@@ -13,8 +13,7 @@ use function is_file;
 
 abstract class FileConfigurationLoader implements ConfigurationLoaderInterface
 {
-    /** @var string */
-    private $directory;
+    private string $directory;
 
     public function __construct(string $directory)
     {

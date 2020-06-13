@@ -12,11 +12,9 @@ use function class_exists;
 
 final class CommandFactory
 {
-    /** @var ClassResolver */
-    private $classResolver;
+    private ClassResolver $classResolver;
 
-    /** @var Container */
-    private $container;
+    private Container $container;
 
     public function __construct(
         ClassResolver $classResolver,

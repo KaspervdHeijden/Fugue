@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Fugue\Logging;
 
-use Fugue\Core\IO\FileWriter;
+use Fugue\Core\IO\StreamWriter;
 
 final class FileLogger extends Logger
 {
-    /** @var FileWriter */
-    private $fileWriter;
+    private StreamWriter $streamWriter;
 
-    public function __construct(FileWriter $fileWriter)
+    public function __construct(StreamWriter $streamWriter)
     {
-        $this->fileWriter = $fileWriter;
+        $this->streamWriter = $streamWriter;
     }
 
     /**
@@ -23,12 +22,12 @@ final class FileLogger extends Logger
      */
     public function getFilename(): string
     {
-        return $this->fileWriter->getFilename();
+        return $this->streamWriter->getFilename();
     }
 
     protected function log(string $logType, string $message): void
     {
         $formattedMessage = $this->getFormattedMessage($logType, $message);
-        $this->fileWriter->write($formattedMessage);
+        $this->streamWriter->write($formattedMessage);
     }
 }

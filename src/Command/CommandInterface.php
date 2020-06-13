@@ -11,5 +11,5 @@ interface CommandInterface
      *
      * @param string[] $arguments
      */
-    public function run(array $arguments): void;
+    public function run(array $arguments): int;
 }

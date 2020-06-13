@@ -13,23 +13,17 @@ use Fugue\Container\Container;
 
 final class Kernel
 {
-    /** @var ExceptionHandlerInterface */
-    private $exceptionHandler;
+    private ExceptionHandlerInterface $exceptionHandler;
 
-    /** @var ContainerLoader */
-    private $containerLoader;
+    private OutputHandlerInterface $outputHandler;
 
-    /** @var OutputHandlerInterface */
-    private $outputHandler;
+    private ClassLoaderInterface $classLoader;
 
-    /** @var ClassLoaderInterface */
-    private $classLoader;
+    private ContainerLoader $containerLoader;
 
-    /** @var Container */
-    private $container;
+    private ?Container $container = null;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         ExceptionHandlerInterface $exceptionHandler,

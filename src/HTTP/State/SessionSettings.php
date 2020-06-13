@@ -6,26 +6,19 @@ namespace Fugue\HTTP\State;
 
 final class SessionSettings
 {
-    /** @var bool */
-    private $useOnlyCookies;
+    private bool $useOnlyCookies;
 
-    /** @var int */
-    private $cacheExpire;
+    private int $cacheExpire;
 
-    /** @var bool */
-    private $useCookies;
+    private bool $useCookies;
 
-    /** @var int */
-    private $httpOnly;
+    private int $httpOnly;
 
-    /** @var int */
-    private $timeout;
+    private int $timeout;
 
-    /** @var bool */
-    private $secure;
+    private bool $secure;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
     public function __construct(
         string $name,

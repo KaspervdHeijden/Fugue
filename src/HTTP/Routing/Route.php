@@ -15,13 +15,11 @@ final class Route
     private $handler;
 
     /** @var string|null */
-    private $method;
+    private ?string $method = null;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var string */
-    private $url;
+    private string $url;
 
     /**
      * Creates a Route.

@@ -22,8 +22,7 @@ final class RouteMatcher
      */
     public const URL_TEMPLATE_REGEX = '#\{([a-z_][a-z0-9_]+)(\:[sif])?\}#iu';
 
-    /** @var RouteCollectionMap */
-    private $routeMap;
+    private RouteCollectionMap $routeMap;
 
     public function __construct(RouteCollectionMap $routeMap)
     {

@@ -13,8 +13,7 @@ use function count;
 
 final class CLIRuntime implements RuntimeInterface
 {
-    /** @var CommandFactory */
-    private $commandFactory;
+    private CommandFactory $commandFactory;
 
     public function __construct(CommandFactory $commandFactory)
     {
@@ -28,7 +27,11 @@ final class CLIRuntime implements RuntimeInterface
             throw InvalidCommandException::forMissingIdentifier();
         }
 
-        $command = $this->commandFactory->getForIdentifier((string)$argv[1]);
-        $command->run(array_slice($argv, 2));
+        $command  = $this->commandFactory->getForIdentifier((string)$argv[1]);
+        $exitCode = $command->run(array_slice($argv, 2));
+
+        if ($exitCode !== 0) {
+            exit($exitCode);
+        }
     }
 }

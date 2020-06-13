@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Fugue\HTTP\State;
 
-/**
- * A session adapter.
- */
 interface SessionAdapterInterface
 {
     /**

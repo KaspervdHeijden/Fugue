@@ -13,8 +13,7 @@ use function is_string;
 
 final class EmailAddress
 {
-    /** @var string */
-    private $emailAddress;
+    private string $emailAddress;
 
     public function __construct(string $emailAddress)
     {

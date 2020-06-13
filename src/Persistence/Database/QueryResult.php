@@ -6,11 +6,9 @@ namespace Fugue\Persistence\Database;
 
 final class QueryResult
 {
-    /** @var int */
-    private $numberOfAffectedRows;
+    private int $numberOfAffectedRows;
 
-    /** @var string|null */
-    private $insertedId;
+    private ?string $insertedId;
 
     public function __construct(
         int $numberOfAffectedRows,

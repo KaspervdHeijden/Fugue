@@ -12,7 +12,7 @@ use function is_int;
 final class MultiOutputHandler implements OutputHandlerInterface
 {
     /** @var OutputHandlerInterface[] */
-    private $outputHandlers;
+    private array $outputHandlers;
 
     public function __construct(OutputHandlerInterface ...$outputHandlers)
     {
@@ -31,8 +31,6 @@ final class MultiOutputHandler implements OutputHandlerInterface
 
     /**
      * Adds a output handler endpoint to this multi OutputHandler.
-     *
-     * @param LoggerInterface $logger The handler to add.
      */
     public function add(OutputHandlerInterface $handler): void
     {

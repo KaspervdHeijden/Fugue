@@ -14,8 +14,7 @@ use function array_map;
 
 final class ClassResolver
 {
-    /** @var CacheInterface */
-    private $cache;
+    private CacheInterface $cache;
 
     public function __construct(CacheInterface $cache)
     {

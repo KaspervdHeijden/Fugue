@@ -8,8 +8,7 @@ use function array_key_exists;
 
 final class MemoryCache implements CacheInterface
 {
-    /** @var mixed[] */
-    private $items = [];
+    private array $items = [];
 
     public function hasValueForKey(string $key): bool
     {

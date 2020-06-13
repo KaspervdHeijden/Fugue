@@ -24,20 +24,15 @@ use function is_file;
 
 final class PHPTemplateAdapter implements TemplateInterface
 {
-    /** @var NumberFormatterInterface */
-    private $numberFormatter;
+    private NumberFormatterInterface $numberFormatter;
 
-    /** @var DateFormatterInterface */
-    private $dateFormatter;
+    private DateFormatterInterface $dateFormatter;
 
-    /** @var OutputHandlerInterface */
-    private $outputHandler;
+    private OutputHandlerInterface $outputHandler;
 
-    /** @var RouteCollectionMap */
-    private $routeMap;
+    private RouteCollectionMap $routeMap;
 
-    /** @var string */
-    private $rootDir;
+    private string $rootDir;
 
     public function __construct(
         NumberFormatterInterface $numberFormatter,
@@ -79,18 +74,13 @@ final class PHPTemplateAdapter implements TemplateInterface
      * @param bool  $output       Whether or or not to output the result.
      *
      * @return string             The formatted number.
-     * @noinspection PhpUnused
      */
     public function number(
         $numericValue,
         int $precision = 2,
         bool $output = true
     ): string {
-        $formattedNumber = $this->numberFormatter->format(
-            (float)$numericValue,
-            $precision
-        );
-
+        $formattedNumber = $this->numberFormatter->format($numericValue, $precision);
         if ($output) {
             $this->escape($formattedNumber);
         }
@@ -108,7 +98,7 @@ final class PHPTemplateAdapter implements TemplateInterface
      */
     public function date($dateValue, bool $output = true): string
     {
-        $formattedDate = $this->dateFormatter->format((string)$dateValue);
+        $formattedDate = $this->dateFormatter->format($dateValue);
         if ($output) {
             $this->escape($formattedDate);
         }
@@ -134,7 +124,6 @@ final class PHPTemplateAdapter implements TemplateInterface
      * @param bool  $output     Whether or or not to output the result.
      *
      * @return string           The optionally shorted text.
-     * @noinspection PhpUnused
      */
     public function shorten(
         $longString,
@@ -165,7 +154,6 @@ final class PHPTemplateAdapter implements TemplateInterface
      * @param bool   $output     Whether or not to output the result.
      *
      * @return string            The URL.
-     * @noinspection PhpUnused
      */
     public function route(
         string $routeName,
@@ -196,10 +184,8 @@ final class PHPTemplateAdapter implements TemplateInterface
         return true;
     }
 
-    public function render(
-        string $templateName,
-        PropertyBag $variables
-    ): string {
+    public function render(string $templateName, PropertyBag $variables): string
+    {
         if (! $this->supports($templateName)) {
             throw InvalidTemplateException::forUnrecognizedTemplateName($templateName);
         }

@@ -7,10 +7,9 @@ namespace Fugue\HTTP\Routing;
 final class RouteMatchResult
 {
     /** @var string[] */
-    private $arguments;
+    private array $arguments;
 
-    /** @var Route */
-    private $route;
+    private Route $route;
 
     /**
      * @param Route    $route

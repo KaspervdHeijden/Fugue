@@ -8,8 +8,7 @@ use Fugue\Persistence\Database\DatabaseQueryAdapterInterface;
 
 abstract class DatabaseRepository
 {
-    /** @var DatabaseQueryAdapterInterface */
-    private $adapter;
+    private DatabaseQueryAdapterInterface $adapter;
 
     public function __construct(DatabaseQueryAdapterInterface $adapter)
     {

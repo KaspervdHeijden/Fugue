@@ -8,8 +8,7 @@ use Fugue\Core\IO\FileWriter;
 
 final class FileOutputHandler implements OutputHandlerInterface
 {
-    /** @var FileWriter */
-    private $fileWriter;
+    private FileWriter $fileWriter;
 
     /** @var resource|null */
     private $handle;

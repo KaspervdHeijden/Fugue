@@ -13,11 +13,10 @@ final class DefaultClassLoader implements ClassLoaderInterface
     /** @var string */
     private const FILE_NAME_EXTENSION = '.php';
 
-    /** @var string */
-    private $rootNamespace;
+    private string $rootNamespace;
 
     /** @var string */
-    private $rootDir;
+    private string $rootDir;
 
     public function __construct(
         string $rootDir,

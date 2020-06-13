@@ -9,8 +9,7 @@ use Throwable;
 
 final class OutputExceptionHandler extends ExceptionHandler
 {
-    /** @var OutputHandlerInterface */
-    private $output;
+    private OutputHandlerInterface $output;
 
     public function __construct(OutputHandlerInterface $outputHandler)
     {

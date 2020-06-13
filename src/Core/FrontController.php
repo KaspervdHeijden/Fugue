@@ -40,40 +40,25 @@ abstract class FrontController
     /** @var string */
     public const ROOT_NAMESPACE = 'Fugue';
 
-    /** @var ExceptionHandlerInterface */
-    private $exceptionHandler;
+    private ?ExceptionHandlerInterface $exceptionHandler = null;
 
-    /** @var ClassLoaderInterface */
-    private $classLoader;
+    private ?OutputHandlerInterface $outputHandler = null;
 
-    /** @var OutputHandlerInterface */
-    private $outputHandler;
+    private ?ClassLoaderInterface $classLoader = null;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private ?LoggerInterface $logger = null;
 
-    /** @var bool */
-    private $displayErrors;
+    private ?Kernel $kernel = null;
 
-    /** @var int */
-    private $errorLevel;
-
-    /** @var string */
-    private $charset;
-
-    /** @var Kernel */
-    private $kernel;
+    private int $errorLevel;
 
     public function __construct(
         int $errorLevel,
         string $charset,
         bool $displayErrors
     ) {
-        $this->displayErrors = $displayErrors;
-        $this->errorLevel    = $errorLevel;
-        $this->charset       = $charset;
-
-        $this->initializeGlobalState();
+        $this->initializeGlobalState($charset, $errorLevel, $displayErrors);
+        $this->errorLevel = $errorLevel;
     }
 
     final public function handleUnexpectedException(
@@ -110,7 +95,7 @@ abstract class FrontController
 
     private function getRootDir(string $path): string
     {
-        return  realpath(rtrim(__DIR__, '/') . "/..{$path}");
+        return realpath(rtrim(__DIR__, '/') . "/..{$path}");
     }
 
     protected function getClassLoader(): ClassLoaderInterface
@@ -154,7 +139,7 @@ abstract class FrontController
     protected function getLogger(): LoggerInterface
     {
         if (! $this->logger instanceof LoggerInterface) {
-            $this->logger = new OutputLogger($this->getOutputHandler());
+            $this->logger = new OutputLogger($this->getOutputHandler(), true);
         }
 
         return $this->logger;
@@ -181,16 +166,19 @@ abstract class FrontController
      * This method mutates global runtime state,
      * and should therefore be called only once.
      */
-    private function initializeGlobalState(): void
-    {
-        ini_set('display_errors', ($this->displayErrors) ? '1' : '0');
-        ini_set('error_reporting', (string)$this->errorLevel);
-        ini_set('default_charset', $this->charset);
+    private function initializeGlobalState(
+        string $charset,
+        int $errorLevel,
+        bool $displayErrors
+    ): void {
+        ini_set('display_errors', ($displayErrors) ? '1' : '0');
+        ini_set('error_reporting', (string)$errorLevel);
+        ini_set('default_charset', $charset);
 
-        mb_internal_encoding($this->charset);
-        mb_regex_encoding($this->charset);
-        mb_http_output($this->charset);
-        mb_http_input($this->charset);
+        mb_internal_encoding($charset);
+        mb_regex_encoding($charset);
+        mb_http_output($charset);
+        mb_http_input($charset);
 
         spl_autoload_register([$this->getClassLoader(), 'loadClass'], true, true);
         set_error_handler([$this, 'handleUnexpectedException']);

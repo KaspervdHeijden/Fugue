@@ -12,11 +12,9 @@ final class Attachment extends MailPart
     /** @var string */
     public const DISPOSITION_INLINE = 'inline';
 
-    /** @var string */
-    private $disposition;
+    private string $disposition;
 
-    /** @var string */
-    private $fileName;
+    private string $fileName;
 
     /**
      * Instantiates an EmailAttachment.

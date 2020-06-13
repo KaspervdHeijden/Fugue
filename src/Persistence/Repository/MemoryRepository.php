@@ -8,11 +8,11 @@ use Fugue\Collection\CollectionMap;
 
 abstract class MemoryRepository
 {
-    /** @var CollectionMap */
-    private $map;
+    private CollectionMap $map;
 
     public function __construct(?CollectionMap $map = null)
     {
+        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
         $this->map = ($map instanceof CollectionMap) ? $map : new CollectionMap();
     }
 

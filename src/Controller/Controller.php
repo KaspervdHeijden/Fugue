@@ -17,8 +17,7 @@ abstract class Controller
 {
     public const DEFAULT_CHARSET = 'utf-8';
 
-    /** @var TemplateAdapterFactory */
-    private $templateFactory;
+    private TemplateAdapterFactory $templateFactory;
 
     public function __construct(TemplateAdapterFactory $templateFactory)
     {

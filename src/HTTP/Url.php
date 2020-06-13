@@ -16,11 +16,10 @@ final class Url
      */
     public const DEFAULT_PORT = 80;
 
-    /** @var string[]|null */
-    private $parts;
+    private ?string $parts = null;
 
     /** @var string */
-    private $url;
+    private string $url;
 
     public function __construct(string $url)
     {

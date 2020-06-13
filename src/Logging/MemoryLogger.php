@@ -9,7 +9,7 @@ use function trim;
 final class MemoryLogger extends Logger
 {
     /** @var string[] */
-    private $logs = [];
+    private array $logs = [];
 
     /**
      * Gets all logs.

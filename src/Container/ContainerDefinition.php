@@ -9,11 +9,9 @@ final class ContainerDefinition
     /** @var mixed */
     private $definition;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var int */
-    private $type;
+    private int $type;
 
     private function __construct(
         string $name,
