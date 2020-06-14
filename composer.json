@@ -21,5 +21,8 @@
         "ext-session": "*",
         "ext-mbstring": "*",
         "ext-simplexml": "*"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": ">=2.16.3"
     }
 }

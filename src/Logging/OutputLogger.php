@@ -9,7 +9,6 @@ use Fugue\Core\Output\OutputHandlerInterface;
 final class OutputLogger extends Logger
 {
     private OutputHandlerInterface $outputHandler;
-
     private bool $logVerbose;
 
     public function __construct(OutputHandlerInterface $outputHandler, bool $logVerbose)

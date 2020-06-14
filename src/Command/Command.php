@@ -14,9 +14,7 @@ use function explode;
 abstract class Command implements CommandInterface
 {
     private ExceptionHandlerInterface $exceptionHandler;
-
     private LoggerInterface $logger;
-
     private string $name;
 
     final public function __construct(

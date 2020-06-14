@@ -21,9 +21,7 @@ use function is_int;
 final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterface
 {
     private DatabaseConnectionSettings $settings;
-
     private LoggerInterface $logger;
-
     private PDO $pdo;
 
     public function __construct(

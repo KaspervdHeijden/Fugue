@@ -8,5 +8,6 @@
 
     # Route requests for non-existant files through the fugue front controller
     RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^ web.php [QSA,L]
 </IfModule>

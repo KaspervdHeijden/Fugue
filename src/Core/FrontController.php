@@ -19,6 +19,7 @@ use Fugue\Container\ClassResolver;
 use Fugue\Logging\LoggerInterface;
 use Fugue\Logging\OutputLogger;
 use Fugue\Caching\MemoryCache;
+use Fugue\Container\Container;
 use Fugue\HTTP\Request;
 use Throwable;
 
@@ -26,6 +27,7 @@ use function spl_autoload_register;
 use function mb_internal_encoding;
 use function mb_regex_encoding;
 use function set_error_handler;
+use function error_reporting;
 use function mb_http_output;
 use function mb_http_input;
 use function realpath;
@@ -41,24 +43,31 @@ abstract class FrontController
     public const ROOT_NAMESPACE = 'Fugue';
 
     private ?ExceptionHandlerInterface $exceptionHandler = null;
-
     private ?OutputHandlerInterface $outputHandler = null;
-
     private ?ClassLoaderInterface $classLoader = null;
-
     private ?LoggerInterface $logger = null;
-
     private ?Kernel $kernel = null;
 
-    private int $errorLevel;
-
+    /**
+     * This method mutates global runtime state,
+     * and should therefore be called only once.
+     */
     public function __construct(
         int $errorLevel,
         string $charset,
         bool $displayErrors
     ) {
-        $this->initializeGlobalState($charset, $errorLevel, $displayErrors);
-        $this->errorLevel = $errorLevel;
+        ini_set('display_errors', ($displayErrors) ? '1' : '0');
+        ini_set('error_reporting', (string)$errorLevel);
+        ini_set('default_charset', $charset);
+
+        mb_internal_encoding($charset);
+        mb_regex_encoding($charset);
+        mb_http_output($charset);
+        mb_http_input($charset);
+
+        spl_autoload_register([$this->getClassLoader(), 'loadClass'], true, true);
+        set_error_handler([$this, 'handleUnexpectedException']);
     }
 
     final public function handleUnexpectedException(
@@ -67,11 +76,11 @@ abstract class FrontController
         string $file,
         int $line
     ): void {
-        try {
-            if (($this->errorLevel & $code) === 0) {
-                return;
-            }
+        if (($code & error_reporting()) === 0) {
+            return;
+        }
 
+        try {
             $this->getExceptionHandler()->handle(
                 UnhandledErrorException::create(
                     $code,
@@ -108,6 +117,11 @@ abstract class FrontController
         }
 
         return $this->classLoader;
+    }
+
+    final protected function getContainer(): Container
+    {
+        return $this->getKernel()->getContainer();
     }
 
     protected function getOutputHandler(): OutputHandlerInterface
@@ -155,34 +169,25 @@ abstract class FrontController
                 new ContainerLoader(...$this->getConfigurationLoaders($this->getRootDir(self::CONF_DIR_PATH))),
                 $this->getLogger()
             );
+
+            $mappings = [
+                'exceptionHandler' => ExceptionHandlerInterface::class,
+                'outputHandler'    => OutputHandlerInterface::class,
+                'logger'           => LoggerInterface::class,
+            ];
+
+            foreach ($mappings as $propery => $className) {
+                $override = $this->getContainer()->resolve($className);
+                if ($override instanceof $className) {
+                    $this->$propery = $override;
+                }
+            }
         }
 
         return $this->kernel;
     }
 
     abstract protected function createRuntime(): RuntimeInterface;
-
-    /**
-     * This method mutates global runtime state,
-     * and should therefore be called only once.
-     */
-    private function initializeGlobalState(
-        string $charset,
-        int $errorLevel,
-        bool $displayErrors
-    ): void {
-        ini_set('display_errors', ($displayErrors) ? '1' : '0');
-        ini_set('error_reporting', (string)$errorLevel);
-        ini_set('default_charset', $charset);
-
-        mb_internal_encoding($charset);
-        mb_regex_encoding($charset);
-        mb_http_output($charset);
-        mb_http_input($charset);
-
-        spl_autoload_register([$this->getClassLoader(), 'loadClass'], true, true);
-        set_error_handler([$this, 'handleUnexpectedException']);
-    }
 
     public function handleRequest(Request $request): void
     {

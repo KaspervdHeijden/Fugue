@@ -13,7 +13,6 @@ final class Attachment extends MailPart
     public const DISPOSITION_INLINE = 'inline';
 
     private string $disposition;
-
     private string $fileName;
 
     /**

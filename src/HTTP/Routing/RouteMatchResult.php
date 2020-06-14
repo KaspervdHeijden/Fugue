@@ -8,7 +8,6 @@ final class RouteMatchResult
 {
     /** @var string[] */
     private array $arguments;
-
     private Route $route;
 
     /**

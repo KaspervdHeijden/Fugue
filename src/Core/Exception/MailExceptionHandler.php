@@ -17,9 +17,7 @@ use function basename;
 final class MailExceptionHandler extends ExceptionHandler
 {
     private EmailSenderInterface $mailerService;
-
     private string $recipientEmail;
-
     private string $senderEmail;
 
     public function __construct(

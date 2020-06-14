@@ -27,12 +27,11 @@ require_once __DIR__ . '/../src/bootstrap.inc.php';
 {
     protected function createRuntime(): RuntimeInterface
     {
-        $container = $this->getKernel()->getContainer();
         return new HttpRuntime(
             $this->getOutputHandler(),
-            $container->resolve(RouteCollectionMap::class),
+            $this->getContainer()->resolve(RouteCollectionMap::class),
             $this->getClassResolver(),
-            $container
+            $this->getContainer()
         );
     }
 })->handleRequest(new Request(

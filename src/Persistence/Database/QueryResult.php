@@ -7,7 +7,6 @@ namespace Fugue\Persistence\Database;
 final class QueryResult
 {
     private int $numberOfAffectedRows;
-
     private ?string $insertedId;
 
     public function __construct(

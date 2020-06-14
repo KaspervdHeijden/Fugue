@@ -15,10 +15,8 @@ final class Route
     private $handler;
 
     /** @var string|null */
-    private ?string $method = null;
-
+    private ?string $method;
     private string $name;
-
     private string $url;
 
     /**
@@ -35,10 +33,10 @@ final class Route
         ?string $method,
         $handler
     ) {
-        $this->method      = ((string)$method !== '' ) ? mb_strtoupper(trim($method)) : null;
-        $this->handler     = $handler;
-        $this->name        = $name;
-        $this->url         = $url;
+        $this->method  = ((string)$method !== '') ? mb_strtoupper(trim($method)) : null;
+        $this->handler = $handler;
+        $this->name    = $name;
+        $this->url     = $url;
     }
 
     /**

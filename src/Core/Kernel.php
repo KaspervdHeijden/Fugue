@@ -14,15 +14,10 @@ use Fugue\Container\Container;
 final class Kernel
 {
     private ExceptionHandlerInterface $exceptionHandler;
-
     private OutputHandlerInterface $outputHandler;
-
     private ClassLoaderInterface $classLoader;
-
     private ContainerLoader $containerLoader;
-
     private ?Container $container = null;
-
     private LoggerInterface $logger;
 
     public function __construct(

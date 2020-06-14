@@ -7,17 +7,11 @@ namespace Fugue\HTTP\State;
 final class SessionSettings
 {
     private bool $useOnlyCookies;
-
     private int $cacheExpire;
-
     private bool $useCookies;
-
     private int $httpOnly;
-
     private int $timeout;
-
     private bool $secure;
-
     private string $name;
 
     public function __construct(

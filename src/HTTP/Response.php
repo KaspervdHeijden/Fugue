@@ -215,9 +215,7 @@ final class Response
     ];
 
     private HeaderBag $headers;
-
     private string $content;
-
     private int $statusCode;
 
     /**

@@ -13,7 +13,6 @@ use function class_exists;
 final class CommandFactory
 {
     private ClassResolver $classResolver;
-
     private Container $container;
 
     public function __construct(

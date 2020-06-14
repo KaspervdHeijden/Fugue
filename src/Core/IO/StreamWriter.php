@@ -31,11 +31,9 @@ final class StreamWriter implements WriterInterface
     ];
 
     private string $filename;
-
+    private string $mode;
     /** @var resource|null */
     private $handle;
-
-    private string $mode;
 
     public function __construct(
         string $filename,

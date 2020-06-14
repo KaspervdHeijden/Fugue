@@ -102,7 +102,8 @@ abstract class Mailer implements EmailSenderInterface
                 continue;
             }
 
-            array_push($body,
+            array_push(
+                $body,
                 "--{$contentBoundary}",
                 "Content-Type: {$part->getContentType()}",
                 "Content-Transfer-Encoding: {$part->getTransferEncoding()}",

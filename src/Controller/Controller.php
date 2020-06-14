@@ -65,7 +65,6 @@ abstract class Controller
         string $charset    = self::DEFAULT_CHARSET,
         string $contentKey = 'content'
     ): Response {
-
         $view                   = $this->templateFactory->getForTemplate($contentTemplate);
         $variables              = $this->getTemplateVariables($title, $variables, $charset);
         $variables[$contentKey] = $view->render($contentTemplate, new PropertyBag($variables));

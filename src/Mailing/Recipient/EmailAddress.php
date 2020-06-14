@@ -30,7 +30,7 @@ final class EmailAddress
             );
         }
 
-        $this->emailAddress = mb_strtolower((string)$email);
+        $this->emailAddress = (string)mb_strtolower((string)$email);
     }
 
     public function getEmailAddress(): string

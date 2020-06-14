@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Fugue\Core\Output;
 
-use Fugue\Logging\LoggerInterface;
-
 use function array_search;
 use function is_int;
 

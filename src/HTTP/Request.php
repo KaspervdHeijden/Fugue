@@ -40,22 +40,14 @@ final class Request
     public const METHOD_TRACE = 'TRACE';
 
     private PropertyBag $server;
-
     private PropertyBag $cookie;
-
     private PropertyBag $files;
-
     private PropertyBag $post;
-
     private PropertyBag $get;
 
     private ?string $protocol = null;
-
     private ?string $method = null;
-
     private ?bool $secure = null;
-
-    /** @var Url */
     private ?Url $url = null;
 
     /**

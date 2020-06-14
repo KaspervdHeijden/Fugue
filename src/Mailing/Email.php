@@ -15,15 +15,10 @@ use InvalidArgumentException;
 final class Email
 {
     private AttachmentList $attachments;
-
     private RecipientList $recipients;
-
     private TextMessage $textMessage;
-
     private ?EmailAddress $replyTo = null;
-
     private EmailAddress $from;
-
     private string $subject;
 
     public function __construct(
@@ -40,6 +35,7 @@ final class Email
             );
         }
 
+        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
         $this->attachments = $attachments ?: new AttachmentList();
         $this->textMessage = $textMessage;
         $this->recipients  = $recipients;

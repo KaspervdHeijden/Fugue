@@ -43,9 +43,7 @@ abstract class MailPart
     public const NEWLINE = "\r\n";
 
     private string $transferEncoding;
-
     private string $contentType;
-
     private string $body;
 
     public function __construct(

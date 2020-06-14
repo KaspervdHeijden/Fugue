@@ -1,3 +1,4 @@
 conf/env.config.inc.php
+.php_cs.cache
 .idea
 /vendor/

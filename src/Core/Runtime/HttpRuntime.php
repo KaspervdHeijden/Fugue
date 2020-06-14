@@ -35,11 +35,8 @@ final class HttpRuntime implements RuntimeInterface
     public const DEFAULT_CONTROLLER_METHOD = 'handleRequest';
 
     private OutputHandlerInterface $outputHandler;
-
     private ClassResolver $classResolver;
-
     private RouteCollectionMap $routeMap;
-
     private Container $container;
 
     public function __construct(

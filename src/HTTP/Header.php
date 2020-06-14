@@ -39,7 +39,6 @@ final class Header
     public const NAME_EXPIRES = 'expires';
 
     private CollectionMap $parts;
-
     private string $key;
 
     public function __construct(string $key, string $value)
