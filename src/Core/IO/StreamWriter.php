@@ -110,6 +110,7 @@ final class StreamWriter implements WriterInterface
     {
         $handle  = $this->getHandle();
         $written = fwrite($handle, $text);
+
         if (! is_int($written)) {
             throw IOException::forWritingToFilename($this->filename);
         }

@@ -7,17 +7,17 @@ namespace Fugue\Persistence\Database;
 final class EmptyDatabaseQueryAdapter implements DatabaseQueryAdapterInterface
 {
     public function fetchOne(
-        string $className,
         string $sql,
-        array $params = []
+        array $params = [],
+        ?string $className = null
     ) {
         return null;
     }
 
     public function fetchAll(
-        string $className,
         string $sql,
-        array $params = []
+        array $params = [],
+        ?string $className = null
     ): array {
         return [];
     }

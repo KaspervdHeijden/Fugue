@@ -114,9 +114,11 @@ final class HtmlTextMessage extends TextMessage
         $activeTag = '';
         $content   = '';
 
-        // Disable libxml's error message to prevent throwing on 'invalid' html or on tags it does not recognize.
-        libxml_use_internal_errors(true);
+        // Disable the error message from libxml to prevent throwing
+        // on 'invalid' html or on tags it does not recognize.
+        $former    = libxml_use_internal_errors(true);
         $doc->loadHTML("<?xml>{$this->getBody()}");
+        libxml_use_internal_errors($former);
 
         $this->findTextNodesFromNode($doc, $content, $activeTag);
         return new PlainTextMessage(

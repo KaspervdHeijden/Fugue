@@ -25,7 +25,7 @@ final class CommandFactory
 
     public function getForIdentifier(string $identifier): CommandInterface
     {
-        if (! class_exists($identifier)) {
+        if (! class_exists($identifier, true)) {
             throw InvalidCommandException::forUnknownIdentifier($identifier);
         }
 

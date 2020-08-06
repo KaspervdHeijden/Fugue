@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Fugue\Command;
 
+use Fugue\Collection\CollectionList;
+
 interface CommandInterface
 {
     /**
      * Executes a command.
-     *
-     * @param string[] $arguments
      */
-    public function run(array $arguments): int;
+    public function run(CollectionList $arguments): int;
 }

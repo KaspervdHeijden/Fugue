@@ -162,11 +162,12 @@ abstract class FrontController
     protected function getKernel(): Kernel
     {
         if (! $this->kernel instanceof Kernel) {
+            $rootDir      = $this->getRootDir(self::CONF_DIR_PATH);
             $this->kernel = new Kernel(
                 $this->getExceptionHandler(),
                 $this->getOutputHandler(),
                 $this->getClassLoader(),
-                new ContainerLoader(...$this->getConfigurationLoaders($this->getRootDir(self::CONF_DIR_PATH))),
+                new ContainerLoader(...$this->getConfigurationLoaders($rootDir)),
                 $this->getLogger()
             );
 
@@ -176,10 +177,10 @@ abstract class FrontController
                 'logger'           => LoggerInterface::class,
             ];
 
-            foreach ($mappings as $propery => $className) {
+            foreach ($mappings as $property => $className) {
                 $override = $this->getContainer()->resolve($className);
                 if ($override instanceof $className) {
-                    $this->$propery = $override;
+                    $this->$property = $override;
                 }
             }
         }

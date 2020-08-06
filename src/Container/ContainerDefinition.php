@@ -4,21 +4,25 @@ declare(strict_types=1);
 
 namespace Fugue\Container;
 
-final class ContainerDefinition
+abstract class ContainerDefinition implements ContainerDefinitionInterface
 {
     /** @var mixed */
-    private $definition;
+    protected $definition;
     private string $name;
-    private int $type;
 
-    private function __construct(
-        string $name,
-        int $type,
-        $definition
-    ) {
+    public function __construct(string $name, $definition)
+    {
+        if (! $this->isValidDefinition($definition)) {
+            throw InvalidDefinitionTypeException::forDefinitionName($name);
+        }
+
         $this->definition = $definition;
         $this->name       = $name;
-        $this->type       = $type;
+    }
+
+    protected function isValidDefinition($definition): bool
+    {
+        return true;
     }
 
     public function getName(): string
@@ -26,54 +30,10 @@ final class ContainerDefinition
         return $this->name;
     }
 
-    public function getType(): int
-    {
-        return $this->type;
-    }
-
     public function getDefinition()
     {
         return $this->definition;
     }
 
-    public static function singleton(
-        string $name,
-        callable $definition
-    ): self {
-        return new self(
-            $name,
-            Container::TYPE_SINGLETON,
-            $definition
-        );
-    }
-
-    /**
-     * Returns a raw Container value definition.
-     *
-     * @param string $name      The name for the service.
-     * @param mixed $definition The service/object to register.
-     *
-     * @return static           The created container definition.
-     */
-    public static function raw(
-        string $name,
-        $definition
-    ): self {
-        return new self(
-            $name,
-            Container::TYPE_RAW,
-            $definition
-        );
-    }
-
-    public static function factory(
-        string $name,
-        callable $definition
-    ): self {
-        return new self(
-            $name,
-            Container::TYPE_FACTORY,
-            $definition
-        );
-    }
+    abstract public function resolve(Container $container);
 }

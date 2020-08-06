@@ -22,10 +22,10 @@ abstract class Logger implements LoggerInterface
     public const TYPE_VERBOSE = 'VERBOSE';
 
     /** @var string */
-    public const TYPE_ERROR = 'ERROR';
+    public const TYPE_ERROR   = 'ERROR';
 
     /** @var string */
-    public const TYPE_INFO = 'INFO';
+    public const TYPE_INFO    = 'INFO';
 
     /**
      * Formats a message.

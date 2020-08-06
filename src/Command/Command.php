@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\Command;
 
+use Fugue\Collection\CollectionList;
 use Fugue\Core\Exception\ExceptionHandlerInterface;
 use Fugue\Logging\LoggerInterface;
 use Throwable;
@@ -17,7 +18,7 @@ abstract class Command implements CommandInterface
     private LoggerInterface $logger;
     private string $name;
 
-    final public function __construct(
+    public function __construct(
         LoggerInterface $logger,
         ExceptionHandlerInterface $exceptionHandler
     ) {
@@ -41,7 +42,7 @@ abstract class Command implements CommandInterface
         return $this->name;
     }
 
-    public function run(array $arguments): int
+    public function run(CollectionList $arguments): int
     {
         try {
             $this->logger->verbose("Starting {$this->name}");
@@ -57,8 +58,6 @@ abstract class Command implements CommandInterface
 
     /**
      * Method containing the logic to perform when running a command.
-     *
-     * @param string[] $arguments The arguments passed.
      */
-    abstract protected function execute(array $arguments): void;
+    abstract protected function execute(CollectionList $arguments): void;
 }

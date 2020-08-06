@@ -14,11 +14,15 @@ class CollectionList extends Collection
             return false;
         }
 
-        if ($key !== null && ! is_int($key)) {
-            return false;
+        if ($key === null) {
+            return true;
         }
 
-        return true;
+        if (is_int($key)) {
+            return true;
+        }
+
+        return false;
     }
 
     public static function forValues(...$values): self

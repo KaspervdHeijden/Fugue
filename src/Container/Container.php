@@ -14,29 +14,9 @@ use function count;
 
 /**
  * Container class. This allows for lazy loading of objects within a defined scope.
- *
- * There are 3 ways to define an object:
- * 1. <var>TYPE_RAW</var>:       This just returns the $definition.
- * 2. <var>TYPE_SINGLETON</var>: This calls the $definition once, and returns it's return value, which is returned in any subsequent queries.
- * 3. <var>TYPE_FACTORY</var>:   The calls the $definition every time the field is accessed, and returns it's return value.
  */
 final class Container implements Countable, ArrayAccess
 {
-    /**
-     * @var int Returns the value as given.
-     */
-    public const TYPE_RAW = 0;
-
-    /**
-     * @var int Calls the definer the first time only (lazy define). Subsequent requests return the result.
-     */
-    public const TYPE_SINGLETON = 1;
-
-    /**
-     * @var int Always return the return value from the definer.
-     */
-    public const TYPE_FACTORY = 2;
-
     /** @var ContainerDefinition[] */
     private array $definitions = [];
 
@@ -49,7 +29,7 @@ final class Container implements Countable, ArrayAccess
 
     public function __set($name, $value)
     {
-        $this->registerRaw($this->ensureStringName($name), $value);
+        $this->register(new RawContainerDefinition($this->ensureStringName($name), $value));
     }
 
     public function __get($name)
@@ -84,7 +64,7 @@ final class Container implements Countable, ArrayAccess
 
     public function offsetSet($offset, $value)
     {
-        $this->registerRaw($this->ensureStringName($offset), $value);
+        $this->register(new RawContainerDefinition($this->ensureStringName($offset), $value));
     }
 
     public function offsetUnset($offset)
@@ -106,7 +86,7 @@ final class Container implements Countable, ArrayAccess
      * Gets an entity from the Container.
      *
      * @param string $name The name of the object to load.
-     * @return mixed       The value/service/object, or null if the object isn't registered is no data.
+     * @return mixed       The value/service/object, or null if the object isn't registered.
      */
     public function resolve(string $name)
     {
@@ -114,25 +94,7 @@ final class Container implements Countable, ArrayAccess
             return null;
         }
 
-        $definition = $this->definitions[$name];
-        switch ($definition->getType()) {
-            case self::TYPE_RAW:
-                return $definition->getDefinition();
-            case self::TYPE_FACTORY:
-                return $definition->getDefinition()($this);
-            case self::TYPE_SINGLETON:
-                $this->registerRaw($name, $definition->getDefinition()($this));
-                return $this->resolve($name);
-            default:
-                throw new LogicException(
-                    "Invalid type ({$definition->getType()}) for '{$name}'."
-                );
-        }
-    }
-
-    private function registerRaw(string $name, $value): void
-    {
-        $this->register(ContainerDefinition::raw($name, $value));
+        return $this->definitions[$name]->resolve($this);
     }
 
     /**

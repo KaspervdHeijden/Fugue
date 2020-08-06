@@ -65,24 +65,24 @@ final class ContainerLoader
     public function createForKernel(Kernel $kernel): Container
     {
         return new Container(
-            ContainerDefinition::raw(Kernel::class, $kernel),
-            ContainerDefinition::raw(
+            new RawContainerDefinition(Kernel::class, $kernel),
+            new RawContainerDefinition(
                 OutputHandlerInterface::class,
                 $kernel->getOutputHandler()
             ),
-            ContainerDefinition::raw(
+            new RawContainerDefinition(
                 LoggerInterface::class,
                 $kernel->getLogger()
             ),
-            ContainerDefinition::raw(
+            new RawContainerDefinition(
                 ExceptionHandlerInterface::class,
                 $kernel->getExceptionHandler()
             ),
-            ContainerDefinition::singleton(
+            new SingletonContainerDefinition(
                 RouteCollectionMap::class,
                 [$this, 'loadRoutes']
             ),
-            ContainerDefinition::singleton(
+            new SingletonContainerDefinition(
                 DatabaseConnectionSettings::class,
                 [$this, 'getDatabaseConnectionSettings']
             ),

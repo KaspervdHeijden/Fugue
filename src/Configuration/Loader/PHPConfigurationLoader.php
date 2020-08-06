@@ -20,7 +20,7 @@ final class PHPConfigurationLoader extends FileConfigurationLoader
         /** @noinspection PhpIncludeInspection */
         $result = require_once $fileName;
         switch (true) {
-            case $result === null:
+            case ($result === null):
                 return null;
             case is_iterable($result):
                 return $result;

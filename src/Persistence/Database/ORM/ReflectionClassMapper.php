@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fugue\Persistence\Database;
+namespace Fugue\Persistence\Database\ORM;
 
 use InvalidArgumentException;
 use ReflectionException;
@@ -13,7 +13,7 @@ use ReflectionType;
 
 use function ucfirst;
 
-final class ORMMapper
+final class ReflectionClassMapper implements RecordMapperInterface
 {
     private ReflectionClass $reflection;
 
@@ -109,19 +109,19 @@ final class ORMMapper
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $method = $this->reflection->getMethod($setter);
-        $params = $method->getParameters();
-
         if ($method->getNumberOfRequiredParameters() !== 1) {
             return;
         }
 
-        $type = $params[0]->getType();
+        $params = $method->getParameters();
+        $type   = $params[0]->getType();
+
         if ($this->shouldSet($value, $type)) {
             $instance->$setter($this->cast($value, $type));
         }
     }
 
-    public function recordToObjectInstance(array $record)
+    public function arrayToObject(array $record): object
     {
         $className = $this->reflection->getName();
         $instance  = new $className();

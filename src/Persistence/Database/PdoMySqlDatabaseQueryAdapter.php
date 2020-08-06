@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Fugue\Persistence\Database;
 
+use Fugue\Persistence\Database\ORM\RecordMapperInterface;
+use Fugue\Persistence\Database\ORM\ReflectionClassMapper;
+use Fugue\Persistence\Database\ORM\StdClassMapper;
 use Fugue\Logging\LoggerInterface;
 use RuntimeException;
 use PDOStatement;
@@ -74,9 +77,13 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
         throw new PDOException($errorMessage, $errorCode);
     }
 
-    private function getMapper(string $className): ORMMapper
+    private function getMapper(?string $className): RecordMapperInterface
     {
-        return new ORMMapper($className);
+        if ($className === null || $className === '') {
+            return new StdClassMapper();
+        }
+
+        return new ReflectionClassMapper($className);
     }
 
     private function execute(string $sql, array $params = []): PDOStatement
@@ -136,9 +143,9 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
     }
 
     public function fetchOne(
-        string $className,
         string $sql,
-        array $params = []
+        array $params = [],
+        ?string $className = null
     ) {
         $mapper = $this->getMapper($className);
         $stmt   = $this->execute($sql, $params);
@@ -148,21 +155,21 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
             return null;
         }
 
-        return $mapper->recordToObjectInstance($record);
+        return $mapper->arrayToObject($record);
     }
 
     public function fetchAll(
-        string $className,
         string $sql,
-        array $params = []
+        array $params = [],
+        ?string $className = null
     ): array {
         $mapper  = $this->getMapper($className);
         $stmt    = $this->execute($sql, $params);
         $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return array_map(
-            static function (array $record) use ($mapper) {
-                return $mapper->recordToObjectInstance($record);
+            static function (array $record) use ($mapper, $className) {
+                return $mapper->arrayToObject($record);
             },
             $records
         );

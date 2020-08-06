@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Fugue\Container\SingletonContainerDefinition;
 use Fugue\Persistence\Database\DatabaseQueryAdapterInterface;
 use Fugue\Persistence\Database\PdoMySqlDatabaseQueryAdapter;
 use Fugue\Persistence\Database\DatabaseConnectionSettings;
@@ -11,7 +12,7 @@ use Fugue\Logging\EmptyLogger;
 
 /** @return ContainerDefinition[] */
 return [
-    ContainerDefinition::singleton(
+    new SingletonContainerDefinition(
         DatabaseQueryAdapterInterface::class,
         static function (Container $container): DatabaseQueryAdapterInterface {
             return new PdoMySqlDatabaseQueryAdapter(

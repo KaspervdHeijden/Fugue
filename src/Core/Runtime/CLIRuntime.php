@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\Core\Runtime;
 
+use Fugue\Collection\CollectionList;
 use Fugue\Command\InvalidCommandException;
 use Fugue\Command\CommandFactory;
 use Fugue\HTTP\Request;
@@ -28,7 +29,7 @@ final class CLIRuntime implements RuntimeInterface
         }
 
         $command  = $this->commandFactory->getForIdentifier((string)$argv[1]);
-        $exitCode = $command->run(array_slice($argv, 2));
+        $exitCode = $command->run(new CollectionList(array_slice($argv, 2), null));
 
         if ($exitCode !== 0) {
             exit($exitCode);
