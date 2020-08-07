@@ -10,7 +10,7 @@ final class Attachment extends MailPart
     public const DISPOSITION_ATTACHMENT = 'attachment';
 
     /** @var string */
-    public const DISPOSITION_INLINE = 'inline';
+    public const DISPOSITION_INLINE     = 'inline';
 
     private string $disposition;
     private string $fileName;
@@ -45,5 +45,15 @@ final class Attachment extends MailPart
     public function getDisposition(): string
     {
         return $this->disposition;
+    }
+
+    public function isAttachment(): bool
+    {
+        return ($this->disposition === self::DISPOSITION_ATTACHMENT);
+    }
+
+    public function isInline(): bool
+    {
+        return ($this->disposition === self::DISPOSITION_INLINE);
     }
 }

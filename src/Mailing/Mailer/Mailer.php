@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Fugue\Mailing\Mailer;
 
-use Fugue\Mailing\MailPart\HtmlTextMessage;
-use Fugue\Mailing\MailPart\AttachmentList;
 use Fugue\Mailing\Recipient\BccRecipient;
 use Fugue\Mailing\Recipient\EmailAddress;
 use Fugue\Mailing\Recipient\ToRecipient;
@@ -58,13 +56,13 @@ abstract class Mailer implements EmailSenderInterface
         }
 
         $headers = [
-            'Cc'           => $this->recipientListToString($email, CcRecipient::class),
             'Bcc'          => $this->recipientListToString($email, BccRecipient::class),
-            'MIME-Version' => self::MIME_VERSION,
+            'Cc'           => $this->recipientListToString($email, CcRecipient::class),
+            'Content-Type' => "multipart/mixed; boundary=\"{$boundary}\"",
             'Reply-To'     => $replyTo->getEmailAddress(),
             'From'         => $from->getEmailAddress(),
             'Return-Path'  => $from->getEmailAddress(),
-            'Content-Type' => "multipart/mixed; boundary=\"{$boundary}\"",
+            'MIME-Version' => self::MIME_VERSION,
         ];
 
         return array_filter($headers);
@@ -73,17 +71,13 @@ abstract class Mailer implements EmailSenderInterface
     /**
      * Generates a message body.
      *
-     * @param TextMessage    $textPart    The message.
-     * @param string         $boundary    The top-level boundary identifier.
-     * @param AttachmentList $attachments The attachments.
+     * @param Email   $email    The Email.
+     * @param string  $boundary The top-level boundary identifier.
      *
-     * @return string                     The message body.
+     * @return string The message body.
      */
-    private function getBody(
-        TextMessage $textPart,
-        string $boundary,
-        AttachmentList $attachments
-    ): string {
+    private function getBody(Email $email, string $boundary): string
+    {
         $contentBoundary = $this->generateBoundary();
         $body            = [
             "--{$boundary}",
@@ -91,14 +85,8 @@ abstract class Mailer implements EmailSenderInterface
             '',
         ];
 
-        $htmlPart = null;
-        if ($textPart instanceof HtmlTextMessage) {
-            $htmlPart = $textPart;
-            $textPart = $textPart->generatePlainTextMessage();
-        }
-
-        foreach ([$textPart, $htmlPart] as $part) {
-            if (! $textPart instanceof TextMessage) {
+        foreach ($email->getMailParts() as $part) {
+            if (! $part instanceof TextMessage) {
                 continue;
             }
 
@@ -114,7 +102,8 @@ abstract class Mailer implements EmailSenderInterface
         }
 
         array_push($body, "--{$contentBoundary}--", '');
-        foreach ($attachments as $attachment) {
+        /** @var Attachment $attachment */
+        foreach ($email->getAttachments() as $attachment) {
             $contentType = $attachment->getContentType();
             $disposition = $attachment->getDisposition();
             $fileName    = $attachment->getFileName();
@@ -122,7 +111,7 @@ abstract class Mailer implements EmailSenderInterface
             if ($fileName !== '') {
                 $contentType .= "; name=\"{$fileName}\"";
 
-                if ($disposition === Attachment::DISPOSITION_ATTACHMENT) {
+                if ($attachment->isAttachment()) {
                     $disposition .= "; filename=\"{$fileName}\"";
                 }
             }
@@ -151,9 +140,8 @@ abstract class Mailer implements EmailSenderInterface
     public function send(Email $email): void
     {
         $boundary = $this->generateBoundary();
-        $textPart = $email->getTextMessage();
         $headers  = implode(MailPart::NEWLINE, $this->getHeaders($email, $boundary));
-        $body     = $this->getBody($textPart, $boundary, $email->getAttachments());
+        $body     = $this->getBody($email, $boundary);
 
         $this->sendMail(
             $this->recipientListToString($email, ToRecipient::class),

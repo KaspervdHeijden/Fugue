@@ -146,7 +146,7 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
         string $sql,
         array $params = [],
         ?string $className = null
-    ) {
+    ): ?object {
         $mapper = $this->getMapper($className);
         $stmt   = $this->execute($sql, $params);
         $record = $stmt->fetch(PDO::FETCH_ASSOC);

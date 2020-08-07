@@ -10,7 +10,7 @@ final class EmptyDatabaseQueryAdapter implements DatabaseQueryAdapterInterface
         string $sql,
         array $params = [],
         ?string $className = null
-    ) {
+    ): ?object {
         return null;
     }
 

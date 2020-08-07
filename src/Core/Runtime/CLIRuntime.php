@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Fugue\Core\Runtime;
 
-use Fugue\Collection\CollectionList;
 use Fugue\Command\InvalidCommandException;
+use Fugue\Collection\CollectionList;
 use Fugue\Command\CommandFactory;
 use Fugue\HTTP\Request;
 

@@ -10,32 +10,39 @@ use function session_start;
 
 final class NativeSessionAdapter implements SessionAdapterInterface
 {
-    private bool $started = false;
+    private SessionSettings $settings;
+    private bool $started;
 
-    public function start(SessionSettings $settings): void
+    public function __construct(SessionSettings $settings)
+    {
+        $this->settings = $settings;
+        $this->started  = false;
+    }
+
+    public function start(): void
     {
         if ($this->started) {
             return;
         }
 
-        $sessionSessions = [
-            'use_only_cookies' => (int)$settings->shouldUseOnlyCookies(),
-            'use_cookies'      => (int)$settings->shouldUseCookies(),
-            'cookie_httponly'  => (int)$settings->getHttpOnly(),
-            'cookie_secure'    => (int)$settings->isSecure(),
-            'cache_expire'     => $settings->getCacheExpire(),
+        $settings = [
+            'use_only_cookies' => (int)$this->settings->shouldUseOnlyCookies(),
+            'use_cookies'      => (int)$this->settings->shouldUseCookies(),
+            'cookie_httponly'  => (int)$this->settings->getHttpOnly(),
+            'cookie_secure'    => (int)$this->settings->isSecure(),
+            'cache_expire'     => $this->settings->getCacheExpire(),
             'use_trans_sid'    => 0,
         ];
 
-        if ($settings->getTimeout() > 0) {
-            $sessionSessions['gc_maxlifetime'] = $settings->getTimeout();
+        if ($this->settings->getTimeout() > 0) {
+            $settings['gc_maxlifetime'] = $this->settings->getTimeout();
         }
 
-        if ($settings->getName() !== '') {
-            $sessionSessions['name'] = $settings->getName();
+        if ($this->settings->getName() !== '') {
+            $settings['name'] = $this->settings->getName();
         }
 
-        $this->started = (bool)session_start($sessionSessions);
+        $this->started = (bool)session_start($settings);
     }
 
     public function get(string $name)

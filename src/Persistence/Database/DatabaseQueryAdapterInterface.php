@@ -25,7 +25,7 @@ interface DatabaseQueryAdapterInterface
      *
      * @return object|null      An instance of $className, or NULL if not found.
      */
-    public function fetchOne(string $sql, array $params = [], ?string $className = null);
+    public function fetchOne(string $sql, array $params = [], ?string $className = null): ?object;
 
     /**
      * Fetches one record in to a class.

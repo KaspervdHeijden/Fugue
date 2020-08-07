@@ -10,6 +10,7 @@ use Fugue\Collection\PropertyBag;
 
 use const ENT_QUOTES;
 use const ENT_HTML5;
+
 use function htmlspecialchars;
 use function ob_get_clean;
 use function is_readable;

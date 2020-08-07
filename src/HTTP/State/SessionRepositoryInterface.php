@@ -9,36 +9,45 @@ interface SessionRepositoryInterface
     /**
      * Gets a value by name.
      *
-     * @param string $name The name to load the value for.
-     * @return mixed       The value for the given name.
+     * @param string $userIdentifier The user identifier.
+     * @param string $name           The name to load the value for.
+     *
+     * @return mixed                 The value for the given name.
      */
-    public function getByName(string $name);
+    public function getByName(string $userIdentifier, string $name);
 
     /**
      * Persists a value.
      *
-     * @param string $name The name for the value to persist.
-     * @return mixed       The value to persist.
+     * @param string $userIdentifier The user identifier.
+     * @param string $name           The name for the value to persist.
+     *
+     * @return mixed                 The value to persist.
      */
-    public function persist(string $name, $value): void;
+    public function persist(string $userIdentifier, string $name, $value): void;
 
     /**
      * Checks if a value is set for the given name.
      *
-     * @param string $name The name to test the existence for.
-     * @return bool        TRUE if a value exist for the give name, FALSE otherwise.
+     * @param string $userIdentifier The user identifier.
+     * @param string $name           The name to test the existence for.
+     *
+     * @return bool                  TRUE if a value exist for the give name, FALSE otherwise.
      */
-    public function exists(string $name): bool;
+    public function exists(string $userIdentifier, string $name): bool;
 
     /**
      * Removes a value for the given name.
      *
-     * @param string $name The name to delete.
+     * @param string $userIdentifier The user identifier.
+     * @param string $name           The name to delete.
      */
-    public function delete(string $name): void;
+    public function delete(string $userIdentifier, string $name): void;
 
     /**
      * Clears all values.
+     *
+     * @param string $userIdentifier The user identifier.
      */
-    public function clear(): void;
+    public function clear(string $userIdentifier): void;
 }

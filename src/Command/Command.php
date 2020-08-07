@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Fugue\Command;
 
-use Fugue\Collection\CollectionList;
 use Fugue\Core\Exception\ExceptionHandlerInterface;
+use Fugue\Collection\CollectionList;
 use Fugue\Logging\LoggerInterface;
 use Throwable;
 

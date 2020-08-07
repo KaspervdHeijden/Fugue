@@ -9,25 +9,26 @@ use Fugue\Mailing\MailPart\HtmlTextMessage;
 use Fugue\Mailing\Recipient\RecipientList;
 use Fugue\Mailing\MailPart\AttachmentList;
 use Fugue\Mailing\Recipient\EmailAddress;
-use Fugue\Mailing\MailPart\TextMessage;
+use Fugue\Mailing\MailPart\MailPartList;
+use Fugue\Mailing\Recipient\ToRecipient;
 use InvalidArgumentException;
 
 final class Email
 {
     private AttachmentList $attachments;
     private RecipientList $recipients;
-    private TextMessage $textMessage;
     private ?EmailAddress $replyTo = null;
+    private MailPartList $mailParts;
     private EmailAddress $from;
     private string $subject;
 
     public function __construct(
         RecipientList $recipients,
-        TextMessage $textMessage,
+        MailPartList $mailParts,
         string $subject,
         EmailAddress $from,
-        ?EmailAddress $replyTo       = null,
-        ?AttachmentList $attachments = null
+        ?EmailAddress $replyTo,
+        AttachmentList $attachments
     ) {
         if ($subject === '') {
             throw new InvalidArgumentException(
@@ -35,10 +36,9 @@ final class Email
             );
         }
 
-        /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
-        $this->attachments = $attachments ?: new AttachmentList();
-        $this->textMessage = $textMessage;
+        $this->attachments = $attachments;
         $this->recipients  = $recipients;
+        $this->mailParts   = $mailParts;
         $this->subject     = $subject;
         $this->replyTo     = $replyTo;
         $this->from        = $from;
@@ -51,10 +51,12 @@ final class Email
         string $from
     ): self {
         return new static(
-            RecipientList::forValues(new EmailAddress($to)),
-            new PlainTextMessage($text),
+            RecipientList::forValues(new ToRecipient(new EmailAddress($to))),
+            new MailPartList([new PlainTextMessage($text)]),
             $subject,
-            new EmailAddress($from)
+            new EmailAddress($from),
+            null,
+            new AttachmentList()
         );
     }
 
@@ -65,10 +67,12 @@ final class Email
         string $from
     ): self {
         return new static(
-            RecipientList::forValues(new EmailAddress($to)),
-            new HtmlTextMessage($text),
+            RecipientList::forValues(new ToRecipient(new EmailAddress($to))),
+            new MailPartList([new HtmlTextMessage($text)]),
             $subject,
-            new EmailAddress($from)
+            new EmailAddress($from),
+            null,
+            new AttachmentList()
         );
     }
 
@@ -77,9 +81,9 @@ final class Email
         return $this->recipients;
     }
 
-    public function getTextMessage(): TextMessage
+    public function getMailParts(): MailPartList
     {
-        return $this->textMessage;
+        return $this->mailParts;
     }
 
     public function getFrom(): EmailAddress

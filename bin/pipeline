@@ -1,27 +1,49 @@
 #!/usr/bin/env sh
 
+num_cores=$(grep -c '^processor\s\+: \+[0-7]\+$' /proc/cpuinfo);
 dirName=$(git rev-parse --show-toplevel 2>/dev/null);
 if [ -z "${dirName}" ] || [ ! -d "${dirName}" ]; then
   echo 'Not a git repository' >&2;
   exit 5;
 fi
 
-phpFiles=$(find "${dirName}" -type f -name '*.php' -and ! -wholename '*/vendor/*' 2>/dev/null);
-echo "Testing $(echo "${phpFiles}" | wc -l) php files";
+phpFiles=$(find "${dirName}" -name '*.php' -type f -and ! -wholename '*/vendor/*' 2>/dev/null);
+echo "Testing $(echo "${phpFiles}" | wc -l) php files using ${num_cores} cores";
 echo '';
 
 echo '- Checking for PHP syntax errors';
-output=$(echo "${phpFiles}" | xargs -I{} php -l {} | grep 'Errors parsing ' | cut -c16-);
+output=$(echo "${phpFiles}" | xargs -P"${num_cores}" -I{} php -l {} | grep 'Errors parsing ' | cut -c16-);
 if [ -n "${output}" ]; then
   echo "${output}" | xargs -I{} echo ' - {}' >&2;
   exit 6;
 fi
 
-echo '- Checking for strict typed classes';
-output=$(echo "${phpFiles}" | xargs -I{} -n1 grep -L 'declare(strict_types=1);' {} | xargs -I{} echo ' - {}');
+echo '- Checking for sorted class imports';
+output=$(echo "${phpFiles}" | while read -r line; do awk '/^use / { print length, $0; }' "${line}" | grep -v 'use function ' | grep -v 'use const ' | cut -d' ' -f1 | sort -rnC || echo " ${line}"; done);
 if [ -n "${output}" ]; then
-  echo "${output}" >&2;
+  echo "${output}" | xargs -I{} echo ' - {}' >&2;
   exit 7;
+fi
+
+echo '- Checking for sorted function imports';
+output=$(echo "${phpFiles}" | while read -r line; do awk '/^use function / { print length, $0; }' "${line}" | cut -d' ' -f1 | sort -rnC || echo "${line}"; done);
+if [ -n "${output}" ]; then
+  echo "${output}" | xargs -I{} echo ' - {}' >&2;
+  exit 8;
+fi
+
+echo '- Checking for sorted constant imports';
+output=$(echo "${phpFiles}" | while read -r line; do awk '/^use const / { print length, $0; }' "${line}" | cut -d' ' -f1 | sort -rnC || echo "${line}"; done);
+if [ -n "${output}" ]; then
+  echo "${output}" | xargs -I{} echo ' - {}' >&2;
+  exit 9;
+fi
+
+echo '- Checking for strict typed classes';
+output=$(echo "${phpFiles}" | xargs -P"${num_cores}" -I{} -n1 grep -L 'declare(strict_types=1);' {});
+if [ -n "${output}" ]; then
+  echo "${output}" | xargs -I{} echo ' - {}' >&2;
+  exit 10;
 fi
 
 echo '- Checking code style';

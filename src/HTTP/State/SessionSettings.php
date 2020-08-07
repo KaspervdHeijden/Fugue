@@ -9,7 +9,7 @@ final class SessionSettings
     private bool $useOnlyCookies;
     private int $cacheExpire;
     private bool $useCookies;
-    private int $httpOnly;
+    private bool $httpOnly;
     private int $timeout;
     private bool $secure;
     private string $name;
@@ -19,7 +19,7 @@ final class SessionSettings
         bool $useOnlyCookies,
         int $cacheExpire,
         bool $useCookies,
-        int $httpOnly,
+        bool $httpOnly,
         int $timeout,
         bool $secure
     ) {
@@ -47,7 +47,7 @@ final class SessionSettings
         return $this->useCookies;
     }
 
-    public function getHttpOnly(): int
+    public function getHttpOnly(): bool
     {
         return $this->httpOnly;
     }
