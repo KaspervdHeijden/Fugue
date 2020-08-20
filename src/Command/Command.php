@@ -49,7 +49,7 @@ abstract class Command implements CommandInterface
             $this->execute($arguments);
             $this->logger->verbose("Completed {$this->name}");
         } catch (Throwable $throwable) {
-            $this->exceptionHandler->handle($throwable);
+            $this->getExceptionHandler()->handle($throwable);
             return (int)($throwable->getCode() ?: 1);
         }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\Controller;
 
+use Fugue\HTTP\StringBuffer;
 use Fugue\View\Templating\TemplateAdapterFactory;
 use Fugue\Collection\PropertyBag;
 use Fugue\HTTP\HeaderBag;
@@ -27,7 +28,7 @@ abstract class Controller
     private function getTemplateVariables(
         string $title,
         array $variables,
-        string $charset = self::DEFAULT_CHARSET
+        string $charset
     ): PropertyBag {
         $defaults = [
             'charset'    => $charset,
@@ -60,14 +61,14 @@ abstract class Controller
         string $title,
         string $contentTemplate,
         string $documentTemplate,
-        array $variables   = [],
-        int $statusCode    = Response::HTTP_OK,
-        string $charset    = self::DEFAULT_CHARSET,
-        string $contentKey = 'content'
+        array $variables       = [],
+        int $statusCode        = Response::HTTP_OK,
+        string $charset        = self::DEFAULT_CHARSET,
+        string $contentVarName = 'content'
     ): Response {
-        $view                   = $this->templateFactory->getForTemplate($contentTemplate);
-        $variables              = $this->getTemplateVariables($title, $variables, $charset);
-        $variables[$contentKey] = $view->render($contentTemplate, new PropertyBag($variables));
+        $view                       = $this->templateFactory->getForTemplate($contentTemplate);
+        $variables                  = $this->getTemplateVariables($title, $variables, $charset);
+        $variables[$contentVarName] = $view->render($contentTemplate, new PropertyBag($variables));
 
         return $this->createResponse(
             $view->render($documentTemplate, new PropertyBag($variables)),
@@ -130,7 +131,7 @@ abstract class Controller
     ): Response {
         $headers = [];
         if ($fileName !== '') {
-            $headers[Header::NAME_CONTENT_DISPOSITION] = "attachment;filename=\"{$fileName}\"";
+            $headers[] = Header::contentDisposition("attachment;filename=\"{$fileName}\"");
         }
 
         return $this->createResponse(
@@ -164,7 +165,7 @@ abstract class Controller
             $message,
             Response::CONTENT_TYPE_PLAINTEXT,
             $statusCode,
-            [Header::NAME_LOCATION => $url]
+            [Header::location($url)]
         );
     }
 
@@ -203,16 +204,17 @@ abstract class Controller
     ): Response {
         $headerBag = new HeaderBag();
         foreach ($headers as $key => $value) {
-            $headerBag->set($key, $value);
+            $headerBag->set($value, $key);
         }
 
         if ($contentType !== '') {
-            $headerBag->set(
-                Header::NAME_CONTENT_TYPE,
-                $contentType
-            );
+            $headerBag->set(Header::contentType($contentType));
         }
 
-        return new Response($content, $statusCode, $headerBag);
+        return new Response(
+            new StringBuffer($content),
+            $statusCode,
+            $headerBag
+        );
     }
 }

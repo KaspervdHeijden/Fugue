@@ -8,24 +8,17 @@ use function is_iterable;
 
 final class PHPConfigurationLoader extends FileConfigurationLoader
 {
-    protected function getFullPathForIdentifier(
-        string $directory,
-        string $identifier
-    ): string {
-        return "{$directory}/php/{$identifier}.conf.php";
-    }
-
-    protected function loadFromFile(string $fileName): ?iterable
+    protected function loadFromFile(string $filename): ?iterable
     {
         /** @noinspection PhpIncludeInspection */
-        $result = require_once $fileName;
+        $result = require_once $filename;
         switch (true) {
             case ($result === null):
                 return null;
             case is_iterable($result):
                 return $result;
             default:
-                return [$result];
+                return (array)$result;
         }
     }
 }

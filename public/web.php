@@ -10,8 +10,6 @@ declare(strict_types=1);
  * |   __|  |  |  |  | |  | |_ | |  |  |  | |   __|
  * |  |     |  `--'  | |  |__| | |  `--'  | |  |____
  * |__|      \______/   \______|  \______/  |_______|
- *
- * (c) 2020. All rights reserved.
  */
 
 use Fugue\HTTP\Routing\RouteCollectionMap;

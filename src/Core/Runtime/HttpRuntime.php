@@ -25,7 +25,6 @@ use function array_merge;
 use function implode;
 use function explode;
 use function header;
-use function strlen;
 
 final class HttpRuntime implements RuntimeInterface
 {
@@ -58,7 +57,7 @@ final class HttpRuntime implements RuntimeInterface
         $response    = $this->run($matchResult, $request);
 
         $this->sendHeaders($request, $response);
-        $this->outputHandler->write($response->getContent());
+        $this->outputHandler->write($response->getContent()->value());
     }
 
     private function sendHeaders(
@@ -90,10 +89,7 @@ final class HttpRuntime implements RuntimeInterface
         ]);
 
         if ($this->shouldSendContentLength($request, $response)) {
-            $headers->set(
-                Header::NAME_CONTENT_LENGTH,
-                (string)strlen($response->getContent())
-            );
+            $headers->set(Header::contentLength($response->getContent()->length()));
         }
 
         return array_merge(

@@ -43,7 +43,7 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
 
         $this->logger->info('Connecting to database');
         $this->pdo = new PDO(
-            $this->settings->getDsn(),
+            $this->settings->getHost(),
             $this->settings->getUser(),
             $this->settings->getPassword(),
             $this->settings->getOptions()

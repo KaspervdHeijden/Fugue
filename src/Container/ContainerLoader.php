@@ -5,66 +5,30 @@ declare(strict_types=1);
 namespace Fugue\Container;
 
 use Fugue\Configuration\Loader\ConfigurationLoaderInterface;
-use Fugue\Persistence\Database\DatabaseConnectionSettings;
-use Fugue\Configuration\ConfigurationNotFoundException;
 use Fugue\Core\Exception\ExceptionHandlerInterface;
 use Fugue\Core\Output\OutputHandlerInterface;
 use Fugue\HTTP\Routing\RouteCollectionMap;
 use Fugue\Logging\LoggerInterface;
-use Fugue\Collection\Collection;
 use Fugue\Core\Kernel;
 
 final class ContainerLoader
 {
     /** @var string */
-    private const CONFIG_ID_DATABASE_CONFIG = 'db-config';
-
-    /** @var string */
     private const CONFIG_ID_SERVICES = 'services';
 
     /** @var string */
-    private const CONFIG_ID_ROUTES = 'routes';
+    private const CONFIG_ID_ROUTES   = 'routes';
 
-    /** @var ConfigurationLoaderInterface[] */
-    private array $configLoaders;
+    private ConfigurationLoaderInterface $configLoader;
 
-    public function __construct(ConfigurationLoaderInterface ...$configLoaders)
+    public function __construct(ConfigurationLoaderInterface $configLoader)
     {
-        $this->configLoaders = $configLoaders;
-    }
-
-    private function load(string $identifier): Collection
-    {
-        foreach ($this->configLoaders as $loader) {
-            if ($loader->supports($identifier)) {
-                return $loader->load($identifier);
-            }
-        }
-
-        throw ConfigurationNotFoundException::forIdentifier($identifier);
-    }
-
-    public function loadRoutes(): RouteCollectionMap
-    {
-        return new RouteCollectionMap($this->load(self::CONFIG_ID_ROUTES));
-    }
-
-    public function getDatabaseConnectionSettings(): DatabaseConnectionSettings
-    {
-        $mapping = $this->load(self::CONFIG_ID_DATABASE_CONFIG);
-        return new DatabaseConnectionSettings(
-            $mapping['dsn'],
-            $mapping['user'],
-            $mapping['password'],
-            $mapping['charset'],
-            $mapping['timezone'] ?? '',
-            $mapping['options'] ?? null
-        );
+        $this->configLoader = $configLoader;
     }
 
     public function createForKernel(Kernel $kernel): Container
     {
-        return new Container(
+        $container = new Container(
             new RawContainerDefinition(Kernel::class, $kernel),
             new RawContainerDefinition(
                 OutputHandlerInterface::class,
@@ -78,15 +42,32 @@ final class ContainerLoader
                 ExceptionHandlerInterface::class,
                 $kernel->getExceptionHandler()
             ),
-            new SingletonContainerDefinition(
-                RouteCollectionMap::class,
-                [$this, 'loadRoutes']
-            ),
-            new SingletonContainerDefinition(
-                DatabaseConnectionSettings::class,
-                [$this, 'getDatabaseConnectionSettings']
-            ),
-            ...$this->load(self::CONFIG_ID_SERVICES)->toArray()
+            new RawContainerDefinition(
+                ConfigurationLoaderInterface::class,
+                $this->configLoader
+            )
         );
+
+        if ($this->configLoader->supports(self::CONFIG_ID_ROUTES)) {
+            $container->register(
+                new SingletonContainerDefinition(
+                    RouteCollectionMap::class,
+                    function (): RouteCollectionMap {
+                        return new RouteCollectionMap(
+                            $this->configLoader->load(self::CONFIG_ID_ROUTES)
+                        );
+                    }
+                ),
+            );
+        }
+
+        if ($this->configLoader->supports(self::CONFIG_ID_SERVICES)) {
+            $definitions = $this->configLoader->load(self::CONFIG_ID_SERVICES);
+            foreach ($definitions as $definition) {
+                $container->register($definition);
+            }
+        }
+
+        return $container;
     }
 }

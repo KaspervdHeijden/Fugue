@@ -61,7 +61,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
      * Determines if this collection contains the supplied key.
      *
      * @param string|int|null $key The key to test for.
-     * @return bool                TRUE if the key exists in this Map, FALSE otherwise.
+     * @return bool                TRUE if the key exists in this map, FALSE otherwise.
      */
     public function containsKey($key): bool
     {

@@ -8,30 +8,30 @@ final class DatabaseConnectionSettings
 {
     private string $password;
     private string $timezone;
-    private ?array $options;
+    private array $options;
     private string $charset;
     private string $user;
-    private string $dsn;
+    private string $host;
 
     public function __construct(
-        string $dsn,
+        string $host,
         string $user,
         string $password,
         string $charset,
         string $timezone,
-        ?array $options
+        array $options
     ) {
         $this->password = $password;
         $this->timezone = $timezone;
         $this->options  = $options;
         $this->charset  = $charset;
         $this->user     = $user;
-        $this->dsn      = $dsn;
+        $this->host     = $host;
     }
 
-    public function getDsn(): string
+    public function getHost(): string
     {
-        return $this->dsn;
+        return $this->host;
     }
 
     public function getUser(): string
@@ -44,7 +44,7 @@ final class DatabaseConnectionSettings
         return $this->password;
     }
 
-    public function getOptions(): ?array
+    public function getOptions(): array
     {
         return $this->options;
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\HTTP;
 
+use DateTimeInterface;
 use Fugue\Collection\CollectionMap;
 use InvalidArgumentException;
 
@@ -43,21 +44,19 @@ final class Header
 
     public function __construct(string $key, string $value)
     {
-        if ($key === '') {
+        $this->key = trim(mb_strtolower($key));
+        if ($this->key === '') {
             throw new InvalidArgumentException(
                 'Header name must not be empty.'
             );
         }
 
-        $parts = new CollectionMap([], 'string');
+        $this->parts = new CollectionMap([], 'string');
         foreach (explode(';', trim($value)) as $part) {
             foreach (explode('=', trim($part), 2) as $name => $value) {
-                $parts[$name] = $value;
+                $this->parts[$name] = $value;
             }
         }
-
-        $this->key   = trim(mb_strtolower($key));
-        $this->parts = $parts;
     }
 
     public function getKey(): string
@@ -95,5 +94,55 @@ final class Header
     public function __toString(): string
     {
         return $this->toHeaderString();
+    }
+
+    public static function contentDisposition(string $disposition): self
+    {
+        return new static(
+            self::NAME_CONTENT_DISPOSITION,
+            $disposition
+        );
+    }
+
+    public static function contentType(string $contentType): self
+    {
+        return new static(self::NAME_CONTENT_TYPE, $contentType);
+    }
+
+    public static function lastModified(DateTimeInterface $lastModified): self
+    {
+        return new static(
+            self::NAME_CONTENT_TYPE,
+            $lastModified->format('D, d M Y H:i:s') . ' GTM'
+        );
+    }
+
+    public static function contentLength(int $length): self
+    {
+        return new static(
+            self::NAME_CONTENT_LENGTH,
+            (string)$length
+        );
+    }
+
+    public static function cacheControl(string $cacheControl): self
+    {
+        return new static(
+            self::NAME_CACHE_CONTROL,
+            $cacheControl
+        );
+    }
+
+    public static function location(string $location): self
+    {
+        return new static(self::NAME_LOCATION, $location);
+    }
+
+    public static function expires(DateTimeInterface $expires): self
+    {
+        return new static(
+            self::NAME_CONTENT_TYPE,
+            $expires->format('D, d M Y H:i:s') . ' GTM'
+        );
     }
 }

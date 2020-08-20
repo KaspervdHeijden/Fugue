@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\Core;
 
+use Fugue\Configuration\Loader\JsonConfigurationLoader;
 use Fugue\Configuration\Loader\IniConfigurationLoader;
 use Fugue\Configuration\Loader\PHPConfigurationLoader;
 use Fugue\Core\Exception\ExceptionHandlerInterface;
@@ -23,6 +24,8 @@ use Fugue\Container\Container;
 use Fugue\HTTP\Request;
 use Throwable;
 
+use Fugue\Configuration\Loader\MultiConfigurationLoader;
+use Fugue\Configuration\Loader\ConfigurationLoaderInterface;
 use function spl_autoload_register;
 use function mb_internal_encoding;
 use function mb_regex_encoding;
@@ -104,7 +107,15 @@ abstract class FrontController
 
     private function getRootDir(string $path): string
     {
-        return realpath(rtrim(__DIR__, '/') . "/..{$path}");
+        $separator = DIRECTORY_SEPARATOR;
+        if ($path !== '') {
+            $path = ltrim($path, $separator);
+            if ($path !== '') {
+                $path = $separator . $path;
+            }
+        }
+
+        return realpath(rtrim(__DIR__, $separator) . "{$separator}..{$path}");
     }
 
     protected function getClassLoader(): ClassLoaderInterface
@@ -142,12 +153,13 @@ abstract class FrontController
         return $this->exceptionHandler;
     }
 
-    protected function getConfigurationLoaders(string $configDir): array
+    protected function getConfigurationLoader(string $configDir): ConfigurationLoaderInterface
     {
-        return [
-            new IniConfigurationLoader($configDir),
-            new PHPConfigurationLoader($configDir),
-        ];
+        return new MultiConfigurationLoader(
+            new JsonConfigurationLoader($configDir, 'json'),
+            new IniConfigurationLoader($configDir, 'ini'),
+            new PHPConfigurationLoader($configDir, 'php')
+        );
     }
 
     protected function getLogger(): LoggerInterface
@@ -167,18 +179,19 @@ abstract class FrontController
                 $this->getExceptionHandler(),
                 $this->getOutputHandler(),
                 $this->getClassLoader(),
-                new ContainerLoader(...$this->getConfigurationLoaders($rootDir)),
+                new ContainerLoader($this->getConfigurationLoader($rootDir)),
                 $this->getLogger()
             );
 
-            $mappings = [
+            $container = $this->getContainer();
+            $mappings  = [
                 'exceptionHandler' => ExceptionHandlerInterface::class,
                 'outputHandler'    => OutputHandlerInterface::class,
                 'logger'           => LoggerInterface::class,
             ];
 
             foreach ($mappings as $property => $className) {
-                $override = $this->getContainer()->resolve($className);
+                $override = $container->resolve($className);
                 if ($override instanceof $className) {
                     $this->$property = $override;
                 }

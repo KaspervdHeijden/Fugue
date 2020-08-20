@@ -45,14 +45,12 @@ final class HeaderBag extends CollectionMap
 
     public function set($value, $key = null): void
     {
-        if (is_string($value)) {
-            parent::set(
-                new Header((string)$key, $value),
-                $key
-            );
-        } else {
-            parent::set($value, $key);
+        $header = $value;
+        if (! $header instanceof Header) {
+            $header = new Header((string)$key, (string)$value);
         }
+
+        parent::set($header, $header->getKey());
     }
 
     protected function checkKey($key): bool

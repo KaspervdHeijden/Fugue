@@ -14,50 +14,61 @@ use function is_file;
 abstract class FileConfigurationLoader implements ConfigurationLoaderInterface
 {
     private string $directory;
+    private string $name;
 
-    public function __construct(string $directory)
+    public function __construct(string $directory, string $name)
     {
         $this->directory = $directory;
+        $this->name      = $name;
     }
-
-    /**
-     * Gets the full path of the filename for a specific identifier.
-     */
-    abstract protected function getFullPathForIdentifier(
-        string $directory,
-        string $identifier
-    ): string;
 
     /**
      * Loads the configuration from disk.
      *
-     * @param string $fileName The filename to load.
+     * @param string $filename The filename to load.
      * @return iterable|null   Should return an iterable, or NULL on failure.
      */
-    abstract protected function loadFromFile(string $fileName): ?iterable;
+    abstract protected function loadFromFile(string $filename): ?iterable;
+
+    private function getPathInfoForIdentifier(
+        string $directory,
+        string $identifier
+    ): object {
+        $fileNames = [
+            "{$directory}/{$this->name}/{$identifier}.conf.{$this->name}.env",
+            "{$directory}/{$this->name}/{$identifier}.conf.{$this->name}",
+        ];
+
+        foreach ($fileNames as $fileName) {
+            if (is_file($fileName) && is_readable($fileName)) {
+                return (object)['success' => true, 'filename' => $fileName];
+            }
+        }
+
+        return (object)['success' => false, 'filename' => ''];
+    }
 
     public function supports(string $identifier): bool
     {
-        $fileName = $this->getFullPathForIdentifier(
+        $pathInfo = $this->getPathInfoForIdentifier(
             $this->directory,
             $identifier
         );
 
-        return is_file($fileName) && is_readable($fileName);
+        return (bool)$pathInfo->success;
     }
 
     public function load(string $identifier): Collection
     {
-        if (! $this->supports($identifier)) {
+        $pathInfo = $this->getPathInfoForIdentifier($this->directory, $identifier);
+        if (! (bool)$pathInfo->success) {
             throw ConfigurationLoadException::notSupportedIdentifier(
                 static::class,
                 $identifier
             );
         }
 
-        $fileName = $this->getFullPathForIdentifier($this->directory, $identifier);
-        $results  = $this->loadFromFile($fileName);
-
+        $results = $this->loadFromFile((string)$pathInfo->filename);
         if (! is_iterable($results)) {
             throw ConfigurationLoadException::configurationNotIterable($identifier);
         }

@@ -214,19 +214,19 @@ final class Response
         self::HTTP_HTTP_VERSION_NOT_SUPPORTED => 'HTTP Version Not supported',
     ];
 
+    private StringBuffer $content;
     private HeaderBag $headers;
-    private string $content;
     private int $statusCode;
 
     /**
      * Creates a new Response object.
      *
-     * @param string    $content    The response content.
-     * @param int       $statusCode The status code.
-     * @param HeaderBag $headerBag  The header bag.
+     * @param StringBuffer $content    The response content.
+     * @param int          $statusCode The status code.
+     * @param HeaderBag    $headerBag  The header bag.
      */
     public function __construct(
-        string $content,
+        StringBuffer $content,
         int $statusCode,
         HeaderBag $headerBag
     ) {
@@ -235,24 +235,9 @@ final class Response
         $this->content    = $content;
     }
 
-    /**
-     * Gets the content.
-     *
-     * @return string The content.
-     */
-    public function getContent(): string
+    public function getContent(): StringBuffer
     {
         return $this->content;
-    }
-
-    /**
-     * Appends content.
-     *
-     * @param string $content The content to append.
-     */
-    public function appendContent(string $content): void
-    {
-        $this->content .= $content;
     }
 
     public function getHeaders(): HeaderBag
@@ -260,21 +245,11 @@ final class Response
         return $this->headers;
     }
 
-    /**
-     * Gets the status code.
-     *
-     * @return int The HTTP status code.
-     */
     public function getStatusCode(): int
     {
         return $this->statusCode;
     }
 
-    /**
-     * Sets the status code for this response.
-     *
-     * @param int $statusCode The HTTP status code.
-     */
     public function setStatusCode(int $statusCode): void
     {
         $this->statusCode = $statusCode;
