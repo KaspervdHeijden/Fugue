@@ -47,7 +47,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     private array $elements = [];
     private ?string $type;
 
-    public function __construct(
+    final public function __construct(
         iterable $elements = [],
         ?string $type      = null
     ) {

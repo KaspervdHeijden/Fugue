@@ -10,6 +10,7 @@ use Fugue\Collection\Collection;
 use function is_readable;
 use function is_iterable;
 use function is_file;
+use function is_dir;
 
 abstract class FileConfigurationLoader implements ConfigurationLoaderInterface
 {
@@ -18,6 +19,10 @@ abstract class FileConfigurationLoader implements ConfigurationLoaderInterface
 
     public function __construct(string $directory, string $name)
     {
+        if (! is_dir($directory)) {
+            throw ConfigurationLoadException::invalidSourceDirectory($directory);
+        }
+
         $this->directory = $directory;
         $this->name      = $name;
     }

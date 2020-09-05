@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Fugue\Controller;
 
-use Fugue\HTTP\StringBuffer;
 use Fugue\View\Templating\TemplateAdapterFactory;
 use Fugue\Collection\PropertyBag;
+use Fugue\HTTP\StringBuffer;
 use Fugue\HTTP\HeaderBag;
 use Fugue\HTTP\Response;
 use Fugue\HTTP\Header;

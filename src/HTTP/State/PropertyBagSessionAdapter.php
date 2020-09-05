@@ -31,7 +31,7 @@ final class PropertyBagSessionAdapter implements SessionAdapterInterface
 
     public function has(string $name): bool
     {
-        $this->sessionData->containsKey($name);
+        return $this->sessionData->containsKey($name);
     }
 
     public function unset(string $name): void

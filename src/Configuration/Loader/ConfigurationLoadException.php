@@ -18,7 +18,14 @@ final class ConfigurationLoadException extends FugueException
     public static function configurationNotIterable(string $identifier): self
     {
         return new static(
-            "Could not load configuration file for '{$identifier}'."
+            "Could not load configuration file for '{$identifier}'"
+        );
+    }
+
+    public static function invalidSourceDirectory(string $directory): self
+    {
+        return new static(
+            "Could not load configurations for invalid source directory '{$directory}'"
         );
     }
 }

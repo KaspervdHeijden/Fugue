@@ -38,6 +38,19 @@ final class Kernel
     {
         if (! $this->container instanceof Container) {
             $this->container = $this->containerLoader->createForKernel($this);
+            $mapping         = [
+                'exceptionHandler' => ExceptionHandlerInterface::class,
+                'outputHandler'    => OutputhandlerInterface::class,
+                'classLoader'      => ClassLoaderInterface::class,
+                'logger'           => LoggerInterface::class,
+            ];
+
+            foreach ($mapping as $property => $className) {
+                $override = $this->container->resolve($className);
+                if ($override instanceof $className) {
+                    $this->$property = $override;
+                }
+            }
         }
 
         return $this->container;

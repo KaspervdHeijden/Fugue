@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Fugue\HTTP;
 
-use DateTimeInterface;
 use Fugue\Collection\CollectionMap;
 use InvalidArgumentException;
+use DateTimeInterface;
 
 use function mb_strtolower;
 use function array_map;

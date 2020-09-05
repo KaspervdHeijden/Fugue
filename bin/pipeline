@@ -53,6 +53,13 @@ if ! ./vendor/bin/php-cs-fixer fix -vvv --dry-run --no-interaction --using-cache
   exit $exitCode;
 fi
 
+echo '- Checking PHP standards';
+if ! ./vendor/bin/phpstan analyse src/; then
+  exitCode=$?;
+  echo 'PHP stan!' >&2;
+  exit $exitCode;
+fi
+
 echo '- Checking console';
 if ! "${dirName}/bin/console" '\Fugue\Command\TestCommand'; then
   exitCode=$?;

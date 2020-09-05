@@ -44,6 +44,7 @@ final class Request
     private PropertyBag $files;
     private PropertyBag $post;
     private PropertyBag $get;
+    private PropertyBag $env;
 
     private ?string $protocol = null;
     private ?string $method = null;
@@ -64,13 +65,15 @@ final class Request
         PropertyBag $post,
         PropertyBag $cookie,
         PropertyBag $files,
-        PropertyBag $server
+        PropertyBag $server,
+        PropertyBag $env
     ) {
         $this->cookie = $cookie;
         $this->server = $server;
         $this->files  = $files;
         $this->post   = $post;
         $this->get    = $get;
+        $this->env    = $env;
     }
 
     /**
@@ -222,5 +225,33 @@ final class Request
     public function files(): PropertyBag
     {
         return $this->files;
+    }
+
+    /**
+     * Gets the ENV PropertyBag.
+     *
+     * @return PropertyBag The $_ENV PropertyBag.
+     */
+    public function env(): PropertyBag
+    {
+        return $this->env;
+    }
+
+    public static function fromArrays(
+        array $server,
+        array $env,
+        array $get    = [],
+        array $post   = [],
+        array $cookie = [],
+        array $files  = []
+    ): self {
+        return new static(
+            new PropertyBag($get),
+            new PropertyBag($post),
+            new PropertyBag($cookie),
+            new PropertyBag($files),
+            new PropertyBag($server),
+            new PropertyBag($env),
+        );
     }
 }
