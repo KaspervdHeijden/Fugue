@@ -28,13 +28,11 @@ require_once __DIR__ . '/../src/bootstrap.inc.php';
         Kernel $kernel,
         ClassResolver $classResolver
     ): RuntimeInterface {
-        $container = $kernel->getContainer();
-
         return new HttpRuntime(
             $kernel->getOutputHandler(),
-            $container->resolve(RouteCollectionMap::class),
+            $kernel->getContainer()->resolve(RouteCollectionMap::class),
             $classResolver,
-            $container,
+            $kernel->getContainer(),
         );
     }
 })->handleRequest(Request::fromArrays($_SERVER, $_ENV, $_GET, $_POST, $_COOKIE, $_FILES));
