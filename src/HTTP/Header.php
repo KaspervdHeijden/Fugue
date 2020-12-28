@@ -98,7 +98,7 @@ final class Header
 
     public static function contentDisposition(string $disposition): self
     {
-        return new static(
+        return new Header(
             self::NAME_CONTENT_DISPOSITION,
             $disposition
         );
@@ -106,12 +106,12 @@ final class Header
 
     public static function contentType(string $contentType): self
     {
-        return new static(self::NAME_CONTENT_TYPE, $contentType);
+        return new Header(self::NAME_CONTENT_TYPE, $contentType);
     }
 
     public static function lastModified(DateTimeInterface $lastModified): self
     {
-        return new static(
+        return new Header(
             self::NAME_CONTENT_TYPE,
             $lastModified->format('D, d M Y H:i:s') . ' GTM'
         );
@@ -119,7 +119,7 @@ final class Header
 
     public static function contentLength(int $length): self
     {
-        return new static(
+        return new Header(
             self::NAME_CONTENT_LENGTH,
             (string)$length
         );
@@ -127,7 +127,7 @@ final class Header
 
     public static function cacheControl(string $cacheControl): self
     {
-        return new static(
+        return new Header(
             self::NAME_CACHE_CONTROL,
             $cacheControl
         );
@@ -135,12 +135,12 @@ final class Header
 
     public static function location(string $location): self
     {
-        return new static(self::NAME_LOCATION, $location);
+        return new Header(self::NAME_LOCATION, $location);
     }
 
     public static function expires(DateTimeInterface $expires): self
     {
-        return new static(
+        return new Header(
             self::NAME_CONTENT_TYPE,
             $expires->format('D, d M Y H:i:s') . ' GTM'
         );

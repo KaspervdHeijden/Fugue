@@ -15,7 +15,12 @@ final class UnhandledErrorException extends FugueException
         int $line,
         Throwable $previous = null
     ): self {
-        $exception       = new static($message, $code, $previous);
+        $exception = new UnhandledErrorException(
+            $message,
+            $code,
+            $previous
+        );
+
         $exception->line = $line;
         $exception->file = $file;
 

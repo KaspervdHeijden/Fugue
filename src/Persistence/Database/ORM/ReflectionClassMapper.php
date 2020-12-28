@@ -84,14 +84,7 @@ final class ReflectionClassMapper implements RecordMapperInterface
         }
     }
 
-    /**
-     * @param object     $instance      The instance to set the property on.
-     * @param string     $propertyName  The name of the property to set.
-     * @param mixed|null $value         The value to set.
-     *
-     * @throws ReflectionException      Shouldn't really.
-     */
-    private function setProperty($instance, string $propertyName, $value): void
+    private function setProperty(object $instance, string $propertyName, $value): void
     {
         $setter = 'set' . ucfirst($propertyName);
         if (! $this->reflection->hasMethod($setter)) {
@@ -127,7 +120,6 @@ final class ReflectionClassMapper implements RecordMapperInterface
         $instance  = new $className();
 
         foreach ($record as $property => $value) {
-            /** @noinspection PhpUnhandledExceptionInspection */
             $this->setProperty($instance, $property, $value);
         }
 

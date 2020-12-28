@@ -218,13 +218,6 @@ final class Response
     private HeaderBag $headers;
     private int $statusCode;
 
-    /**
-     * Creates a new Response object.
-     *
-     * @param StringBuffer $content    The response content.
-     * @param int          $statusCode The status code.
-     * @param HeaderBag    $headerBag  The header bag.
-     */
     public function __construct(
         StringBuffer $content,
         int $statusCode,
@@ -260,61 +253,31 @@ final class Response
         return (int)floor($this->getStatusCode() / 100);
     }
 
-    /**
-     * Is this a informational response?
-     *
-     * @return bool TRUE if the status code is between 100 and 200, FALSE otherwise.
-     */
     public function isInformational(): bool
     {
         return ($this->getStatusCodeClass() === 1);
     }
 
-    /**
-     * Is this a successful response?
-     *
-     * @return bool TRUE if the status code is between 200 and 300, FALSE otherwise.
-     */
     public function isSuccessful(): bool
     {
         return ($this->getStatusCodeClass() === 2);
     }
 
-    /**
-     * Is this a redirect?
-     *
-     * @return bool TRUE if the status code is between 300 and 400, FALSE otherwise.
-     */
     public function isRedirect(): bool
     {
         return ($this->getStatusCodeClass() === 3);
     }
 
-    /**
-     * Is this a client error response?
-     *
-     * @return bool TRUE if the status code is between 400 and 500, FALSE otherwise.
-     */
     public function isClientError(): bool
     {
         return ($this->getStatusCodeClass() === 4);
     }
 
-    /**
-     * Is this a server error response?
-     *
-     * @return bool TRUE if the status code is between 500 and 600, FALSE otherwise.
-     */
     public function isServerError(): bool
     {
         return ($this->getStatusCodeClass() === 5);
     }
 
-    /**
-     * Gets the text from a status code.
-     *
-     * @return string The status text.
-     */
     public function getStatusCodeText(): string
     {
         return self::STATUS_CODE_MAPPING[$this->getStatusCode()] ?? 'Unknown';

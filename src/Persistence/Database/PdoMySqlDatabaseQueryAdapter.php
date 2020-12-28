@@ -64,11 +64,6 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
         }
     }
 
-    /**
-     * Throws an exception based on the array input.
-     *
-     * @param array $errorInfo The error info of the last occurred error.
-     */
     private function throwExceptionFromArray(array $errorInfo): void
     {
         [$sqlState, $errorCode, $errorMessage] = $errorInfo;

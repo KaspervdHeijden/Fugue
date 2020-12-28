@@ -13,7 +13,7 @@ final class JsonConfigurationLoader extends FileConfigurationLoader
     protected function loadFromFile(string $filename): ?iterable
     {
         $contents = file_get_contents($filename);
-        $json     = json_decode($contents);
+        $json     = json_decode($contents, true);
 
         if (! is_array($json)) {
             return null;

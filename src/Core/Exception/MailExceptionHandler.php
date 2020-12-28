@@ -24,17 +24,17 @@ final class MailExceptionHandler extends ExceptionHandler
         $this->senderEmail    = $senderEmail;
     }
 
-    private function getSubject(Throwable $exception): string
+    private function getSubject(Throwable $throwable): string
     {
-        return "Exception on {$exception->getFile()}:{$exception->getLine()}";
+        return "Exception on {$throwable->getFile()}:{$throwable->getLine()}";
     }
 
-    public function handle(Throwable $exception): void
+    public function handle(Throwable $throwable): void
     {
         $email = Email::forText(
             $this->recipientEmail,
-            $this->getSubject($exception),
-            $this->formatExceptionMessage($exception),
+            $this->getSubject($throwable),
+            $this->formatExceptionMessage($throwable),
             $this->senderEmail
         );
 

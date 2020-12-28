@@ -8,6 +8,7 @@ abstract class ContainerDefinition implements ContainerDefinitionInterface
 {
     /** @var mixed */
     protected $definition;
+
     private string $name;
 
     public function __construct(string $name, $definition)

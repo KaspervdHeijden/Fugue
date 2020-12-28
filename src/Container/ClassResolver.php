@@ -21,13 +21,6 @@ final class ClassResolver
         $this->cache = $cache;
     }
 
-    /**
-     * @param string        $className
-     * @param Container     $container
-     * @param CollectionMap $classToObjects
-     *
-     * @return mixed        Instance of $className
-     */
     public function resolve(
         string $className,
         Container $container,

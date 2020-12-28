@@ -48,12 +48,14 @@ abstract class Command implements CommandInterface
             $this->logger->verbose("Starting {$this->name}");
             $this->execute($arguments);
             $this->logger->verbose("Completed {$this->name}");
+
+            return 0;
         } catch (Throwable $throwable) {
+            $this->logger->verbose("Exception {$throwable->getMessage()}");
+
             $this->getExceptionHandler()->handle($throwable);
             return (int)($throwable->getCode() ?: 1);
         }
-
-        return 0;
     }
 
     /**

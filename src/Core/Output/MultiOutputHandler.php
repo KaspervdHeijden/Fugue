@@ -27,9 +27,6 @@ final class MultiOutputHandler implements OutputHandlerInterface
         return null;
     }
 
-    /**
-     * Adds a output handler endpoint to this multi OutputHandler.
-     */
     public function add(OutputHandlerInterface $handler): void
     {
         if ($this->getHandlerIndex($handler) === null) {
@@ -37,11 +34,6 @@ final class MultiOutputHandler implements OutputHandlerInterface
         }
     }
 
-    /**
-     * Removes a output handler endpoint.
-     *
-     * @param OutputHandlerInterface $handler The handler to remove.
-     */
     public function remove(OutputHandlerInterface $handler): void
     {
         $index = $this->getHandlerIndex($handler);

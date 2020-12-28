@@ -27,11 +27,6 @@ final class MultiLogger extends Logger
         return null;
     }
 
-    /**
-     * Adds a logger endpoint to this MultiLogger.
-     *
-     * @param LoggerInterface $logger The logger to add.
-     */
     public function add(LoggerInterface $logger): void
     {
         if ($this->getLoggerIndex($logger) === null) {
@@ -39,21 +34,11 @@ final class MultiLogger extends Logger
         }
     }
 
-    /**
-     * Gets all loggers attached to this MultiLogger.
-     *
-     * @return LoggerInterface[] The loggers attached to this MultiLogger.
-     */
     public function getLoggers(): array
     {
         return $this->loggers;
     }
 
-    /**
-     * Removes a logger endpoint.
-     *
-     * @param LoggerInterface $logger The logger to remove.
-     */
     public function remove(LoggerInterface $logger): void
     {
         $index = $this->getLoggerIndex($logger);

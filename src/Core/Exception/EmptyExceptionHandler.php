@@ -8,7 +8,7 @@ use Throwable;
 
 final class EmptyExceptionHandler implements ExceptionHandlerInterface
 {
-    public function handle(Throwable $exception): void
+    public function handle(Throwable $throwable): void
     {
     }
 }

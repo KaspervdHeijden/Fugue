@@ -12,19 +12,21 @@ final class ConfigurationLoadException extends FugueException
         string $className,
         string $identifier
     ): self {
-        return new static("{$className} does not support '{$identifier}'.");
+        return new ConfigurationLoadException(
+            "{$className} does not support '{$identifier}'."
+        );
     }
 
     public static function configurationNotIterable(string $identifier): self
     {
-        return new static(
+        return new ConfigurationLoadException(
             "Could not load configuration file for '{$identifier}'"
         );
     }
 
     public static function invalidSourceDirectory(string $directory): self
     {
-        return new static(
+        return new ConfigurationLoadException(
             "Could not load configurations for invalid source directory '{$directory}'"
         );
     }

@@ -10,6 +10,8 @@ final class ValueNotFoundException extends FugueException
 {
     public static function forKey(string $key): self
     {
-        return new static("Value not found for key '{$key}'.");
+        return new ValueNotFoundException(
+            "Value not found for key '{$key}'."
+        );
     }
 }

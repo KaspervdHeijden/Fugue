@@ -31,37 +31,23 @@ final class PHPTemplateAdapter implements TemplateInterface
         $this->rootDir = $rootDir;
     }
 
-    /**
-     * Outputs an escaped value.
-     *
-     * @param mixed $text The text to escape.
-     * @return string     The escaped version of the supplied text.
-     */
     public function escape($text): string
     {
         return htmlspecialchars((string)$text, ENT_HTML5 | ENT_QUOTES);
     }
 
-    /**
-     * Displays a route URL.
-     *
-     * @param string $routeName  The name of the route.
-     * @param array  $parameters The parameters for the route.
-     *
-     * @return string            The URL.
-     */
     public function route(string $routeName, array $parameters = []): string
     {
         return $this->matcher->getUrl($routeName, $parameters);
     }
 
-    public function supports(string $name): bool
+    public function supports(string $templateName): bool
     {
-        if (! (bool)preg_match('/\.php$/', $name)) {
+        if (! (bool)preg_match('/\.php$/', $templateName)) {
             return false;
         }
 
-        $fileName = "{$this->rootDir}/{$name}";
+        $fileName = "{$this->rootDir}/{$templateName}";
         if (! is_file($fileName) || ! is_readable($fileName)) {
             return false;
         }

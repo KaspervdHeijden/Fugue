@@ -12,7 +12,7 @@ final class InvalidDefinitionTypeException extends FugueException
 {
     public static function forDefinitionName(string $name): self
     {
-        return new static(sprintf(
+        return new InvalidDefinitionTypeException(sprintf(
             'Unexpected type encountered for definition "%s"',
             $name
         ));

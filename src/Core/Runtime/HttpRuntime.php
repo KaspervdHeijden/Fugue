@@ -31,7 +31,7 @@ final class HttpRuntime implements RuntimeInterface
     /**
      * @var string The default controller method name if not set.
      */
-    public const DEFAULT_CONTROLLER_METHOD = 'handleRequest';
+    private const DEFAULT_CONTROLLER_METHOD = 'handleRequest';
 
     private OutputHandlerInterface $outputHandler;
     private ClassResolver $classResolver;
@@ -123,14 +123,6 @@ final class HttpRuntime implements RuntimeInterface
         return true;
     }
 
-    /**
-     * Gets the handler to run.
-     *
-     * @param Route   $route   The route to run.
-     * @param Request $request The originating request.
-     *
-     * @return callable        The handler for the route.
-     */
     private function getHandler(
         Route $route,
         Request $request
@@ -170,14 +162,6 @@ final class HttpRuntime implements RuntimeInterface
         return [$instance, $methodName];
     }
 
-    /**
-     * Runs a route.
-     *
-     * @param RouteMatchResult $matchResult The route to run.
-     * @param Request          $request     The request object to use as input.
-     *
-     * @return Response                     The response.
-     */
     private function run(
         RouteMatchResult $matchResult,
         Request $request

@@ -11,19 +11,11 @@ final class MemoryLogger extends Logger
     /** @var string[] */
     private array $logs = [];
 
-    /**
-     * Gets all logs.
-     *
-     * @return string[] All logged messages.
-     */
     public function getLogs(): array
     {
         return $this->logs;
     }
 
-    /**
-     * Clears the log.
-     */
     public function clear(): void
     {
         $this->logs = [];

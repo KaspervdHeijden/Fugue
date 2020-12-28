@@ -6,8 +6,5 @@ namespace Fugue\Container;
 
 interface ContainerDefinitionInterface
 {
-    /**
-     * Resolves an object from a definition.
-     */
     public function resolve(Container $container);
 }

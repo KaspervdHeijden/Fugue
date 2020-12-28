@@ -10,7 +10,6 @@ use function is_file;
 
 final class DefaultClassLoader implements ClassLoaderInterface
 {
-    /** @var string */
     private const FILE_NAME_EXTENSION = '.php';
 
     private string $rootNamespace;

@@ -17,10 +17,7 @@ use function rtrim;
 
 final class RouteMatcher
 {
-    /**
-     * @var string The regular expression used to parse the URL templates.
-     */
-    public const URL_TEMPLATE_REGEX = '#\{([a-z_][a-z0-9_]+)(\:[sif])?\}#iu';
+    private const URL_TEMPLATE_REGEX = '#\{([a-z_][a-z0-9_]+)(\:[sif])?\}#iu';
 
     private RouteCollectionMap $routeMap;
 
@@ -29,13 +26,7 @@ final class RouteMatcher
         $this->routeMap = $routeMap;
     }
 
-    /**
-     * Gets the regular expression used for matching a URL.
-     *
-     * @param Route $route The route to get the regular expression for.
-     * @return string      The regular expression.
-     */
-    private function getRegex(Route $route): string
+    private function getRegularExpressionForRoute(Route $route): string
     {
         $regex = str_replace('/', '/+', rtrim(preg_replace_callback(
             self::URL_TEMPLATE_REGEX,
@@ -60,14 +51,6 @@ final class RouteMatcher
         return "#^{$regex}\/*$#";
     }
 
-    /**
-     * Gives a value if this route matches the given request.
-     *
-     * @param Route   $route         The route to test.
-     * @param Request $request       The url path to match against.
-     *
-     * @return RouteMatchResult|null The result of the match.
-     */
     private function match(
         Route $route,
         Request $request
@@ -77,7 +60,7 @@ final class RouteMatcher
         }
 
         $path    = $request->getUrl()->getPath();
-        $regex   = $this->getRegex($route);
+        $regex   = $this->getRegularExpressionForRoute($route);
         $matches = [];
 
         if (! (bool)preg_match($regex, $path, $matches)) {
@@ -88,14 +71,6 @@ final class RouteMatcher
         return new RouteMatchResult($route, $arguments);
     }
 
-    /**
-     * Gets the URL.
-     *
-     * @param string $routeName The name of the route.
-     * @param array  $params    List of variables to replace.
-     *
-     * @return string           The URL that matches the path.
-     */
     public function getUrl(
         string $routeName,
         array $parameters
@@ -114,12 +89,6 @@ final class RouteMatcher
         );
     }
 
-    /**
-     * Gets the first route that matches the given request.
-     *
-     * @param Request $request  The request to run.
-     * @return RouteMatchResult The response generated from the first route that match the Url.
-     */
     public function getRouteForRequest(Request $request): RouteMatchResult
     {
         foreach ($this->routeMap as $route) {

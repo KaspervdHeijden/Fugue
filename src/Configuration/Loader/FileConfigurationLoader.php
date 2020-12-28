@@ -27,12 +27,6 @@ abstract class FileConfigurationLoader implements ConfigurationLoaderInterface
         $this->name      = $name;
     }
 
-    /**
-     * Loads the configuration from disk.
-     *
-     * @param string $filename The filename to load.
-     * @return iterable|null   Should return an iterable, or NULL on failure.
-     */
     abstract protected function loadFromFile(string $filename): ?iterable;
 
     private function getPathInfoForIdentifier(

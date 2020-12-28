@@ -32,6 +32,7 @@ final class StreamWriter implements WriterInterface
 
     private string $filename;
     private string $mode;
+
     /** @var resource|null */
     private $handle;
 
@@ -70,8 +71,6 @@ final class StreamWriter implements WriterInterface
     }
 
     /**
-     * Gets a handle to the file.
-     *
      * @return resource The file handle
      */
     private function getHandle()
@@ -89,9 +88,6 @@ final class StreamWriter implements WriterInterface
         return $this->handle;
     }
 
-    /**
-     * Closes the internal file pointer.
-     */
     public function close(): void
     {
         if (is_resource($this->handle)) {
@@ -100,16 +96,10 @@ final class StreamWriter implements WriterInterface
         }
     }
 
-    /**
-     * Writes to the file.
-     *
-     * @param string The string to write.
-     * @return int   The number of bytes written.
-     */
-    public function write(string $text): int
+    public function write(string $string): int
     {
         $handle  = $this->getHandle();
-        $written = fwrite($handle, $text);
+        $written = fwrite($handle, $string);
 
         if (! is_int($written)) {
             throw IOException::forWritingToFilename($this->filename);

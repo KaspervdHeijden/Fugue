@@ -15,11 +15,6 @@ final class FileLogger extends Logger
         $this->streamWriter = $streamWriter;
     }
 
-    /**
-     * Gets the filename this logger logs to.
-     *
-     * @return string The filename for this FileLogger.
-     */
     public function getFilename(): string
     {
         return $this->streamWriter->getFilename();

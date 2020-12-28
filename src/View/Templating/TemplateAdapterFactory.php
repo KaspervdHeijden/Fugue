@@ -13,12 +13,6 @@ final class TemplateAdapterFactory
         $this->templates = $templateInterfaces;
     }
 
-    /**
-     * Gets a TemplateInterface.
-     *
-     * @param string $name       The template filename to get the TemplateInterface for.
-     * @return TemplateInterface The TemplateInterface.
-     */
     public function getForTemplate(string $name): TemplateInterface
     {
         foreach ($this->templates as $template) {

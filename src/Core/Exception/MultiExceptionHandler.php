@@ -16,10 +16,10 @@ final class MultiExceptionHandler implements ExceptionHandlerInterface
         $this->handlers = $handlers;
     }
 
-    public function handle(Throwable $exception): void
+    public function handle(Throwable $throwable): void
     {
         foreach ($this->handlers as $handler) {
-            $handler->handle($exception);
+            $handler->handle($throwable);
         }
     }
 }

@@ -51,15 +51,6 @@ final class Request
     private ?bool $secure = null;
     private ?Url $url = null;
 
-    /**
-     * Creates a request object.
-     *
-     * @param PropertyBag $get    The GET data.
-     * @param PropertyBag $post   The POST data.
-     * @param PropertyBag $cookie The COOKIE data.
-     * @param PropertyBag $files  The FILES data.
-     * @param PropertyBag $server The SERVER data.
-     */
     public function __construct(
         PropertyBag $get,
         PropertyBag $post,
@@ -76,11 +67,6 @@ final class Request
         $this->env    = $env;
     }
 
-    /**
-     * Gets the URL of the current Request.
-     *
-     * @return Url The current Request URL.
-     */
     public function getUrl(): Url
     {
         if (! $this->url instanceof Url) {
@@ -94,11 +80,6 @@ final class Request
         return $this->url;
     }
 
-    /**
-     * Gets a value indicating if this request is being done over a secure connection.
-     *
-     * @return bool TRUE if this is a secure request, FALSE otherwise.
-     */
     public function isSecure(): bool
     {
         if ($this->secure === null) {
@@ -113,11 +94,6 @@ final class Request
         return $this->secure;
     }
 
-    /**
-     * Gets the Request protocol used for this request.
-     *
-     * @return string The request protocol.
-     */
     public function getProtocol(): string
     {
         if ($this->protocol === null) {
@@ -130,11 +106,6 @@ final class Request
         return $this->protocol;
     }
 
-    /**
-     * Gets the Request method used for this request.
-     *
-     * @return string The request method.
-     */
     public function getMethod(): string
     {
         if ($this->method === null) {
@@ -147,91 +118,46 @@ final class Request
         return $this->method;
     }
 
-    /**
-     * Is this a HEAD request?
-     *
-     * @return bool
-     */
     public function isHeadRequest(): bool
     {
         return ($this->getMethod() === self::METHOD_HEAD);
     }
 
-    /**
-     * Is this a GET request?
-     *
-     * @return bool
-     */
     public function isGetRequest(): bool
     {
         return ($this->getMethod() === self::METHOD_GET);
     }
 
-    /**
-     * Is this a POST request?
-     *
-     * @return bool
-     */
     public function isPostRequest(): bool
     {
         return ($this->getMethod() === self::METHOD_POST);
     }
 
-    /**
-     * Gets the SERVER PropertyBag.
-     *
-     * @return PropertyBag The $_SERVER PropertyBag.
-     */
     public function server(): PropertyBag
     {
         return $this->server;
     }
 
-    /**
-     * Gets the COOKIE PropertyBag.
-     *
-     * @return PropertyBag The $_COOKIE PropertyBag.
-     */
     public function cookie(): PropertyBag
     {
         return $this->cookie;
     }
 
-    /**
-     * Gets the GET PropertyBag.
-     *
-     * @return PropertyBag The $_GET PropertyBag.
-     */
     public function get(): PropertyBag
     {
         return $this->get;
     }
 
-    /**
-     * Gets the POST PropertyBag.
-     *
-     * @return PropertyBag The $_POST PropertyBag.
-     */
     public function post(): PropertyBag
     {
         return $this->post;
     }
 
-    /**
-     * Gets the FILES PropertyBag.
-     *
-     * @return PropertyBag The $_FILES PropertyBag.
-     */
     public function files(): PropertyBag
     {
         return $this->files;
     }
 
-    /**
-     * Gets the ENV PropertyBag.
-     *
-     * @return PropertyBag The $_ENV PropertyBag.
-     */
     public function env(): PropertyBag
     {
         return $this->env;
@@ -245,7 +171,7 @@ final class Request
         array $cookie = [],
         array $files  = []
     ): self {
-        return new static(
+        return new Request(
             new PropertyBag($get),
             new PropertyBag($post),
             new PropertyBag($cookie),

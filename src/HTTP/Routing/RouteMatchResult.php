@@ -11,7 +11,6 @@ final class RouteMatchResult
     private Route $route;
 
     /**
-     * @param Route    $route
      * @param string[] $arguments
      */
     public function __construct(Route $route, array $arguments)

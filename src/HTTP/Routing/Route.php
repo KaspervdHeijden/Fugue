@@ -14,19 +14,10 @@ final class Route
     /** @var callable|string */
     private $handler;
 
-    /** @var string|null */
     private ?string $method;
     private string $name;
     private string $url;
 
-    /**
-     * Creates a Route.
-     *
-     * @param string $name             The name of the Route
-     * @param string $url              The path match.
-     * @param string|null $method      The method used.
-     * @param callable|string $handler The handler to perform.
-     */
     private function __construct(
         string $name,
         string $url,
@@ -68,15 +59,6 @@ final class Route
         return new static($name, $url, $method, $handler);
     }
 
-    /**
-     * Binds a GET handler to a route.
-     *
-     * @param string          $url     The url template that matches the path.
-     * @param callable|string $handler The Handler to run.
-     * @param string          $name    The name of the Route.
-     *
-     * @return Route                   The added Route.
-     */
     public static function get(
         string $url,
         $handler,
@@ -85,15 +67,6 @@ final class Route
         return self::any($url, $handler, $name, Request::METHOD_GET);
     }
 
-    /**
-     * Binds a POST handler to a route.
-     *
-     * @param string          $url     The url template that matches the path.
-     * @param callable|string $handler The Handler to run.
-     * @param string          $name    The name of the Route.
-     *
-     * @return Route                   The added Route.
-     */
     public static function post(
         string $url,
         $handler,
@@ -102,15 +75,6 @@ final class Route
         return self::any($url, $handler, $name, Request::METHOD_POST);
     }
 
-    /**
-     * Binds a PUT handler to a route.
-     *
-     * @param string          $url     The url template that matches the path.
-     * @param callable|string $handler The Handler to run.
-     * @param string          $name    The name of the Route.
-     *
-     * @return Route                   The added Route.
-     */
     public static function put(
         string $url,
         $handler,
@@ -119,15 +83,6 @@ final class Route
         return self::any($url, $handler, $name, Request::METHOD_PUT);
     }
 
-    /**
-     * Binds a DELETE handler to a route.
-     *
-     * @param string          $url     The url template that matches the path.
-     * @param callable|string $handler The handler to run.
-     * @param string          $name    The name of the Route.
-     *
-     * @return Route                   The added Route.
-     */
     public static function delete(
         string $url,
         $handler,
@@ -136,39 +91,22 @@ final class Route
         return self::any($url, $handler, $name, Request::METHOD_DELETE);
     }
 
-    /**
-     * Gets the name of the Route.
-     *
-     * @return string The Route's name.
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * Gets the match of the Route.
-     *
-     * @return string The Route's path match.
-     */
     public function getUrl(): string
     {
         return $this->url;
     }
 
-    /**
-     * Gets the method of the Route.
-     *
-     * @return string The Route's method requirement.
-     */
     public function getMethod(): ?string
     {
         return $this->method;
     }
 
     /**
-     * Gets the handler.
-     *
      * @return callable|string
      */
     public function getHandler()

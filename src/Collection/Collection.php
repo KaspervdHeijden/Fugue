@@ -57,12 +57,6 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         }
     }
 
-    /**
-     * Determines if this collection contains the supplied key.
-     *
-     * @param string|int|null $key The key to test for.
-     * @return bool                TRUE if the key exists in this map, FALSE otherwise.
-     */
     public function containsKey($key): bool
     {
         return (bool)array_key_exists($key, $this->elements);
@@ -96,14 +90,6 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         $this->unset($offset);
     }
 
-    /**
-     * Gets a value.
-     *
-     * @param string|int $key     The name of the value to get.
-     * @param mixed      $default A default for if the value does not exist.
-     *
-     * @return mixed              The value found, or the default.
-     */
     public function get($key, $default = null)
     {
         if (! $this->checkKey($key)) {
@@ -113,12 +99,6 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         return $this->elements[$key] ?? $default;
     }
 
-    /**
-     * Sets a value.
-     *
-     * @param mixed           $value The value to store.
-     * @param string|int|null $key   The name of the value to set.
-     */
     public function set($value, $key = null): void
     {
         if (! $this->checkKey($key)) {
@@ -147,13 +127,6 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         }
     }
 
-    /**
-     * Filters the collection given a filter method.
-     *
-     * @param callable The filter method.
-     * @return static  A new collection based on the
-     *                 return values of the filter method.
-     */
     public function filter(callable $filter): self
     {
         return new static(
@@ -162,39 +135,6 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         );
     }
 
-    /**
-     * Returns true if the calls to given method
-     * returns the expected result for all elements.
-     *
-     * This implementation stops at the first failure.
-     *
-     * @param callable $conditionMethod The method performing the test on the elements.
-     * @param mixed    $expectedResult  The expected result.
-     *
-     * @return bool                     TRUE if all method calls return TRUE, FALSE otherwise.
-     */
-    public function every(
-        callable $conditionMethod,
-        $expectedResult = true
-    ): bool {
-        foreach ($this->elements as $element) {
-            if ($conditionMethod($element) !== $expectedResult) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Performs a reduce where this collection
-     * elements are reduced to a single value.
-     *
-     * @param callable $combinator   Method returns a single value given two elements.
-     * @param mixed    $initialValue The initial value to use.
-     *
-     * @return mixed   The single reduced value.
-     */
     public function reduce(
         callable $combinator,
         $initialValue = null
@@ -216,12 +156,6 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         );
     }
 
-    /**
-     * Checks if the given value type is acceptable.
-     *
-     * @param mixed $value The value to check.
-     * @return bool        TRUE if the value is to be accepted, FALSE otherwise.
-     */
     protected function checkValue($value): bool
     {
         if (! is_string($this->type)) {
@@ -235,65 +169,36 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         return ($value instanceof $this->type);
     }
 
-    /**
-     * Checks if the given key type is acceptable.
-     *
-     * @param string|int|null $key The key to check.
-     * @return bool                TRUE if the key is acceptable, FALSE otherwise.
-     */
     protected function checkKey($key): bool
     {
         return true;
     }
 
-    /**
-     * Clears the collection.
-     */
     public function clear(): void
     {
         $this->elements = [];
     }
 
-    /**
-     * Gets the data in this collection as an array.
-     *
-     * @return array The elements of this collection as an array.
-     */
     public function toArray(): array
     {
         return $this->elements;
     }
 
-    /**
-     * Determines if this collection contains the supplied value.
-     *
-     * @param mixed $element The element to test for.
-     * @return bool          TRUE if the key exists in this Map, FALSE otherwise.
-     */
     public function contains($element): bool
     {
         return array_search($element, $this->elements, true) !== false;
     }
 
-    /**
-     * Gets a list of all keys defined in this Collection.
-     *
-     * @return string[]|int[] List of keys.
-     */
     public function keys(): array
     {
         return array_keys($this->elements);
     }
 
-    /**
-     * Gets a subset of this collection.
-     *
-     * @param int      $offset The start of the subset index.
-     * @param int|null $length The length of the subset, of NULL for all.
-     *
-     * @return Collection      The subset collection.
-     */
-    public function slice(int $offset, ?int $length = null): self
+    public function slice(
+        int $offset,
+        ?int $length  = null,
+        ?string $type = null
+    ): self
     {
         return new static(
             array_slice(
@@ -302,15 +207,10 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
                 $length,
                 true
             ),
-            $this->type
+            ($type !== null) ? $type : $this->type
         );
     }
 
-    /**
-     * Gets the first element.
-     *
-     * @return mixed The first element in this collection, or NULL if this collection is empty.
-     */
     public function first()
     {
         $key = array_key_first($this->elements);
@@ -321,11 +221,6 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         return $this->elements[$key];
     }
 
-    /**
-     * Gets the last element.
-     *
-     * @return mixed The last element in this collection, or NULL if this collection is empty.
-     */
     public function last()
     {
         $key = array_key_last($this->elements);
@@ -336,11 +231,6 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         return $this->elements[$key];
     }
 
-    /**
-     * Checks to see if this collection is empty.
-     *
-     * @return bool TRUE if this collection is empty, FALSE otherwise.
-     */
     public function isEmpty(): bool
     {
         return count($this->elements) === 0;
@@ -354,5 +244,35 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     public function count(): int
     {
         return count($this->elements);
+    }
+
+    public function every(
+        callable $checker,
+        $expectedResult = true
+    ): bool {
+        foreach ($this->elements as $element) {
+            if ($checker($element) !== $expectedResult) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function any(
+        callable $checker,
+        $expectedResult = true
+    ): bool {
+        if ($this->isEmpty()) {
+            return true;
+        }
+
+        foreach ($this->elements as $key => $element) {
+            if ($checker($element, $key) === $expectedResult) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

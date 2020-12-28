@@ -77,14 +77,6 @@ abstract class Controller
         );
     }
 
-    /**
-     * Generates a JSON response.
-     *
-     * @param array $data       The data to return as a JSON file.
-     * @param int   $statusCode The status code for the response.
-     *
-     * @return Response         The generated response.
-     */
     protected function createJSONResponse(
         array $data,
         int $statusCode = Response::HTTP_OK
@@ -96,14 +88,6 @@ abstract class Controller
         );
     }
 
-    /**
-     * Generates a plain text response.
-     *
-     * @param string $text       The data to return as a JSON file.
-     * @param int    $statusCode The status code for the response.
-     *
-     * @return Response          The generated response.
-     */
     protected function createPlainTextResponse(
         string $text,
         int $statusCode = Response::HTTP_OK
@@ -115,15 +99,6 @@ abstract class Controller
         );
     }
 
-    /**
-     * Generates a CSV response.
-     *
-     * @param string $csv         The CSV content.
-     * @param string $fileName    The CSV filename.
-     * @param int    $statusCode  The status code for the response.
-     *
-     * @return Response           The generated response.
-     */
     protected function createCSVResponse(
         string $csv,
         string $fileName = '',
@@ -142,16 +117,6 @@ abstract class Controller
         );
     }
 
-    /**
-     * Generates a view for a redirect.
-     *
-     * @param string $url        The URL to redirect to.
-     * @param string $message    The message to show.
-     * @param int    $statusCode The status code for the response.
-     *                           Defaults to "302 Moved Temporarily".
-     *
-     * @return Response          The generated response.
-     */
     protected function createRedirectResponse(
         string $url,
         string $message = '',
@@ -169,16 +134,6 @@ abstract class Controller
         );
     }
 
-    /**
-     * Renders a view without a document context.
-     *
-     * @param string $contentTemplate The content template file.
-     * @param array  $variables       HashMap of variables to pass to the template.
-     * @param string $contentType     The content type of the response.
-     * @param int    $statusCode      The status code for the response.
-     *
-     * @return Response               The generated content.
-     */
     protected function renderView(
         string $contentTemplate,
         array $variables    = [],

@@ -6,14 +6,6 @@ namespace Fugue\Persistence\Database;
 
 interface DatabaseQueryAdapterInterface
 {
-    /**
-     * Performs a query on the database.
-     *
-     * @param string $sql       The SQL query to perform.
-     * @param array  $params    Replaceable parameters.
-     *
-     * @return QueryResult      The result of the query.
-     */
     public function query(string $sql, array $params = []): QueryResult;
 
     /**
@@ -23,7 +15,7 @@ interface DatabaseQueryAdapterInterface
      * @param array       $params    Replaceable parameters.
      * @param string|null $className The name of the class to load the results in.
      *
-     * @return object|null      An instance of $className, or NULL if not found.
+     * @return object|null           An instance of $className, or NULL if not found.
      */
     public function fetchOne(string $sql, array $params = [], ?string $className = null): ?object;
 
@@ -34,7 +26,7 @@ interface DatabaseQueryAdapterInterface
      * @param array       $params    Replaceable parameters.
      * @param string|null $className The name of the class to load the results in.
      *
-     * @return object[]         An array of instances of $className.
+     * @return object[]              An array of instances of $className.
      */
     public function fetchAll(string $sql, array $params = [], ?string $className = null): array;
 
