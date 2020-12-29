@@ -11,9 +11,6 @@ use function is_array;
 
 final class Url
 {
-    /**
-     * @var int The default port number.
-     */
     public const DEFAULT_PORT = 80;
 
     private ?string $parts = null;

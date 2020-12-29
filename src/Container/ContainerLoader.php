@@ -13,10 +13,7 @@ use Fugue\Core\Kernel;
 
 final class ContainerLoader
 {
-    /** @var string */
     private const CONFIG_ID_SERVICES = 'services';
-
-    /** @var string */
     private const CONFIG_ID_ROUTES   = 'routes';
 
     private ConfigurationLoaderInterface $configLoader;

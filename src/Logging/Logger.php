@@ -10,22 +10,17 @@ use function trim;
 
 abstract class Logger implements LoggerInterface
 {
-    /** @var string */
     public const DEFAULT_DATE_FORMAT = 'Y-m-d H:i:s';
 
-    private string $dateFormat = self::DEFAULT_DATE_FORMAT;
-
-    /** @var string */
     public const TYPE_WARNING = 'WARNING';
 
-    /** @var string */
     public const TYPE_VERBOSE = 'VERBOSE';
 
-    /** @var string */
     public const TYPE_ERROR   = 'ERROR';
 
-    /** @var string */
     public const TYPE_INFO    = 'INFO';
+
+    private string $dateFormat = self::DEFAULT_DATE_FORMAT;
 
     protected function getFormattedMessage(
         string $logType,

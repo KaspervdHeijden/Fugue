@@ -21,6 +21,7 @@ abstract class ContainerDefinition implements ContainerDefinitionInterface
         $this->name       = $name;
     }
 
+    /** @noinspection PhpUnusedParameterInspection */
     protected function isValidDefinition($definition): bool
     {
         return true;

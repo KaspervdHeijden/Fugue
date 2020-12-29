@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Fugue\HTTP;
 
+use Countable;
+
+use function mb_strlen;
 use function strlen;
 
-final class StringBuffer
+final class StringBuffer implements Countable
 {
     private string $buffer;
 
@@ -35,8 +38,18 @@ final class StringBuffer
         $this->buffer .= $value;
     }
 
-    public function length(): int
+    public function byteLength(): int
     {
         return strlen($this->buffer);
+    }
+
+    public function length(): int
+    {
+        return mb_strlen($this->buffer);
+    }
+
+    public function count(): int
+    {
+        return $this->length();
     }
 }

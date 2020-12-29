@@ -50,7 +50,7 @@ final class Email
         string $text,
         string $from
     ): self {
-        return new static(
+        return new Email(
             RecipientList::forValues(new ToRecipient(new EmailAddress($to))),
             new MailPartList([new PlainTextMessage($text)]),
             $subject,
@@ -66,7 +66,7 @@ final class Email
         string $text,
         string $from
     ): self {
-        return new static(
+        return new Email(
             RecipientList::forValues(new ToRecipient(new EmailAddress($to))),
             new MailPartList([new HtmlTextMessage($text)]),
             $subject,

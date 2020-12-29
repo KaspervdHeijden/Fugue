@@ -12,12 +12,8 @@ use Countable;
 use function is_string;
 use function count;
 
-/**
- * Container class. This allows for lazy loading of objects within a defined scope.
- */
 final class Container implements Countable, ArrayAccess
 {
-    /** @var ContainerDefinition[] */
     private array $definitions = [];
 
     public function __construct(ContainerDefinition ...$definitions)
@@ -37,7 +33,7 @@ final class Container implements Countable, ArrayAccess
         return $this->resolve($this->ensureStringName($name));
     }
 
-    public function __isset($name)
+    public function __isset($name): bool
     {
         return $this->isRegistered((string)$name);
     }
@@ -52,7 +48,7 @@ final class Container implements Countable, ArrayAccess
         return count($this->definitions);
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $this->isRegistered((string)$offset);
     }
@@ -102,8 +98,6 @@ final class Container implements Countable, ArrayAccess
      *
      * If you wish to bind a class instance that implements __call() by type RAW,
      * please specify self::TYPE_RAW implicitly, because those variables are methods.
-     *
-     * @param ContainerDefinition $definition The definition to register.
      */
     public function register(ContainerDefinition $definition): void
     {
@@ -113,7 +107,7 @@ final class Container implements Countable, ArrayAccess
     private function ensureStringName($name): string
     {
         if (! is_string($name)) {
-            throw new InvalidArgumentException('Names must be strings.');
+            throw new InvalidArgumentException('Name must be a string.');
         }
 
         return (string)$name;

@@ -12,35 +12,13 @@ use function chunk_split;
 
 abstract class MailPart
 {
-    /**
-     * @var string The quoted printable body encoding.
-     */
     public const TRANSFER_ENCODING_QUOTED_PRINTABLE = 'quoted-printable';
-
-    /**
-     * @var string The base64 body encoding.
-     */
     public const TRANSFER_ENCODING_BASE64 = 'base64';
-
-    /**
-     * @var string The 7bit body encoding.
-     */
     public const TRANSFER_ENCODING_7BIT = '7bit';
-
-    /**
-     * @var string No transfer encoding.
-     */
     public const TRANSFER_ENCODING_NONE = '';
 
-    /**
-     * @var int The maximum line length of an 64 encoded body.
-     */
+    public const NEWLINE                = "\r\n";
     public const BASE64_MAX_LINE_LENGTH = 76;
-
-    /**
-     * @var string Newline sequence for an email body.
-     */
-    public const NEWLINE = "\r\n";
 
     private string $transferEncoding;
     private string $contentType;

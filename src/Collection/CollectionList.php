@@ -25,6 +25,7 @@ class CollectionList extends Collection
         return false;
     }
 
+    /** @return static */
     public static function forValues(...$values): self
     {
         return new static($values);

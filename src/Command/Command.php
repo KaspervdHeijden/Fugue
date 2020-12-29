@@ -58,8 +58,5 @@ abstract class Command implements CommandInterface
         }
     }
 
-    /**
-     * Method containing the logic to perform when running a command.
-     */
     abstract protected function execute(CollectionList $arguments): void;
 }

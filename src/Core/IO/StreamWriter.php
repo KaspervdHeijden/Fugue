@@ -15,10 +15,8 @@ use function fopen;
 
 final class StreamWriter implements WriterInterface
 {
-    /** @var string */
     public const DEFAULT_MODE = 'w';
 
-    /** @var string[] */
     public const VALID_MODES = [
         'a+',
         'x+',

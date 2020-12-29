@@ -22,30 +22,14 @@ use function uniqid;
 
 abstract class Mailer implements EmailSenderInterface
 {
-    /** @var string */
     public const BOUNDARY_PREFIX = 'np';
+    public const MIME_VERSION    = '1.0';
 
-    /** @var string */
-    public const MIME_VERSION = '1.0';
-
-    /**
-     * Generates a boundary.
-     *
-     * @return string A boundary identifier.
-     */
     private function generateBoundary(): string
     {
         return uniqid(self::BOUNDARY_PREFIX, false);
     }
 
-    /**
-     * Generates the top-level headers for an email.
-     *
-     * @param Email  $email    The email to generate the top-level headers for.
-     * @param string $boundary The top-level boundary identifier.
-     *
-     * @return array           Key/Value pairs of headers.
-     */
     private function getHeaders(Email $email, string $boundary): array
     {
         $replyTo = $email->getReplyTo();
@@ -68,14 +52,6 @@ abstract class Mailer implements EmailSenderInterface
         return array_filter($headers);
     }
 
-    /**
-     * Generates a message body.
-     *
-     * @param Email   $email    The Email.
-     * @param string  $boundary The top-level boundary identifier.
-     *
-     * @return string The message body.
-     */
     private function getBody(Email $email, string $boundary): string
     {
         $contentBoundary = $this->generateBoundary();
@@ -132,11 +108,6 @@ abstract class Mailer implements EmailSenderInterface
         return implode(MailPart::NEWLINE, $body);
     }
 
-    /**
-     * Sends an email.
-     *
-     * @param Email $email The email to send.
-     */
     public function send(Email $email): void
     {
         $boundary = $this->generateBoundary();
@@ -153,7 +124,6 @@ abstract class Mailer implements EmailSenderInterface
 
     private function recipientListToString(Email $email, string $class): string
     {
-        /** @var CollectionMap $emailAddresses */
         $emailAddresses = $email->getRecipients()->reduce(
             static function (CollectionMap $carry, Recipient $recipient) use ($class): CollectionMap {
                 if ($recipient instanceof $class) {
@@ -168,14 +138,6 @@ abstract class Mailer implements EmailSenderInterface
         return implode(', ', $emailAddresses->keys());
     }
 
-    /**
-     * Implementation dependant method responsible for sending the email.
-     *
-     * @param string $to      The email recipient(s).
-     * @param string $subject The email subject.
-     * @param string $body    The email body.
-     * @param string $headers The additional top-level headers.
-     */
     abstract protected function sendMail(
         string $to,
         string $subject,

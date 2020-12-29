@@ -9,7 +9,6 @@ use function is_int;
 
 final class MultiOutputHandler implements OutputHandlerInterface
 {
-    /** @var OutputHandlerInterface[] */
     private array $outputHandlers;
 
     public function __construct(OutputHandlerInterface ...$outputHandlers)

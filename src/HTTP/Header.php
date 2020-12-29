@@ -18,25 +18,18 @@ use function trim;
 
 final class Header
 {
-    /** @var string */
     public const NAME_CONTENT_DISPOSITION = 'content_disposition';
 
-    /** @var string */
     public const NAME_CONTENT_TYPE = 'content_type';
 
-    /** @var string */
     public const NAME_LAST_MODIFIED = 'last_modified';
 
-    /** @var string */
     public const NAME_CONTENT_LENGTH = 'content_length';
 
-    /** @var string */
     public const NAME_CACHE_CONTROL = 'cache_control';
 
-    /** @var string */
     public const NAME_LOCATION = 'location';
 
-    /** @var string */
     public const NAME_EXPIRES = 'expires';
 
     private CollectionMap $parts;
@@ -141,7 +134,7 @@ final class Header
     public static function expires(DateTimeInterface $expires): self
     {
         return new Header(
-            self::NAME_CONTENT_TYPE,
+            self::NAME_EXPIRES,
             $expires->format('D, d M Y H:i:s') . ' GTM'
         );
     }

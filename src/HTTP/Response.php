@@ -11,163 +11,115 @@ final class Response
     /*
      * Informative
      */
-    /** @var int */
     public const HTTP_CONTINUE = 100;
 
-    /** @var int */
     public const HTTP_SWITCHING_PROTOCOLS = 101;
 
     /*
      * Success
      */
-    /** @var int */
     public const HTTP_OK = 200;
-
-    /** @var int */
+    
     public const HTTP_CREATED = 201;
-
-    /** @var int */
+    
     public const HTTP_ACCEPTED = 202;
-
-    /** @var int */
+    
     public const HTTP_NONAUTHORITATIVE_INFORMATION = 203;
-
-    /** @var int */
+    
     public const HTTP_NO_CONTENT = 204;
-
-    /** @var int */
+    
     public const HTTP_RESET_CONTENT = 205;
-
-    /** @var int */
+    
     public const HTTP_PARTIAL_CONTENT = 206;
 
     /*
      * Redirects
      */
-    /** @var int */
     public const HTTP_MULTIPLE_CHOICES = 300;
 
-    /** @var int */
     public const HTTP_MOVED_PERMANENTLY = 301;
 
-    /** @var int */
     public const HTTP_MOVED_TEMPORARILY = 302;
 
-    /** @var int */
     public const HTTP_FOUND = 302;
 
-    /** @var int */
     public const HTTP_SEE_OTHER = 303;
 
-    /** @var int */
     public const HTTP_NOT_MODIFIED = 304;
 
-    /** @var int */
     public const HTTP_USE_PROXY = 305;
 
     /*
      * Client errors
      */
-    /** @var int */
     public const HTTP_BAD_REQUEST = 400;
 
-    /** @var int */
     public const HTTP_UNAUTHORIZED = 401;
 
-    /** @var int */
     public const HTTP_PAYMENT_REQUIRED = 402;
 
-    /** @var int */
     public const HTTP_FORBIDDEN = 403;
 
-    /** @var int */
     public const HTTP_NOT_FOUND = 404;
 
-    /** @var int */
     public const HTTP_METHOD_NOT_ALLOWED = 405;
 
-    /** @var int */
     public const HTTP_NOT_ACCEPTABLE = 406;
 
-    /** @var int */
     public const HTTP_PROXY_AUTHENTICATION_REQUIRED = 407;
 
-    /** @var int */
     public const HTTP_REQUEST_TIMEOUT = 408;
 
-    /** @var int */
     public const HTTP_CONFLICT = 409;
 
-    /** @var int */
     public const HTTP_GONE = 410;
 
-    /** @var int */
     public const HTTP_LENGTH_REQUIRED = 411;
 
-    /** @var int */
     public const HTTP_PRECONDITION_FAILED = 412;
 
-    /** @var int */
     public const HTTP_REQUEST_ENTITY_TOO_LARGE = 413;
 
-    /** @var int */
     public const HTTP_REQUESTURI_TOO_LARGE = 414;
 
-    /** @var int */
     public const HTTP_UNSUPPORTED_MEDIA_TYPE = 415;
 
-    /** @var int */
     public const HTTP_REQUESTED_RANGE_NOT_SATISFIABLE = 416;
 
-    /** @var int */
     public const HTTP_EXPECTATION_FAILED = 417;
 
-    /** @var int */
     public const HTTP_IM_A_TEAPOT = 418;
 
-    /** @var int */
     public const HTTP_ENHANCE_YOUR_CALM = 420;
 
     /*
      * Server errors
      */
-    /** @var int */
     public const HTTP_INTERNAL_SERVER_ERROR = 500;
 
-    /** @var int */
     public const HTTP_NOT_IMPLEMENTED = 501;
 
-    /** @var int */
     public const HTTP_BAD_GATEWAY = 502;
 
-    /** @var int */
     public const HTTP_SERVICE_UNAVAILABLE = 503;
 
-    /** @var int */
     public const HTTP_GATEWAY_TIMEOUT = 504;
 
-    /** @var int */
     public const HTTP_HTTP_VERSION_NOT_SUPPORTED = 505;
 
     /*
      * Constants for the content-type
      */
-    /** @var string */
     public const CONTENT_TYPE_JAVASCRIPT = 'text/javascript';
 
-    /** @var string */
     public const CONTENT_TYPE_PLAINTEXT  = 'text/plain';
 
-    /** @var string */
     public const CONTENT_TYPE_HTML = 'text/html';
 
-    /** @var string */
     public const CONTENT_TYPE_CSS = 'text/css';
 
-    /** @var string */
     public const CONTENT_TYPE_CSV = 'text/csv';
 
-    /** @var string */
     public const CONTENT_TYPE_PDF = 'application/pdf';
     
     private const STATUS_CODE_MAPPING = [

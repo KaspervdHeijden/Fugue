@@ -56,14 +56,14 @@ fi
 echo '- Checking PHP standards';
 if ! ./vendor/bin/phpstan analyse src/; then
   exitCode=$?;
-  echo 'PHP stan!' >&2;
+  echo 'PHP stan failed!' >&2;
   exit $exitCode;
 fi
 
 echo '- Checking console';
 if ! "${dirName}/bin/console" '\Fugue\Command\TestCommand'; then
   exitCode=$?;
-  echo 'Console failed!' >&2;
+  echo 'console test command failed!' >&2;
   exit $exitCode;
 fi
 

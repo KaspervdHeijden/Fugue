@@ -8,7 +8,6 @@ use Throwable;
 
 final class MultiExceptionHandler implements ExceptionHandlerInterface
 {
-    /** @var ExceptionHandlerInterface[] */
     private array $handlers;
 
     public function __construct(ExceptionHandlerInterface ...$handlers)

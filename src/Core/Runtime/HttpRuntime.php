@@ -83,7 +83,7 @@ final class HttpRuntime implements RuntimeInterface
     ): array {
         $headers = $response->getHeaders();
         if ($this->shouldSendContentLength($request, $response)) {
-            $headers[] = Header::contentLength($response->getContent()->length());
+            $headers[] = Header::contentLength($response->getContent()->byteLength());
         }
 
         $statusHeader = implode(' ', [

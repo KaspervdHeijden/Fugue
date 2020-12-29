@@ -112,6 +112,9 @@ final class PlainTextMessage extends TextMessage
             }
         })($document, $content, '');
 
-        return new static(trim($content), $transferEncoding);
+        return new PlainTextMessage(
+            trim($content),
+            $transferEncoding
+        );
     }
 }
