@@ -13,14 +13,14 @@ final class TemplateAdapterFactory
         $this->templates = $templateInterfaces;
     }
 
-    public function getForTemplate(string $name): TemplateInterface
+    public function getForTemplateName(string $templateName): TemplateInterface
     {
         foreach ($this->templates as $template) {
-            if ($template->supports($name)) {
+            if ($template->supports($templateName)) {
                 return $template;
             }
         }
 
-        throw InvalidTemplateException::forUnrecognizedTemplateName($name);
+        throw InvalidTemplateException::forUnrecognizedTemplateName($templateName);
     }
 }

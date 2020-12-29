@@ -18,7 +18,10 @@ use function array_search;
 use function array_merge;
 use function array_slice;
 use function array_keys;
+use function is_object;
 use function is_string;
+use function get_class;
+use function gettype;
 use function count;
 
 abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
@@ -40,6 +43,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         'real'      => 'is_float',
         'boolean'   => 'is_bool',
         'bool'      => 'is_bool',
+        'null'      => 'is_null',
         'int'       => 'is_int',
         'integer'   => 'is_int',
     ];
@@ -52,9 +56,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         ?string $type      = null
     ) {
         $this->type = $type;
-        foreach ($elements as $key => $value) {
-            $this->set($value, $key);
-        }
+        $this->push($elements);
     }
 
     public function containsKey($key): bool
@@ -62,7 +64,8 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         return (bool)array_key_exists($key, $this->elements);
     }
 
-    public function merge(self $other): self
+    /** @return static */
+    public function merge(?self $other): self
     {
         return new static(
             array_merge($this->elements, $other->elements),
@@ -77,7 +80,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
 
     public function offsetGet($offset)
     {
-        return $this->get($offset, null);
+        return $this->get($offset);
     }
 
     public function offsetSet($offset, $value): void
@@ -116,7 +119,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         }
     }
 
-    public function unset(...$keys): void
+    public function unset(string ...$keys): void
     {
         foreach ($keys as $key) {
             if (! $this->checkKey($key)) {
@@ -127,6 +130,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         }
     }
 
+    /** @return static */
     public function filter(callable $filter): self
     {
         return new static(
@@ -146,14 +150,22 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         );
     }
 
-    public function forEach(
-        callable $filter,
-        ?string $type = null
-    ): self {
-        return new static(
-            array_map($filter, $this->elements),
-            ($type !== null) ? $type : $this->type
-        );
+    public function implode(
+        string $glue = '',
+        ?callable $caster = null
+    ): string {
+        if ($caster === null) {
+            $caster = static function ($element): string {
+                return (string)$element;
+            };
+        }
+
+        return implode($glue, $this->map($caster));
+    }
+
+    public function map(callable $filter): array
+    {
+        return array_map($filter, $this->elements);
     }
 
     protected function checkValue($value): bool
@@ -169,6 +181,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         return ($value instanceof $this->type);
     }
 
+    /** @noinspection PhpUnusedParameterInspection */
     protected function checkKey($key): bool
     {
         return true;
@@ -194,11 +207,8 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         return array_keys($this->elements);
     }
 
-    public function slice(
-        int $offset,
-        ?int $length  = null,
-        ?string $type = null
-    ): self
+    /** @return static */
+    public function slice(int $offset, ?int $length = null): self
     {
         return new static(
             array_slice(
@@ -207,7 +217,16 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
                 $length,
                 true
             ),
-            ($type !== null) ? $type : $this->type
+            $this->type
+        );
+    }
+
+    /** @return static */
+    public function subset(int $start, ?int $end = null): self
+    {
+        return $this->slice(
+            $start,
+            $end === null ? null : ($end - $start)
         );
     }
 
@@ -274,5 +293,63 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         }
 
         return false;
+    }
+
+    public function push(iterable $elements): void
+    {
+        foreach ($elements as $key => $element) {
+            $this->set($element, $key);
+        }
+    }
+
+    /** @return static */
+    public static function forString(iterable $elements): self
+    {
+        return new static($elements, 'string');
+    }
+
+    /** @return static */
+    public static function forInt(iterable $elements): self
+    {
+        return new static($elements, 'int');
+    }
+
+    /** @return static */
+    public static function forFloat(iterable $elements): self
+    {
+        return new static($elements, 'float');
+    }
+
+    /** @return static */
+    public static function forBool(iterable $elements): self
+    {
+        return new static($elements, 'bool');
+    }
+
+    /** @return static */
+    public static function forAuto(iterable $elements): self
+    {
+        $runtimeClass = static::class;
+        if ($elements instanceof $runtimeClass) {
+            /** @var static $elements */
+            return $elements->merge(new static());
+        }
+
+        foreach ($elements as $element) {
+            if ($element === null) {
+                continue;
+            }
+
+            if (is_object($element)) {
+                return new static($elements, get_class($element));
+            }
+
+            $type = gettype($element);
+            if (isset(self::TYPE_MAPPING[$type])) {
+                return new static($elements, $type);
+            }
+        }
+
+        return new static($elements);
     }
 }
