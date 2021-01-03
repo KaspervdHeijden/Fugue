@@ -18,6 +18,7 @@ use Fugue\Container\ClassResolver;
 use Fugue\Core\Runtime\CLIRuntime;
 use Fugue\Command\CommandFactory;
 use Fugue\Core\FrontController;
+use Fugue\Container\Container;
 use Fugue\HTTP\Request;
 use Fugue\Core\Kernel;
 
@@ -27,11 +28,13 @@ require_once __DIR__ . '/../src/bootstrap.inc.php';
 {
     final protected function createRuntime(
         Kernel $kernel,
+        Container $container,
         ClassResolver $classResolver
     ): RuntimeInterface {
         $factory = new CommandFactory(
+            $kernel->getClassLoader(),
             $classResolver,
-            $kernel->getContainer()
+            $container
         );
 
         return new CLIRuntime($factory);

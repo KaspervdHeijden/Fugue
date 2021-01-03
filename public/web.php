@@ -17,6 +17,7 @@ use Fugue\Core\Runtime\RuntimeInterface;
 use Fugue\Core\Runtime\HttpRuntime;
 use Fugue\Container\ClassResolver;
 use Fugue\Core\FrontController;
+use Fugue\Container\Container;
 use Fugue\HTTP\Request;
 use Fugue\Core\Kernel;
 
@@ -26,13 +27,15 @@ require_once __DIR__ . '/../src/bootstrap.inc.php';
 {
     final protected function createRuntime(
         Kernel $kernel,
+        Container $container,
         ClassResolver $classResolver
     ): RuntimeInterface {
         return new HttpRuntime(
             $kernel->getOutputHandler(),
-            $kernel->getContainer()->resolve(RouteCollectionMap::class),
+            $kernel->getClassLoader(),
+            $container->resolve(RouteCollectionMap::class),
             $classResolver,
-            $kernel->getContainer(),
+            $container,
         );
     }
 })->handleRequest(Request::fromArrays($_SERVER, $_ENV, $_GET, $_POST, $_COOKIE, $_FILES));

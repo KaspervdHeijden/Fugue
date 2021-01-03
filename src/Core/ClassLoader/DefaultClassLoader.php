@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\Core\ClassLoader;
 
+use function class_exists;
 use function str_replace;
 use function is_readable;
 use function is_file;
@@ -41,5 +42,10 @@ final class DefaultClassLoader implements ClassLoaderInterface
                 require_once $fileName;
             })($fileName);
         }
+    }
+
+    public function exists(string $className, bool $autoload): bool
+    {
+        return class_exists($className, $autoload);
     }
 }

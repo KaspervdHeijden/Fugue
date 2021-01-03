@@ -13,6 +13,7 @@ use function count;
 
 final class Container implements Countable, ArrayAccess
 {
+    /** @var ContainerDefinition[] */
     private array $definitions = [];
 
     public function __construct(ContainerDefinition ...$definitions)

@@ -25,4 +25,9 @@ final class InvalidRouteHandlerException extends FugueException
             "Handler function does not exist: '{$className}->{$methodName}()'"
         );
     }
+
+    public static function emptyFunctionName(string $className): self
+    {
+        return new self("Handler function not given for '{$className}'");
+    }
 }

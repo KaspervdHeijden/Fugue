@@ -1,8 +1,7 @@
 # Fugue
 
-Fugue framework.
+Fugue Framework
 
 ## Features:
-- SOLID code design principles.
-- PSR-2 code.
-- MVC based.
+- SOLID code design principles
+- PSR-2 code

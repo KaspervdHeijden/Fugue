@@ -31,8 +31,6 @@ final class CLIRuntime implements RuntimeInterface
         $command  = $this->commandFactory->getForIdentifier((string)$argv[1]);
         $exitCode = $command->run(new CollectionList(array_slice($argv, 2), null));
 
-        if ($exitCode !== 0) {
-            exit($exitCode);
-        }
+        exit($exitCode);
     }
 }

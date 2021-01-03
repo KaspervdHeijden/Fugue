@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Fugue\Configuration\Loader;
 
-use Fugue\Collection\CollectionMap;
-use Fugue\Collection\Collection;
-
 use function is_readable;
-use function is_iterable;
+use function is_array;
 use function is_file;
 use function is_dir;
 
@@ -54,24 +51,24 @@ abstract class FileConfigurationLoader implements ConfigurationLoaderInterface
             $identifier
         );
 
-        return (bool)$pathInfo->success;
+        return $pathInfo->success;
     }
 
-    public function load(string $identifier): Collection
+    public function load(string $identifier): array
     {
         $pathInfo = $this->getPathInfoForIdentifier($this->directory, $identifier);
-        if (! (bool)$pathInfo->success) {
+        if (! $pathInfo->success) {
             throw ConfigurationLoadException::notSupportedIdentifier(
                 static::class,
                 $identifier
             );
         }
 
-        $results = $this->loadFromFile((string)$pathInfo->filename);
-        if (! is_iterable($results)) {
+        $results = $this->loadFromFile($pathInfo->filename);
+        if (! is_array($results)) {
             throw ConfigurationLoadException::configurationNotIterable($identifier);
         }
 
-        return new CollectionMap($results);
+        return $results;
     }
 }

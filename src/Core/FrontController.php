@@ -22,6 +22,7 @@ use Fugue\Logging\LoggerInterface;
 use Fugue\Container\ClassResolver;
 use Fugue\Logging\OutputLogger;
 use Fugue\Caching\MemoryCache;
+use Fugue\Container\Container;
 use Fugue\HTTP\Request;
 use Throwable;
 
@@ -39,6 +40,7 @@ use function rtrim;
 
 abstract class FrontController
 {
+    private ConfigurationLoaderInterface $configLoader;
     private int $errorLevel;
     private Kernel $kernel;
 
@@ -50,22 +52,22 @@ abstract class FrontController
         int $errorLevel,
         string $charset,
         bool $displayErrors,
-        ?ClassLoaderInterface $classLoader           = null,
         ?OutputHandlerInterface $outputHandler       = null,
         ?ConfigurationLoaderInterface $configLoader  = null,
         ?ExceptionHandlerInterface $exceptionHandler = null,
-        ?LoggerInterface $logger                     = null
+        ?LoggerInterface $logger                     = null,
+        ?ClassLoaderInterface $classLoader           = null
     ) {
-        $rootDir = mb_substr(rtrim(__DIR__, DIRECTORY_SEPARATOR), 0, -4);
-        if (! $classLoader instanceof ClassLoaderInterface) {
-            $root        = array_slice(explode('\\', self::class), 0, 1)[0];
-            $classLoader = new DefaultClassLoader($rootDir, $root);
-        }
+        $rootDir     = mb_substr(rtrim(__DIR__, DIRECTORY_SEPARATOR), 0, -4);
+        $classLoader = $classLoader ?: new DefaultClassLoader(
+            $rootDir,
+            array_slice(explode('\\', self::class), 0, 1)[0]
+        );
 
         spl_autoload_register([$classLoader, 'loadClass'], true, true);
 
-        $outputHandler = $outputHandler ?: new StandardOutputHandler();
-        $configLoader  = $configLoader ?: new MultiConfigurationLoader(
+        $outputHandler      = $outputHandler ?: new StandardOutputHandler();
+        $this->configLoader = $configLoader ?: new MultiConfigurationLoader(
             new JsonConfigurationLoader("{$rootDir}/../conf", 'json'),
             new IniConfigurationLoader("{$rootDir}/../conf", 'ini'),
             new PHPConfigurationLoader("{$rootDir}/../conf", 'php'),
@@ -76,7 +78,6 @@ abstract class FrontController
             $exceptionHandler ?: new OutputExceptionHandler($outputHandler),
             $outputHandler,
             $classLoader,
-            $configLoader,
             $logger ?: new OutputLogger($outputHandler, true),
         );
 
@@ -96,15 +97,13 @@ abstract class FrontController
         ExceptionHandlerInterface $exceptionHandler,
         OutputHandlerInterface $outputHandler,
         ClassLoaderInterface $classLoader,
-        ConfigurationLoaderInterface $configLoader,
         LoggerInterface $logger
     ): Kernel {
         return new Kernel(
             $exceptionHandler,
             $outputHandler,
             $classLoader,
-            new ContainerLoader($configLoader),
-            $logger,
+            $logger
         );
     }
 
@@ -138,13 +137,20 @@ abstract class FrontController
 
     abstract protected function createRuntime(
         Kernel $kernel,
+        Container $container,
         ClassResolver $classResolver
     ): RuntimeInterface;
 
     public function handleRequest(Request $request): void
     {
-        $resolver = new ClassResolver(new MemoryCache());
-        $runtime  = $this->createRuntime($this->kernel, $resolver);
+        $loader    = new ContainerLoader($this->configLoader);
+        $container = $loader->createForKernel($this->kernel);
+        $resolver  = new ClassResolver(new MemoryCache());
+        $runtime   = $this->createRuntime(
+            $this->kernel,
+            $container,
+            $resolver
+        );
 
         $runtime->handle($request);
     }

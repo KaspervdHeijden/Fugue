@@ -7,8 +7,7 @@ namespace Fugue\Container;
 abstract class ContainerDefinition implements ContainerDefinitionInterface
 {
     /** @var mixed */
-    protected $definition;
-
+    private $definition;
     private string $name;
 
     public function __construct(string $name, $definition)

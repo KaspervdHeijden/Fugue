@@ -27,7 +27,7 @@ final class MultiConfigurationLoader implements ConfigurationLoaderInterface
         return false;
     }
 
-    public function load(string $identifier): Collection
+    public function load(string $identifier): array
     {
         foreach ($this->configLoaders as $loader) {
             if ($loader->supports($identifier)) {

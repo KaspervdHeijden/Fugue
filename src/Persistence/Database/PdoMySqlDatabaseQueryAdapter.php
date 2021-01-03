@@ -163,9 +163,7 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
         $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return array_map(
-            static function (array $record) use ($mapper, $className) {
-                return $mapper->arrayToObject($record);
-            },
+            static fn (array $record) => $mapper->arrayToObject($record),
             $records
         );
     }

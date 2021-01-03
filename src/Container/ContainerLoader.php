@@ -58,7 +58,9 @@ final class ContainerLoader
 
         if ($this->configLoader->supports(self::CONFIG_ID_SERVICES)) {
             $definitions = $this->configLoader->load(self::CONFIG_ID_SERVICES);
-            $definitions->map(static fn (ContainerDefinition $definition) => $container->register($definition));
+            foreach ($definitions as $definition) {
+                $container->register($definition);
+            }
         }
 
         return $container;

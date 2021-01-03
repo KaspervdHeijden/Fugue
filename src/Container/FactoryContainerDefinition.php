@@ -15,6 +15,6 @@ final class FactoryContainerDefinition extends ContainerDefinition
 
     public function resolve(Container $container)
     {
-        return ($this->definition)($container);
+        return $this->getDefinition()($container);
     }
 }

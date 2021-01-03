@@ -38,7 +38,7 @@ final class StringBuffer implements Countable
         $this->buffer .= $value;
     }
 
-    public function byteLength(): int
+    public function size(): int
     {
         return strlen($this->buffer);
     }

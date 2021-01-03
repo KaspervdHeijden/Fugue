@@ -16,8 +16,7 @@ use function fopen;
 final class StreamWriter implements WriterInterface
 {
     public const DEFAULT_MODE = 'w';
-
-    public const VALID_MODES = [
+    public const VALID_MODES  = [
         'a+',
         'x+',
         'w+',
@@ -45,11 +44,18 @@ final class StreamWriter implements WriterInterface
         }
 
         if ($filename === '') {
-            throw new InvalidArgumentException('Filename should not be empty');
+            throw new InvalidArgumentException(
+                'Filename should not be empty'
+            );
         }
 
         $this->filename = $filename;
         $this->mode     = $mode;
+    }
+
+    public function __destruct()
+    {
+        $this->close();
     }
 
     public function getFilename(): string

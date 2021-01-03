@@ -8,6 +8,6 @@ final class RawContainerDefinition extends ContainerDefinition
 {
     public function resolve(Container $container)
     {
-        return $this->definition;
+        return $this->getDefinition();
     }
 }

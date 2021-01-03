@@ -22,9 +22,9 @@ return [
                 $settings['dsn'],
                 $settings['user'],
                 $settings['password'],
-                $settings['charset'],
-                $settings['timezone'],
-                $settings['options']
+                $settings['charset'] ?? 'UTF-8',
+                $settings['timezone'] ?? 'UTC',
+                $settings['options'] ?? []
             );
 
             return new PdoMySqlDatabaseQueryAdapter($config, new EmptyLogger());
