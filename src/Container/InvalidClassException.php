@@ -10,6 +10,6 @@ final class InvalidClassException extends FugueException
 {
     public static function forClassName(string $className): self
     {
-        return new self("Could not load class {$className}.");
+        return new self("Could not load class {$className}");
     }
 }

@@ -6,7 +6,7 @@ namespace Fugue\Caching;
 
 final class EmptyCache implements CacheInterface
 {
-    public function hasValueForKey(string $key): bool
+    public function hasEntry(string $key): bool
     {
         return false;
     }

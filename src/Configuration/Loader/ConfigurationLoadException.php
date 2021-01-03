@@ -12,7 +12,7 @@ final class ConfigurationLoadException extends FugueException
         string $className,
         string $identifier
     ): self {
-        return new self("{$className} does not support '{$identifier}'.");
+        return new self("{$className} does not support '{$identifier}'");
     }
 
     public static function configurationNotIterable(string $identifier): self

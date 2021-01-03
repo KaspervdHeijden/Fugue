@@ -10,14 +10,14 @@ final class MemoryCache implements CacheInterface
 {
     private array $items = [];
 
-    public function hasValueForKey(string $key): bool
+    public function hasEntry(string $key): bool
     {
         return array_key_exists($key, $this->items);
     }
 
     public function retrieve(string $key)
     {
-        if (! $this->hasValueForKey($key)) {
+        if (! $this->hasEntry($key)) {
             throw ValueNotFoundException::forKey($key);
         }
 

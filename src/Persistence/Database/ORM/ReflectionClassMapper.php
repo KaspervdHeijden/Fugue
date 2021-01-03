@@ -21,7 +21,7 @@ final class ReflectionClassMapper implements RecordMapperInterface
     {
         if ($className === '') {
             throw new InvalidArgumentException(
-                'Classname should not be empty.'
+                'Classname should not be empty'
             );
         }
 
@@ -34,14 +34,14 @@ final class ReflectionClassMapper implements RecordMapperInterface
                 $constructor->getNumberOfRequiredParameters() > 0
             ) {
                 throw new LogicException(
-                    "Cannot instantiate a new {$className} because it requires arguments."
+                    "Cannot instantiate a new {$className} because it requires arguments"
                 );
             }
 
             $this->reflection = $reflection;
         } catch (ReflectionException $reflectionException) {
             throw new InvalidArgumentException(
-                "Could not load class '{$className}'.",
+                "Could not load class '{$className}'",
                 (int)$reflectionException->getCode(),
                 $reflectionException
             );

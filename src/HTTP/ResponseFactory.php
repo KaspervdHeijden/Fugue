@@ -64,7 +64,7 @@ final class ResponseFactory
         int $statusCode = Response::HTTP_MOVED_TEMPORARILY
     ): Response {
         if ($message === '') {
-            $message = "The resource you are trying to access can be found here: '{$url}'.";
+            $message = "The resource you are trying to access can be found here: '{$url}'";
         }
 
         return $this->create(

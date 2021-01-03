@@ -40,7 +40,7 @@ final class Header
         $this->key = trim(mb_strtolower($key));
         if ($this->key === '') {
             throw new InvalidArgumentException(
-                'Header name must not be empty.'
+                'Header name must not be empty'
             );
         }
 

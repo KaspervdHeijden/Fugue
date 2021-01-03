@@ -40,12 +40,12 @@ final class StreamWriter implements WriterInterface
     ) {
         if (! in_array($mode, self::VALID_MODES, true)) {
             throw new InvalidArgumentException(
-                "Invalid file opening mode ({$mode}) for logger file."
+                "Invalid file opening mode ({$mode}) for logger file"
             );
         }
 
         if ($filename === '') {
-            throw new InvalidArgumentException('Filename should not be empty.');
+            throw new InvalidArgumentException('Filename should not be empty');
         }
 
         $this->filename = $filename;

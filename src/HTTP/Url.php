@@ -27,7 +27,7 @@ final class Url
             $parts = parse_url($this->url);
             if (! is_array($parts)) {
                 throw new UnexpectedValueException(
-                    "Could not parse URL '{$this->url}'."
+                    "Could not parse URL '{$this->url}'"
                 );
             }
 

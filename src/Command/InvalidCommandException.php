@@ -10,21 +10,21 @@ final class InvalidCommandException extends FugueException
 {
     public static function forMissingIdentifier(): self
     {
-        return new self('No command identifier given.');
+        return new self('No command identifier given');
     }
 
     public static function forUnknownIdentifier(
         string $identifier
     ): self {
         return new self(
-            "Command identifier not recognized '{$identifier}'."
+            "Command identifier not recognized '{$identifier}'"
         );
     }
 
     public static function forInvalidClassType(string $identifier): self
     {
         return new self(
-            "Object instance for identifier '{$identifier}' does not implement CommandInterface."
+            "Object instance for identifier '{$identifier}' does not implement CommandInterface"
         );
     }
 }

@@ -32,7 +32,7 @@ final class Email
     ) {
         if ($subject === '') {
             throw new InvalidArgumentException(
-                'Subject must not be empty.'
+                'Subject must not be empty'
             );
         }
 

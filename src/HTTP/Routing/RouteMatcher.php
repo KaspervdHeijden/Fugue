@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\HTTP\Routing;
 
+use Fugue\Collection\CollectionList;
 use Fugue\HTTP\Request;
 
 use const ARRAY_FILTER_USE_KEY;
@@ -68,7 +69,7 @@ final class RouteMatcher
         }
 
         $arguments = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
-        return new RouteMatchResult($route, $arguments);
+        return new RouteMatchResult($route, CollectionList::forString($arguments));
     }
 
     public function getUrl(

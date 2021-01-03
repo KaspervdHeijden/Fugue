@@ -4,25 +4,20 @@ declare(strict_types=1);
 
 namespace Fugue\HTTP\Routing;
 
+use Fugue\Collection\CollectionList;
+
 final class RouteMatchResult
 {
-    /** @var string[] */
-    private array $arguments;
+    private CollectionList $arguments;
     private Route $route;
 
-    /**
-     * @param string[] $arguments
-     */
-    public function __construct(Route $route, array $arguments)
+    public function __construct(Route $route, CollectionList $arguments)
     {
         $this->arguments = $arguments;
         $this->route     = $route;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getArguments(): array
+    public function getArguments(): CollectionList
     {
         return $this->arguments;
     }

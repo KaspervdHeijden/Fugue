@@ -166,11 +166,8 @@ final class HttpRuntime implements RuntimeInterface
         Request $request
     ): Response {
         $handler   = $this->getHandler($matchResult->getRoute(), $request);
-        $arguments = array_merge(
-            $matchResult->getArguments(),
-            [$request, $matchResult->getRoute()]
-        );
+        $arguments = $matchResult->getArguments()->merge([$request, $matchResult->getRoute()]);
 
-        return $handler(...$arguments);
+        return $handler(...$arguments->toArray());
     }
 }

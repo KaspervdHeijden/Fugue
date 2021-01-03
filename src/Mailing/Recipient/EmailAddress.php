@@ -19,14 +19,14 @@ final class EmailAddress
     {
         if ($emailAddress === '') {
             throw new InvalidArgumentException(
-                'The supplied email address must not be empty.'
+                'The supplied email address must not be empty'
             );
         }
 
         $email = filter_var($emailAddress, FILTER_VALIDATE_EMAIL);
         if (! is_string($email)) {
             throw new InvalidArgumentException(
-                'The supplied email address is invalid.'
+                'The supplied email address is invalid'
             );
         }
 

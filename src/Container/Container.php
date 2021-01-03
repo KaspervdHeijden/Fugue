@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Fugue\Container;
 
 use InvalidArgumentException;
-use LogicException;
 use ArrayAccess;
 use Countable;
 
@@ -107,7 +106,7 @@ final class Container implements Countable, ArrayAccess
     private function ensureStringName($name): string
     {
         if (! is_string($name)) {
-            throw new InvalidArgumentException('Name must be a string.');
+            throw new InvalidArgumentException('Name must be a string');
         }
 
         return (string)$name;

@@ -13,9 +13,9 @@ use function chunk_split;
 abstract class MailPart
 {
     public const TRANSFER_ENCODING_QUOTED_PRINTABLE = 'quoted-printable';
-    public const TRANSFER_ENCODING_BASE64 = 'base64';
-    public const TRANSFER_ENCODING_7BIT = '7bit';
-    public const TRANSFER_ENCODING_NONE = '';
+    public const TRANSFER_ENCODING_BASE64           = 'base64';
+    public const TRANSFER_ENCODING_7BIT             = '7bit';
+    public const TRANSFER_ENCODING_NONE             = '';
 
     public const NEWLINE                = "\r\n";
     public const BASE64_MAX_LINE_LENGTH = 76;
@@ -65,7 +65,7 @@ abstract class MailPart
                 return quoted_printable_encode($this->body);
             default:
                 throw new UnexpectedValueException(
-                    "Unrecognized transfer encoding '{$this->transferEncoding}'."
+                    "Unrecognized transfer encoding '{$this->transferEncoding}'"
                 );
         }
     }

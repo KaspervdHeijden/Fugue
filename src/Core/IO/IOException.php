@@ -10,11 +10,11 @@ final class IOException extends RuntimeException
 {
     public static function forWritingToFilename(string $filename): self
     {
-        return new self("Could not write to '{$filename}'.");
+        return new self("Could not write to '{$filename}'");
     }
 
     public static function forOpeningFilename(string $filename): self
     {
-        return new self("Could not open '{$filename}' for writing.");
+        return new self("Could not open '{$filename}' for writing");
     }
 }

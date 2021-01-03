@@ -21,8 +21,11 @@ use function array_keys;
 use function is_object;
 use function is_string;
 use function get_class;
+use function array_sum;
 use function gettype;
 use function count;
+use function max;
+use function min;
 
 abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
 {
@@ -65,10 +68,10 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /** @return static */
-    public function merge(?self $other): self
+    public function merge(?iterable $other): self
     {
         return new static(
-            array_merge($this->elements, $other->elements),
+            array_merge($this->elements, $other),
             $this->type
         );
     }
@@ -139,6 +142,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         );
     }
 
+    /** @return mixed */
     public function reduce(
         callable $combinator,
         $initialValue = null
@@ -154,12 +158,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         string $glue = '',
         ?callable $caster = null
     ): string {
-        if ($caster === null) {
-            $caster = static function ($element): string {
-                return (string)$element;
-            };
-        }
-
+        $caster = $caster ?: static fn ($element): string => (string)$element;
         return implode($glue, $this->map($caster));
     }
 
@@ -293,6 +292,31 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         }
 
         return false;
+    }
+
+    public function sum()
+    {
+        return array_sum($this->elements);
+    }
+
+    public function avg(): float
+    {
+        $count = $this->count();
+        if ($count === 0) {
+            return 0;
+        }
+
+        return (float)($this->sum() / $count);
+    }
+
+    public function max()
+    {
+        return max(...$this->elements);
+    }
+
+    public function min()
+    {
+        return min(...$this->elements);
     }
 
     public function push(iterable $elements): void

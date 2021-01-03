@@ -49,20 +49,16 @@ final class ContainerLoader
             $container->register(
                 new SingletonContainerDefinition(
                     RouteCollectionMap::class,
-                    function (): RouteCollectionMap {
-                        return new RouteCollectionMap(
-                            $this->configLoader->load(self::CONFIG_ID_ROUTES)
-                        );
-                    }
+                    fn (): RouteCollectionMap => new RouteCollectionMap(
+                        $this->configLoader->load(self::CONFIG_ID_ROUTES)
+                    )
                 ),
             );
         }
 
         if ($this->configLoader->supports(self::CONFIG_ID_SERVICES)) {
             $definitions = $this->configLoader->load(self::CONFIG_ID_SERVICES);
-            foreach ($definitions as $definition) {
-                $container->register($definition);
-            }
+            $definitions->map(static fn (ContainerDefinition $definition) => $container->register($definition));
         }
 
         return $container;
