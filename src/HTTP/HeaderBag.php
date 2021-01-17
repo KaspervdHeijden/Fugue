@@ -53,7 +53,7 @@ final class HeaderBag extends CollectionMap
 
     protected function checkKey($key): bool
     {
-        return is_string($key);
+        return parent::checkKey($key) && is_string($key);
     }
 
     protected function checkValue($value): bool

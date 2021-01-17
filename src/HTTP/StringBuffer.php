@@ -11,21 +11,21 @@ use function strlen;
 
 final class StringBuffer implements Countable
 {
-    private string $buffer;
+    private string $value;
 
     public function __construct(string $value = '')
     {
-        $this->buffer = $value;
+        $this->value = $value;
     }
 
     public function clear(): void
     {
-        $this->buffer = '';
+        $this->value = '';
     }
 
     public function value(): string
     {
-        return $this->buffer;
+        return $this->value;
     }
 
     public function __toString(): string
@@ -35,17 +35,17 @@ final class StringBuffer implements Countable
 
     public function append(string $value): void
     {
-        $this->buffer .= $value;
+        $this->value .= $value;
     }
 
     public function size(): int
     {
-        return strlen($this->buffer);
+        return strlen($this->value);
     }
 
     public function length(): int
     {
-        return mb_strlen($this->buffer);
+        return mb_strlen($this->value);
     }
 
     public function count(): int

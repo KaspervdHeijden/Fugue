@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Fugue\Configuration\Loader;
 
 use Fugue\Configuration\ConfigurationNotFoundException;
-use Fugue\Collection\Collection;
 
 final class MultiConfigurationLoader implements ConfigurationLoaderInterface
 {

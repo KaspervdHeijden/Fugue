@@ -9,16 +9,16 @@ use Throwable;
 
 final class OutputExceptionHandler extends ExceptionHandler
 {
-    private OutputHandlerInterface $output;
+    private OutputHandlerInterface $outputHandler;
 
     public function __construct(OutputHandlerInterface $outputHandler)
     {
-        $this->output = $outputHandler;
+        $this->outputHandler = $outputHandler;
     }
 
     public function handle(Throwable $throwable): void
     {
         $message = $this->formatExceptionMessage($throwable);
-        $this->output->write($message);
+        $this->outputHandler->write($message);
     }
 }

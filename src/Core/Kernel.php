@@ -12,7 +12,7 @@ use Fugue\Logging\LoggerInterface;
 final class Kernel
 {
     private ExceptionHandlerInterface $exceptionHandler;
-    private OutputHandlerInterface $outputHandler;
+    private OutputhandlerInterface $outputHandler;
     private ClassLoaderInterface $classLoader;
     private LoggerInterface $logger;
 

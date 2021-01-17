@@ -23,9 +23,14 @@ final class Container implements Countable, ArrayAccess
         }
     }
 
-    public function __set($name, $value)
+    public function __set($name, $value): void
     {
-        $this->register(new RawContainerDefinition($this->ensureStringName($name), $value));
+        $this->register(
+            new RawContainerDefinition(
+                $this->ensureStringName($name),
+                $value
+            )
+        );
     }
 
     public function __get($name)
@@ -38,7 +43,7 @@ final class Container implements Countable, ArrayAccess
         return $this->isRegistered((string)$name);
     }
 
-    public function __unset($name)
+    public function __unset($name): void
     {
         $this->unregister((string)$name);
     }
@@ -58,12 +63,17 @@ final class Container implements Countable, ArrayAccess
         return $this->resolve($this->ensureStringName($offset));
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
-        $this->register(new RawContainerDefinition($this->ensureStringName($offset), $value));
+        $this->register(
+            new RawContainerDefinition(
+                $this->ensureStringName($offset),
+                $value
+            )
+        );
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $this->unregister((string)$offset);
     }

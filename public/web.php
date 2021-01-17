@@ -12,6 +12,7 @@ declare(strict_types=1);
  * |__|      \______/   \______|  \______/  |_______|
  */
 
+use Fugue\HTTP\NativeHttpResponseHeadersHandler;
 use Fugue\HTTP\Routing\RouteCollectionMap;
 use Fugue\Core\Runtime\RuntimeInterface;
 use Fugue\Core\Runtime\HttpRuntime;
@@ -31,11 +32,19 @@ require_once __DIR__ . '/../src/bootstrap.inc.php';
         ClassResolver $classResolver
     ): RuntimeInterface {
         return new HttpRuntime(
+            new NativeHttpResponseHeadersHandler(),
             $kernel->getOutputHandler(),
             $kernel->getClassLoader(),
-            $container->resolve(RouteCollectionMap::class),
             $classResolver,
+            $container->resolve(RouteCollectionMap::class),
             $container,
         );
     }
-})->handleRequest(Request::fromArrays($_SERVER, $_ENV, $_GET, $_POST, $_COOKIE, $_FILES));
+})->handleRequest(Request::fromArrays(
+    $_SERVER,
+    $_ENV,
+    $_GET,
+    $_POST,
+    $_COOKIE,
+    $_FILES
+));

@@ -10,6 +10,8 @@ final class InvalidTemplateException extends FugueException
 {
     public static function forUnrecognizedTemplateName(string $name): self
     {
-        return new self("Could not load template for '{$name}'");
+        return new self(
+            "Could not load template for '{$name}'"
+        );
     }
 }

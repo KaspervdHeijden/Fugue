@@ -128,11 +128,11 @@ final class Response
 
     public function __construct(
         StringBuffer $content,
-        int $statusCode,
-        HeaderBag $headerBag
+        HeaderBag $headers,
+        int $statusCode
     ) {
         $this->statusCode = $statusCode;
-        $this->headers    = $headerBag;
+        $this->headers    = $headers;
         $this->content    = $content;
     }
 

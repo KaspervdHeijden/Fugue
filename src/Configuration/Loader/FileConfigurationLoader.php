@@ -4,27 +4,31 @@ declare(strict_types=1);
 
 namespace Fugue\Configuration\Loader;
 
-use function is_readable;
+use Fugue\IO\Filesystem\FileSystemInterface;
+
 use function is_array;
-use function is_file;
-use function is_dir;
 
 abstract class FileConfigurationLoader implements ConfigurationLoaderInterface
 {
+    private FileSystemInterface $fileSystem;
     private string $directory;
     private string $name;
 
-    public function __construct(string $directory, string $name)
-    {
-        if (! is_dir($directory)) {
+    public function __construct(
+        FileSystemInterface $fileSystem,
+        string $directory,
+        string $name
+    ) {
+        if (! $fileSystem->isDir($directory)) {
             throw ConfigurationLoadException::invalidSourceDirectory($directory);
         }
 
-        $this->directory = $directory;
-        $this->name      = $name;
+        $this->fileSystem = $fileSystem;
+        $this->directory  = $directory;
+        $this->name       = $name;
     }
 
-    abstract protected function loadFromFile(string $filename): ?iterable;
+    abstract protected function loadFromFile(string $filename): ?array;
 
     private function getPathInfoForIdentifier(
         string $directory,
@@ -36,7 +40,10 @@ abstract class FileConfigurationLoader implements ConfigurationLoaderInterface
         ];
 
         foreach ($fileNames as $fileName) {
-            if (is_file($fileName) && is_readable($fileName)) {
+            if (
+                $this->fileSystem->isFile($fileName) &&
+                $this->fileSystem->isReadable($fileName)
+            ) {
                 return (object)['success' => true, 'filename' => $fileName];
             }
         }

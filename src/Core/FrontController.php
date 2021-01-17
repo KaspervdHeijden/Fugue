@@ -15,7 +15,9 @@ use Fugue\Core\Exception\OutputExceptionHandler;
 use Fugue\Core\ClassLoader\ClassLoaderInterface;
 use Fugue\Core\ClassLoader\DefaultClassLoader;
 use Fugue\Core\Output\OutputHandlerInterface;
+use Fugue\IO\Filesystem\FileSystemInterface;
 use Fugue\Core\Output\StandardOutputHandler;
+use Fugue\IO\Filesystem\NativeFileSystem;
 use Fugue\Core\Runtime\RuntimeInterface;
 use Fugue\Container\ContainerLoader;
 use Fugue\Logging\LoggerInterface;
@@ -56,10 +58,13 @@ abstract class FrontController
         ?ConfigurationLoaderInterface $configLoader  = null,
         ?ExceptionHandlerInterface $exceptionHandler = null,
         ?LoggerInterface $logger                     = null,
-        ?ClassLoaderInterface $classLoader           = null
+        ?ClassLoaderInterface $classLoader           = null,
+        FileSystemInterface $fileSystem              = null
     ) {
         $rootDir     = mb_substr(rtrim(__DIR__, DIRECTORY_SEPARATOR), 0, -4);
+        $fileSystem  = $fileSystem ?: new NativeFileSystem();
         $classLoader = $classLoader ?: new DefaultClassLoader(
+            $fileSystem,
             $rootDir,
             array_slice(explode('\\', self::class), 0, 1)[0]
         );
@@ -68,9 +73,9 @@ abstract class FrontController
 
         $outputHandler      = $outputHandler ?: new StandardOutputHandler();
         $this->configLoader = $configLoader ?: new MultiConfigurationLoader(
-            new JsonConfigurationLoader("{$rootDir}/../conf", 'json'),
-            new IniConfigurationLoader("{$rootDir}/../conf", 'ini'),
-            new PHPConfigurationLoader("{$rootDir}/../conf", 'php'),
+            new JsonConfigurationLoader($fileSystem, "{$rootDir}/../conf", 'json'),
+            new IniConfigurationLoader($fileSystem, "{$rootDir}/../conf", 'ini'),
+            new PHPConfigurationLoader($fileSystem, "{$rootDir}/../conf", 'php'),
         );
 
         $this->errorLevel = $errorLevel;
@@ -78,7 +83,7 @@ abstract class FrontController
             $exceptionHandler ?: new OutputExceptionHandler($outputHandler),
             $outputHandler,
             $classLoader,
-            $logger ?: new OutputLogger($outputHandler, true),
+            $logger ?: new OutputLogger($outputHandler),
         );
 
         set_error_handler([$this, 'handleUnexpectedException']);

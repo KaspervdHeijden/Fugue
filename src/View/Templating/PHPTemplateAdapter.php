@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Fugue\View\Templating;
 
-use Fugue\HTTP\Routing\RouteCollectionMap;
 use Fugue\HTTP\Routing\RouteMatcher;
 use Fugue\Collection\PropertyBag;
 
@@ -25,9 +24,9 @@ final class PHPTemplateAdapter implements TemplateInterface
     private RouteMatcher $matcher;
     private string $rootDir;
 
-    public function __construct(RouteCollectionMap $routeMap, string $rootDir)
+    public function __construct(RouteMatcher $matcher, string $rootDir)
     {
-        $this->matcher = new RouteMatcher($routeMap);
+        $this->matcher = $matcher;
         $this->rootDir = $rootDir;
     }
 
@@ -36,8 +35,10 @@ final class PHPTemplateAdapter implements TemplateInterface
         return htmlspecialchars((string)$text, ENT_HTML5 | ENT_QUOTES);
     }
 
-    public function route(string $routeName, array $parameters = []): string
-    {
+    public function route(
+        string $routeName,
+        array $parameters = []
+    ): string {
         return $this->matcher->getUrl($routeName, $parameters);
     }
 
@@ -55,8 +56,10 @@ final class PHPTemplateAdapter implements TemplateInterface
         return true;
     }
 
-    public function render(string $templateName, PropertyBag $variables): string
-    {
+    public function render(
+        string $templateName,
+        PropertyBag $variables
+    ): string {
         if (! $this->supports($templateName)) {
             throw InvalidTemplateException::forUnrecognizedTemplateName($templateName);
         }

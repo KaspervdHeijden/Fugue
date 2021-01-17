@@ -13,6 +13,10 @@ final class RouteCollectionMap extends CollectionMap
 {
     protected function checkKey($key): bool
     {
+        if (! parent::checkKey($key)) {
+            return false;
+        }
+
         if (! is_string($key)) {
             return false;
         }

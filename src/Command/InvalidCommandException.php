@@ -21,8 +21,9 @@ final class InvalidCommandException extends FugueException
         );
     }
 
-    public static function forInvalidClassType(string $identifier): self
-    {
+    public static function forInvalidClassType(
+        string $identifier
+    ): self {
         return new self(
             "Object instance for identifier '{$identifier}' does not implement CommandInterface"
         );

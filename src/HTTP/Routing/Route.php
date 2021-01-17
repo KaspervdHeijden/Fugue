@@ -11,20 +11,19 @@ use function trim;
 
 final class Route
 {
-    /** @var callable|string */
-    private $handler;
-
     private ?string $method;
     private string $name;
     private string $url;
+    /** @var callable|string */
+    private $handler;
 
     private function __construct(
         string $name,
         string $url,
-        ?string $method,
+        string $method,
         $handler
     ) {
-        $this->method  = ((string)$method !== '') ? mb_strtoupper(trim($method)) : null;
+        $this->method  = ($method !== '') ? mb_strtoupper(trim($method)) : null;
         $this->handler = $handler;
         $this->name    = $name;
         $this->url     = $url;
@@ -42,28 +41,21 @@ final class Route
      * In addition, variables are supported. Variables take the form {<i>name</i>},
      *  and are passed as an argument to the controller handler function. E.g.:<br>
      * <code>/product/{id}</code> matches <i>/product/what-ever</i>, and "what-ever" is passed to the controller.
-     *
-     * @param string          $url     The url template that matches the path.
-     * @param callable|string $handler The Handler to run.
-     * @param string          $name    The name of the Route.
-     * @param string          $method  The method used for the match.
-     *
-     * @return Route                   The added Route.
      */
     public static function any(
         string $url,
         $handler,
         string $name,
         string $method
-    ): Route {
-        return new static($name, $url, $method, $handler);
+    ): self {
+        return new self($name, $url, $method, $handler);
     }
 
     public static function get(
         string $url,
         $handler,
         string $name
-    ): Route {
+    ): self {
         return self::any($url, $handler, $name, Request::METHOD_GET);
     }
 
@@ -71,7 +63,7 @@ final class Route
         string $url,
         $handler,
         string $name
-    ): Route {
+    ): self {
         return self::any($url, $handler, $name, Request::METHOD_POST);
     }
 
@@ -79,7 +71,7 @@ final class Route
         string $url,
         $handler,
         string $name
-    ): Route {
+    ): self {
         return self::any($url, $handler, $name, Request::METHOD_PUT);
     }
 
@@ -87,7 +79,7 @@ final class Route
         string $url,
         $handler,
         string $name
-    ): Route {
+    ): self {
         return self::any($url, $handler, $name, Request::METHOD_DELETE);
     }
 
@@ -106,9 +98,7 @@ final class Route
         return $this->method;
     }
 
-    /**
-     * @return callable|string
-     */
+    /** @return callable|string */
     public function getHandler()
     {
         return $this->handler;

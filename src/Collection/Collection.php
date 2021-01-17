@@ -20,8 +20,8 @@ use function array_slice;
 use function array_keys;
 use function is_object;
 use function is_string;
-use function get_class;
 use function array_sum;
+use function get_class;
 use function gettype;
 use function count;
 use function max;
@@ -68,7 +68,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /** @return static */
-    public function merge(?iterable $other): self
+    public function merge(array $other): self
     {
         return new static(
             array_merge($this->elements, $other),
@@ -98,10 +98,6 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
 
     public function get($key, $default = null)
     {
-        if (! $this->checkKey($key)) {
-            throw InvalidTypeException::forKey(static::class);
-        }
-
         return $this->elements[$key] ?? $default;
     }
 
@@ -122,7 +118,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         }
     }
 
-    public function unset(string ...$keys): void
+    public function unset(...$keys): void
     {
         foreach ($keys as $key) {
             if (! $this->checkKey($key)) {
@@ -142,7 +138,6 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         );
     }
 
-    /** @return mixed */
     public function reduce(
         callable $combinator,
         $initialValue = null
@@ -158,7 +153,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         string $glue = '',
         ?callable $caster = null
     ): string {
-        $caster = $caster ?: static fn ($element): string => (string)$element;
+        $caster = $caster ?: fn ($element): string => (string)$element;
         return implode($glue, $this->map($caster));
     }
 
@@ -294,6 +289,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         return false;
     }
 
+    /** @return int|float */
     public function sum()
     {
         return array_sum($this->elements);
@@ -356,7 +352,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         $runtimeClass = static::class;
         if ($elements instanceof $runtimeClass) {
             /** @var static $elements */
-            return $elements->merge(new static());
+            return $elements->merge([]);
         }
 
         foreach ($elements as $element) {

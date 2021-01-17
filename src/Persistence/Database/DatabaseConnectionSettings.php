@@ -8,8 +8,8 @@ final class DatabaseConnectionSettings
 {
     private string $password;
     private string $timezone;
-    private array $options;
     private string $charset;
+    private array $options;
     private string $user;
     private string $host;
 
@@ -23,8 +23,8 @@ final class DatabaseConnectionSettings
     ) {
         $this->password = $password;
         $this->timezone = $timezone;
-        $this->options  = $options;
         $this->charset  = $charset;
+        $this->options  = $options;
         $this->user     = $user;
         $this->host     = $host;
     }

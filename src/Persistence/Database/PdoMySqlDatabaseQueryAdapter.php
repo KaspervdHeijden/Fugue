@@ -25,7 +25,7 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
 {
     private DatabaseConnectionSettings $settings;
     private LoggerInterface $logger;
-    private PDO $pdo;
+    private ?PDO $pdo = null;
 
     public function __construct(
         DatabaseConnectionSettings $settings,
@@ -113,7 +113,7 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
                 case is_string($value):
                     // fall through
                 default:
-                    $stmt->bindValue($key, $value, PDO::PARAM_STR);
+                    $stmt->bindValue($key, $value);
                     break;
             }
         }
@@ -163,7 +163,7 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
         $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return array_map(
-            static fn (array $record) => $mapper->arrayToObject($record),
+            static fn (array $record): object => $mapper->arrayToObject($record),
             $records
         );
     }
@@ -171,7 +171,7 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
     public function fetchValue(string $sql, array $params = [])
     {
         $stmt   = $this->execute($sql, $params);
-        $column = $stmt->fetchColumn(0);
+        $column = $stmt->fetchColumn();
 
         if ($column === false) {
             return null;

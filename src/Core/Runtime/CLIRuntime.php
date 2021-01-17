@@ -9,9 +9,6 @@ use Fugue\Collection\CollectionList;
 use Fugue\Command\CommandFactory;
 use Fugue\HTTP\Request;
 
-use function array_slice;
-use function count;
-
 final class CLIRuntime implements RuntimeInterface
 {
     private CommandFactory $commandFactory;
@@ -23,13 +20,13 @@ final class CLIRuntime implements RuntimeInterface
 
     public function handle(Request $request): void
     {
-        $argv = $request->server()->getArray('argv');
-        if (count($argv) < 2) {
+        $args = new CollectionList($request->server()->getArray('argv'), null);
+        if ($args->count() < 2) {
             throw InvalidCommandException::forMissingIdentifier();
         }
 
-        $command  = $this->commandFactory->getForIdentifier((string)$argv[1]);
-        $exitCode = $command->run(new CollectionList(array_slice($argv, 2), null));
+        $command  = $this->commandFactory->getForIdentifier((string)$args[1]);
+        $exitCode = $command->run($args->slice(2));
 
         exit($exitCode);
     }

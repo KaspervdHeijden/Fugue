@@ -10,7 +10,7 @@ use function is_array;
 
 final class JsonConfigurationLoader extends FileConfigurationLoader
 {
-    protected function loadFromFile(string $filename): ?iterable
+    protected function loadFromFile(string $filename): ?array
     {
         $contents = file_get_contents($filename);
         $json     = json_decode($contents, true);

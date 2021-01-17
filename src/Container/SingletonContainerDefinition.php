@@ -6,9 +6,9 @@ namespace Fugue\Container;
 
 final class SingletonContainerDefinition extends ContainerDefinition
 {
+    private bool $resolved = false;
     /** @var mixed */
     private $resolvedValue;
-    private bool $resolved = false;
 
     protected function isValidDefinition($definition): bool
     {

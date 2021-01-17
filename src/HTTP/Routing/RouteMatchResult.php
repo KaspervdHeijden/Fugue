@@ -11,8 +11,10 @@ final class RouteMatchResult
     private CollectionList $arguments;
     private Route $route;
 
-    public function __construct(Route $route, CollectionList $arguments)
-    {
+    public function __construct(
+        Route $route,
+        CollectionList $arguments
+    ) {
         $this->arguments = $arguments;
         $this->route     = $route;
     }

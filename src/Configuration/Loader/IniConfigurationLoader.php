@@ -10,7 +10,7 @@ use function is_array;
 
 final class IniConfigurationLoader extends FileConfigurationLoader
 {
-    protected function loadFromFile(string $filename): ?iterable
+    protected function loadFromFile(string $filename): ?array
     {
         $results = parse_ini_file($filename, true, INI_SCANNER_TYPED);
         if (! is_array($results)) {

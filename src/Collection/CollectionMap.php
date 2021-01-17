@@ -11,6 +11,10 @@ class CollectionMap extends Collection
 {
     protected function checkKey($key): bool
     {
+        if (! parent::checkKey($key)) {
+            return false;
+        }
+
         if (! is_string($key) && ! is_int($key)) {
             return false;
         }

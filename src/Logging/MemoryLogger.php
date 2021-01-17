@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fugue\Logging;
 
-use function trim;
+use function rtrim;
 
 final class MemoryLogger extends Logger
 {
@@ -23,6 +23,10 @@ final class MemoryLogger extends Logger
 
     protected function log(string $logType, string $message): void
     {
-        $this->logs[] = trim($this->getFormattedMessage($logType, $message));
+        $logMessage = trim($this->getFormattedMessage($logType, $message));
+
+        if ($logMessage !== '') {
+            $this->logs[] = $logMessage;
+        }
     }
 }

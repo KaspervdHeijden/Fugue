@@ -47,7 +47,9 @@ final class ResponseFactory
     ): Response {
         $headers = new HeaderBag();
         if ($fileName !== '') {
-            $headers[] = Header::contentDisposition("attachment;filename=\"{$fileName}\"");
+            $headers[] = Header::contentDisposition(
+                "attachment;filename=\"{$fileName}\""
+            );
         }
 
         return $this->create(
@@ -64,7 +66,7 @@ final class ResponseFactory
         int $statusCode = Response::HTTP_MOVED_TEMPORARILY
     ): Response {
         if ($message === '') {
-            $message = "The resource you are trying to access can be found here: '{$url}'";
+            $message = "The requested resource can be found here: '{$url}'";
         }
 
         return $this->create(
@@ -105,8 +107,8 @@ final class ResponseFactory
 
         return new Response(
             new StringBuffer($content),
+            $headerBag,
             $statusCode,
-            $headerBag
         );
     }
 }

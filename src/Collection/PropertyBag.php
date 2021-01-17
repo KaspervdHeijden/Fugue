@@ -10,7 +10,7 @@ final class PropertyBag extends CollectionMap
 {
     protected function checkKey($key): bool
     {
-        return is_string($key);
+        return parent::checkKey($key) && is_string($key);
     }
 
     public function getInt(string $key, int $default = 0): int

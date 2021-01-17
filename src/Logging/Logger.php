@@ -13,11 +13,8 @@ abstract class Logger implements LoggerInterface
     public const DEFAULT_DATE_FORMAT = 'Y-m-d H:i:s';
 
     public const TYPE_WARNING = 'WARNING';
-
     public const TYPE_VERBOSE = 'VERBOSE';
-
     public const TYPE_ERROR   = 'ERROR';
-
     public const TYPE_INFO    = 'INFO';
 
     private string $dateFormat = self::DEFAULT_DATE_FORMAT;
@@ -76,5 +73,6 @@ abstract class Logger implements LoggerInterface
 
     public function verbose(string $message): void
     {
+        $this->callLogIfNotEmpty(self::TYPE_VERBOSE, $message);
     }
 }

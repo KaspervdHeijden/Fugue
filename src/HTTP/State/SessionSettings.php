@@ -10,9 +10,9 @@ final class SessionSettings
     private int $cacheExpire;
     private bool $useCookies;
     private bool $httpOnly;
+    private string $name;
     private int $timeout;
     private bool $secure;
-    private string $name;
 
     public function __construct(
         string $name,
@@ -29,7 +29,6 @@ final class SessionSettings
         $this->httpOnly       = $httpOnly;
         $this->timeout        = $timeout;
         $this->secure         = $secure;
-        $this->name           = $name;
     }
 
     public function shouldUseOnlyCookies(): bool

@@ -22,11 +22,11 @@ final class Request
     public const METHOD_CONNECT = 'CONNECT';
     public const METHOD_TRACE   = 'TRACE';
 
-    private PropertyBag $server;
+    private PropertyBag $get;
+    private PropertyBag $post;
     private PropertyBag $cookie;
     private PropertyBag $files;
-    private PropertyBag $post;
-    private PropertyBag $get;
+    private PropertyBag $server;
     private PropertyBag $env;
 
     private ?string $protocol = null;
@@ -46,8 +46,8 @@ final class Request
         $this->server = $server;
         $this->files  = $files;
         $this->post   = $post;
-        $this->get    = $get;
         $this->env    = $env;
+        $this->get    = $get;
     }
 
     public function getUrl(): Url
@@ -67,8 +67,10 @@ final class Request
     {
         if ($this->secure === null) {
             $https = $this->server->getString('HTTPS', '');
+
             if ($https === '') {
-                $this->secure = $this->server->getInt('SERVER_PORT', 80) === 443;
+                $port = $this->server->getInt('SERVER_PORT', 80);
+                $this->secure = ($port === 443);
             } else {
                 $this->secure = (int)$https !== 0 && strcasecmp($https, 'off') !== 0;
             }

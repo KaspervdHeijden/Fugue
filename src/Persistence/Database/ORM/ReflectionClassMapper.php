@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Fugue\Persistence\Database\ORM;
 
 use InvalidArgumentException;
+use ReflectionNamedType;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionClass;
@@ -63,11 +64,10 @@ final class ReflectionClassMapper implements RecordMapperInterface
 
     private function cast($value, ?ReflectionType $type)
     {
-        if (! $type instanceof ReflectionType) {
+        if (! $type instanceof ReflectionNamedType) {
             return $value;
         }
 
-        /** @noinspection PhpPossiblePolymorphicInvocationInspection */
         switch ($type->getName()) {
             case 'int':
                 return (int)$value;
@@ -80,12 +80,15 @@ final class ReflectionClassMapper implements RecordMapperInterface
             case 'array':
                 return (array)$value;
             default:
-                return $value;
+                return$value;
         }
     }
 
-    private function setProperty(object $instance, string $propertyName, $value): void
-    {
+    private function setProperty(
+        object $instance,
+        string $propertyName,
+        $value
+    ): void {
         $setter = 'set' . ucfirst($propertyName);
         if (! $this->reflection->hasMethod($setter)) {
             if ($this->reflection->hasProperty($propertyName)) {

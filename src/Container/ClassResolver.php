@@ -7,6 +7,7 @@ namespace Fugue\Container;
 use Fugue\Collection\CollectionList;
 use Fugue\Collection\CollectionMap;
 use Fugue\Caching\CacheInterface;
+use ReflectionNamedType;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionClass;
@@ -27,9 +28,7 @@ final class ClassResolver
     ) {
         $reflectionClasses = $this->getArgumentClassesFromConstructorWithCache($className);
         $arguments         = $reflectionClasses->map(
-            static function (ReflectionClass $reflectionClass) use ($container, $classToObjects) {
-                $typeName = $reflectionClass->getName();
-
+            static function (string $typeName) use ($container, $classToObjects) {
                 if ($classToObjects->containsKey($typeName)) {
                     return $classToObjects[$typeName];
                 } elseif ($container->isRegistered($typeName)) {
@@ -58,8 +57,8 @@ final class ClassResolver
     private function getArgumentClassesFromConstructor(string $className): CollectionList
     {
         try {
-            $classes     = new CollectionList([], ReflectionClass::class);
             $reflection  = new ReflectionClass($className);
+            $classes     = CollectionList::forString([]);
             $constructor = $reflection->getConstructor();
 
             if (! $constructor instanceof ReflectionMethod) {
@@ -68,9 +67,9 @@ final class ClassResolver
 
             $parameters = $constructor->getParameters();
             foreach ($parameters as $parameter) {
-                $class = $parameter->getClass();
-                if ($class instanceof ReflectionClass) {
-                    $classes[] = $class;
+                $class = $parameter->getType();
+                if ($class instanceof ReflectionNamedType) {
+                    $classes[] = $class->getName();
                     continue;
                 }
 

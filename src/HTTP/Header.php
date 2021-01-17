@@ -19,18 +19,12 @@ use function trim;
 final class Header
 {
     public const NAME_CONTENT_DISPOSITION = 'content_disposition';
-
-    public const NAME_CONTENT_TYPE = 'content_type';
-
-    public const NAME_LAST_MODIFIED = 'last_modified';
-
-    public const NAME_CONTENT_LENGTH = 'content_length';
-
-    public const NAME_CACHE_CONTROL = 'cache_control';
-
-    public const NAME_LOCATION = 'location';
-
-    public const NAME_EXPIRES = 'expires';
+    public const NAME_CONTENT_TYPE        = 'content_type';
+    public const NAME_LAST_MODIFIED       = 'last_modified';
+    public const NAME_CONTENT_LENGTH      = 'content_length';
+    public const NAME_CACHE_CONTROL       = 'cache_control';
+    public const NAME_LOCATION            = 'location';
+    public const NAME_EXPIRES             = 'expires';
 
     private CollectionMap $parts;
     private string $key;
@@ -60,9 +54,7 @@ final class Header
     public function getName(): string
     {
         $parts = array_map(
-            static function (string $part): string {
-                return ucfirst($part);
-            },
+            static fn (string $part): string => ucfirst($part),
             explode('_', $this->key)
         );
 

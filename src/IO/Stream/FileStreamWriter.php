@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Fugue\Core\IO;
+namespace Fugue\IO\Stream;
 
 use InvalidArgumentException;
+use Fugue\IO\IOException;
 
 use function is_resource;
 use function in_array;
@@ -13,7 +14,7 @@ use function fwrite;
 use function fclose;
 use function fopen;
 
-final class StreamWriter implements WriterInterface
+final class FileStreamWriter implements StreamWriterInterface
 {
     public const DEFAULT_MODE = 'w';
     public const VALID_MODES  = [
@@ -29,7 +30,6 @@ final class StreamWriter implements WriterInterface
 
     private string $filename;
     private string $mode;
-
     /** @var resource|null */
     private $handle;
 
@@ -81,9 +81,8 @@ final class StreamWriter implements WriterInterface
     {
         if (! is_resource($this->handle)) {
             $handle = fopen($this->filename, $this->mode);
-
             if (! is_resource($handle)) {
-                throw IOException::forOpeningFilename($this->filename);
+                throw IOException::forOpeningStream($this->filename);
             }
 
             $this->handle = $handle;
@@ -106,7 +105,7 @@ final class StreamWriter implements WriterInterface
         $written = fwrite($handle, $string);
 
         if (! is_int($written)) {
-            throw IOException::forWritingToFilename($this->filename);
+            throw IOException::forWritingToStream($this->filename);
         }
 
         return $written;
