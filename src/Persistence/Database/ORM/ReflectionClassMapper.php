@@ -80,7 +80,7 @@ final class ReflectionClassMapper implements RecordMapperInterface
             case 'array':
                 return (array)$value;
             default:
-                return$value;
+                return $value;
         }
     }
 

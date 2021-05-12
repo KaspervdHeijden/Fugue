@@ -175,7 +175,6 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         return ($value instanceof $this->type);
     }
 
-    /** @noinspection PhpUnusedParameterInspection */
     protected function checkKey($key): bool
     {
         return true;

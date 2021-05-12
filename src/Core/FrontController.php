@@ -33,7 +33,6 @@ use function mb_internal_encoding;
 use function mb_regex_encoding;
 use function set_error_handler;
 use function mb_http_output;
-use function mb_http_input;
 use function array_slice;
 use function mb_substr;
 use function explode;
@@ -95,7 +94,6 @@ abstract class FrontController
         mb_internal_encoding($charset);
         mb_regex_encoding($charset);
         mb_http_output($charset);
-        mb_http_input($charset);
     }
 
     protected function createKernel(
