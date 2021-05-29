@@ -13,7 +13,7 @@ final class Url
 {
     public const DEFAULT_PORT = 80;
 
-    private ?string $parts = null;
+    private ?array $parts = null;
     private string $url;
 
     public function __construct(string $url)

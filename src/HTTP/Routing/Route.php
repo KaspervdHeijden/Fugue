@@ -45,10 +45,9 @@ final class Route
     public static function any(
         string $url,
         $handler,
-        string $name,
-        string $method
+        string $name
     ): self {
-        return new self($name, $url, $method, $handler);
+        return new self($name, $url, '', $handler);
     }
 
     public static function get(
@@ -56,7 +55,7 @@ final class Route
         $handler,
         string $name
     ): self {
-        return self::any($url, $handler, $name, Request::METHOD_GET);
+        return new self($name, $url, Request::METHOD_GET, $handler);
     }
 
     public static function post(
@@ -64,7 +63,7 @@ final class Route
         $handler,
         string $name
     ): self {
-        return self::any($url, $handler, $name, Request::METHOD_POST);
+        return new self($name, $url, Request::METHOD_POST, $handler);
     }
 
     public static function put(
@@ -72,7 +71,7 @@ final class Route
         $handler,
         string $name
     ): self {
-        return self::any($url, $handler, $name, Request::METHOD_PUT);
+        return new self($name, $url, Request::METHOD_PUT, $handler);
     }
 
     public static function delete(
@@ -80,7 +79,7 @@ final class Route
         $handler,
         string $name
     ): self {
-        return self::any($url, $handler, $name, Request::METHOD_DELETE);
+        return new self($name, $url, Request::METHOD_DELETE, $handler);
     }
 
     public function getName(): string

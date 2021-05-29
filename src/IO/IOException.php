@@ -8,7 +8,17 @@ use RuntimeException;
 
 final class IOException extends RuntimeException
 {
-    public static function forWritingToStream(string $filename): self
+    public static function forWritingToStream(): self
+    {
+        return new self('Could not write to stream');
+    }
+
+    public static function forWritingToClosedStream(): self
+    {
+        return new self('Could not write to closed stream');
+    }
+
+    public static function forWritingToFilename(string $filename): self
     {
         return new self("Could not write to '{$filename}'");
     }

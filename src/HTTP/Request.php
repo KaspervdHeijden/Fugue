@@ -22,6 +22,9 @@ final class Request
     public const METHOD_CONNECT = 'CONNECT';
     public const METHOD_TRACE   = 'TRACE';
 
+    private const DEFAULT_HOST = 'localhost';
+    private const DEFAULT_PATH = '/';
+
     private PropertyBag $get;
     private PropertyBag $post;
     private PropertyBag $cookie;
@@ -53,8 +56,8 @@ final class Request
     public function getUrl(): Url
     {
         if (! $this->url instanceof Url) {
-            $host      = rtrim($this->server->getString('HTTP_HOST'), '/');
-            $path      = $this->server->getString('REQUEST_URI');
+            $host      = rtrim($this->server->getString('HTTP_HOST', self::DEFAULT_HOST), '/');
+            $path      = $this->server->getString('REQUEST_URI', self::DEFAULT_PATH);
             $protocol  = ($this->isSecure()) ? 'https' : 'http';
 
             $this->url = new Url("{$protocol}://{$host}{$path}");

@@ -4,18 +4,15 @@ declare(strict_types=1);
 
 namespace Fugue\Core\Runtime;
 
-use Fugue\Core\ClassLoader\ClassLoaderInterface;
 use Fugue\HTTP\ResponseHeadersHandlerInterface;
-use Fugue\Core\Output\OutputHandlerInterface;
 use Fugue\HTTP\Routing\RouteCollectionMap;
 use Fugue\HTTP\Routing\RouteMatchResult;
 use Fugue\HTTP\Routing\RouteMatcher;
-use Fugue\Collection\CollectionMap;
-use Fugue\Container\ClassResolver;
 use Fugue\Container\Container;
 use Fugue\HTTP\Routing\Route;
 use Fugue\HTTP\Response;
 use Fugue\HTTP\Request;
+use Fugue\Core\Kernel;
 
 use function method_exists;
 use function is_callable;
@@ -24,26 +21,20 @@ use function explode;
 final class HttpRuntime implements RuntimeInterface
 {
     private ResponseHeadersHandlerInterface $responseHeadersHandler;
-    private OutputHandlerInterface $outputHandler;
-    private ClassLoaderInterface $classLoader;
-    private ClassResolver $classResolver;
     private RouteCollectionMap $routes;
     private Container $container;
+    private Kernel $kernel;
 
     public function __construct(
         ResponseHeadersHandlerInterface $responseHeadersHandler,
-        OutputHandlerInterface $outputHandler,
-        ClassLoaderInterface $classLoader,
-        ClassResolver $classResolver,
         RouteCollectionMap $routes,
-        Container $container
+        Container $container,
+        Kernel $kernel
     ) {
         $this->responseHeadersHandler = $responseHeadersHandler;
-        $this->outputHandler          = $outputHandler;
-        $this->classResolver          = $classResolver;
-        $this->classLoader            = $classLoader;
         $this->container              = $container;
         $this->routes                 = $routes;
+        $this->kernel                 = $kernel;
     }
 
     public function handle(Request $request): void
@@ -53,10 +44,10 @@ final class HttpRuntime implements RuntimeInterface
         $response    = $this->run($matchResult, $request);
 
         $this->responseHeadersHandler->sendHeaders($request, $response);
-        $this->outputHandler->write($response->getContent()->value());
+        $this->kernel->getOutputHandler()->write($response->getContent()->value());
     }
 
-    private function getHandler(Route $route, Request $request): callable
+    private function getHandler(Route $route): callable
     {
         $handler = $route->getHandler();
         if (is_callable($handler)) {
@@ -64,13 +55,14 @@ final class HttpRuntime implements RuntimeInterface
         }
 
         [$className, $methodName] = explode('@', "\\{$handler}", 2);
-        if (($className ?? '') === '' || ! $this->classLoader->exists($className, true)) {
+        if (
+            ($className ?? '') === '' ||
+            ! $this->kernel->getClassLoader()->exists($className, true)
+        ) {
             throw InvalidRouteHandlerException::nonExistentClass($className);
         }
 
-        $mapping  = new CollectionMap([Request::class => $request, Route::class => $route]);
-        $instance = $this->classResolver->resolve($className, $this->container, $mapping);
-
+        $instance = $this->kernel->resolveClass($className, $this->container);
         if (($methodName ?? '') === '') {
             if (is_callable($instance)) {
                 return $instance;
@@ -89,13 +81,14 @@ final class HttpRuntime implements RuntimeInterface
         return [$instance, $methodName];
     }
 
-    private function run(
-        RouteMatchResult $matchResult,
-        Request $request
-    ): Response {
-        $handler   = $this->getHandler($matchResult->getRoute(), $request);
-        $arguments = $matchResult->getArguments()->merge([$request, $matchResult->getRoute()]);
+    private function run(RouteMatchResult $matchResult, Request $request): Response
+    {
+        $handler   = $this->getHandler($matchResult->getRoute());
+        $arguments = $matchResult->getArguments()->merge([
+            $request,
+            $matchResult->getRoute()
+        ]);
 
-        return $handler(...$arguments);
+        return $handler(...$arguments->values());
     }
 }

@@ -42,7 +42,7 @@ final class ContainerLoader
             new RawContainerDefinition(
                 ConfigurationLoaderInterface::class,
                 $this->configLoader
-            )
+            ),
         );
 
         if ($this->configLoader->supports(self::CONFIG_ID_ROUTES)) {

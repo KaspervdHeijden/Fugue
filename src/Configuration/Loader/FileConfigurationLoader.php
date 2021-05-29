@@ -19,7 +19,7 @@ abstract class FileConfigurationLoader implements ConfigurationLoaderInterface
         string $directory,
         string $name
     ) {
-        if (! $fileSystem->isDir($directory)) {
+        if (! $fileSystem->isReadableDir($directory)) {
             throw ConfigurationLoadException::invalidSourceDirectory($directory);
         }
 
@@ -30,20 +30,15 @@ abstract class FileConfigurationLoader implements ConfigurationLoaderInterface
 
     abstract protected function loadFromFile(string $filename): ?array;
 
-    private function getPathInfoForIdentifier(
-        string $directory,
-        string $identifier
-    ): object {
+    private function getPathInfoForIdentifier(string $directory, string $identifier): object
+    {
         $fileNames = [
             "{$directory}/{$this->name}/{$identifier}.conf.{$this->name}.env",
             "{$directory}/{$this->name}/{$identifier}.conf.{$this->name}",
         ];
 
         foreach ($fileNames as $fileName) {
-            if (
-                $this->fileSystem->isFile($fileName) &&
-                $this->fileSystem->isReadable($fileName)
-            ) {
+            if ($this->fileSystem->isReadableFile($fileName)) {
                 return (object)['success' => true, 'filename' => $fileName];
             }
         }

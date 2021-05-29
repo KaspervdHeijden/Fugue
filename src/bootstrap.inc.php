@@ -10,4 +10,4 @@ require_once __DIR__ . '/Core/ClassLoader/ClassLoaderInterface.php';
 require_once __DIR__ . '/Core/ClassLoader/DefaultClassLoader.php';
 require_once __DIR__ . '/IO/Filesystem/FileSystemInterface.php';
 require_once __DIR__ . '/IO/Filesystem/NativeFileSystem.php';
-require_once __DIR__ . '/Core/FrontController.php';
+require_once __DIR__ . '/Core/Kernel.php';

@@ -4,42 +4,49 @@ declare(strict_types=1);
 
 namespace Fugue\View\Templating;
 
+use Fugue\IO\Filesystem\FileSystemInterface;
 use Fugue\HTTP\Routing\RouteMatcher;
 use Fugue\Collection\PropertyBag;
 
+use const DIRECTORY_SEPARATOR;
 use const ENT_QUOTES;
 use const ENT_HTML5;
-
 use function htmlspecialchars;
 use function ob_get_clean;
-use function is_readable;
 use function preg_match;
 use function is_string;
 use function ob_start;
 use function extract;
-use function is_file;
 
 final class PHPTemplateAdapter implements TemplateInterface
 {
+    private FileSystemInterface $fileSystem;
     private RouteMatcher $matcher;
     private string $rootDir;
 
-    public function __construct(RouteMatcher $matcher, string $rootDir)
-    {
-        $this->matcher = $matcher;
-        $this->rootDir = $rootDir;
+    public function __construct(
+        RouteMatcher $matcher,
+        FileSystemInterface $fileSystem,
+        string $rootDir
+    ) {
+        $this->fileSystem = $fileSystem;
+        $this->matcher    = $matcher;
+        $this->rootDir    = $rootDir;
     }
 
-    public function escape($text): string
+    public function escape($text, int $flags = ENT_HTML5 | ENT_QUOTES): string
     {
-        return htmlspecialchars((string)$text, ENT_HTML5 | ENT_QUOTES);
+        return htmlspecialchars((string)$text, $flags);
     }
 
-    public function route(
-        string $routeName,
-        array $parameters = []
-    ): string {
+    public function route(string $routeName, array $parameters = []): string
+    {
         return $this->matcher->getUrl($routeName, $parameters);
+    }
+
+    private function getFilename(string $templateName): string
+    {
+        return $this->rootDir . DIRECTORY_SEPARATOR . $templateName;
     }
 
     public function supports(string $templateName): bool
@@ -48,23 +55,23 @@ final class PHPTemplateAdapter implements TemplateInterface
             return false;
         }
 
-        $fileName = "{$this->rootDir}/{$templateName}";
-        if (! is_file($fileName) || ! is_readable($fileName)) {
+        $fileName = $this->getFilename($templateName);
+        if (! $this->fileSystem->isReadableFile($fileName)) {
             return false;
         }
 
         return true;
     }
 
-    public function render(
-        string $templateName,
-        PropertyBag $variables
-    ): string {
+    public function render(string $templateName, PropertyBag $variables): string
+    {
         if (! $this->supports($templateName)) {
             throw InvalidTemplateException::forUnrecognizedTemplateName($templateName);
         }
 
-        $templateVariables = array_merge($variables->toArray(), ['view' => $this]);
+        $variableMap = array_merge($variables->toArray(), ['view' => $this]);
+        $fileName    = $this->getFilename($templateName);
+
         return (static function (
             string $currentTemplateFileName,
             array $templateVariables
@@ -83,6 +90,6 @@ final class PHPTemplateAdapter implements TemplateInterface
             }
 
             return $content;
-        })("{$this->rootDir}/{$templateName}", $templateVariables);
+        })($fileName, $variableMap);
     }
 }

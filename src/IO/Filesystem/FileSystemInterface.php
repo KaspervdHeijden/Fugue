@@ -10,7 +10,9 @@ interface FileSystemInterface
 
     public function isFile(string $file): bool;
 
-    public function isReadable(string $file): bool;
+    public function isReadableDir(string $directory): bool;
+
+    public function isReadableFile(string $file): bool;
 
     public function isExecutable(string $file): bool;
 }

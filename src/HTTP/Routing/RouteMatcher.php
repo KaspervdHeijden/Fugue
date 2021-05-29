@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace Fugue\HTTP\Routing;
 
-use Fugue\Collection\CollectionList;
+use Fugue\Collection\Collection;
 use Fugue\HTTP\Request;
 
-use const ARRAY_FILTER_USE_KEY;
 use function preg_replace_callback;
 use function mb_strtolower;
-use function array_filter;
 use function str_replace;
 use function preg_match;
-use function in_array;
 use function rtrim;
 
 final class RouteMatcher
@@ -27,20 +24,24 @@ final class RouteMatcher
         $this->routeMap = $routeMap;
     }
 
-    private function getRegularExpressionForRoute(Route $route): string
+    private function getRegularExpressionAndTypesForRoute(Route $route): object
     {
-        $regex = str_replace('/', '/+', rtrim(preg_replace_callback(
+        $castMap = [];
+        $regex   = str_replace('/', '/+', rtrim(preg_replace_callback(
             self::URL_TEMPLATE_REGEX,
-            static function (array $matches): string {
+            static function (array $matches) use (&$castMap): string {
                 switch (isset($matches[2]) && $matches[2] !== '' ? mb_strtolower($matches[2][1]) : 's') {
                     case 'i':
-                        $regex = '\d+';
+                        $castMap[$matches[1]] = '\intval';
+                        $regex                = '\d+';
                         break;
                     case 'f':
-                        $regex = '\d+(\.\d+)?';
+                        $castMap[$matches[1]] = '\floatval';
+                        $regex                = '\d+(\.\d+)?';
                         break;
                     default:
-                        $regex = '[^/]+?';
+                        $castMap[$matches[1]] = '\strval';
+                        $regex                = '[^/]+?';
                         break;
                 }
 
@@ -49,27 +50,37 @@ final class RouteMatcher
             $route->getUrl()
         ), '/'));
 
-        return "#^{$regex}\/*$#";
+        return (object)[
+            'regex'   => "#^{$regex}\/*$#",
+            'castMap' => $castMap,
+        ];
     }
 
-    private function match(
-        Route $route,
-        Request $request
-    ): ?RouteMatchResult {
-        if (! in_array($route->getMethod(), [null, $request->getMethod()], true)) {
+    private function match(Route $route, Request $request): ?RouteMatchResult
+    {
+        if ($route->getMethod() !== null && $route->getMethod() !== $request->getMethod()) {
             return null;
         }
 
         $path    = $request->getUrl()->getPath();
-        $regex   = $this->getRegularExpressionForRoute($route);
+        $regex   = $this->getRegularExpressionAndTypesForRoute($route);
         $matches = [];
 
-        if (! (bool)preg_match($regex, $path, $matches)) {
+        if (! (bool)preg_match($regex->regex, $path, $matches)) {
             return null;
         }
 
-        $arguments = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
-        return new RouteMatchResult($route, CollectionList::forString($arguments));
+        $arguments = [];
+        foreach ($matches as $key => $value) {
+            if (! isset($regex->castMap[$key])) {
+                continue;
+            }
+
+            $caster          = $regex->castMap[$key];
+            $arguments[$key] = $caster($value);
+        }
+
+        return new RouteMatchResult($route, Collection::forMixed($arguments));
     }
 
     public function getUrl(
@@ -83,9 +94,7 @@ final class RouteMatcher
 
         return preg_replace_callback(
             self::URL_TEMPLATE_REGEX,
-            static function (array $matches) use ($parameters): string {
-                return mb_strtolower($params[$matches[1]] ?? '');
-            },
+            static fn (array $matches): string => mb_strtolower($parameters[$matches[1]] ?? ''),
             $route->getUrl()
         );
     }

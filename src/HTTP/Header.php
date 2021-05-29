@@ -68,7 +68,7 @@ final class Header
 
     public function getValue(): string
     {
-        return implode(';', $this->parts->toArray());
+        return implode(';', $this->parts->values());
     }
 
     public function toHeaderString(): string

@@ -17,16 +17,7 @@ use function fopen;
 final class FileStreamWriter implements StreamWriterInterface
 {
     public const DEFAULT_MODE = 'w';
-    public const VALID_MODES  = [
-        'a+',
-        'x+',
-        'w+',
-        'c+',
-        'a',
-        'x',
-        'w',
-        'c',
-    ];
+    public const VALID_MODES  = ['a', 'x', 'w', 'c'];
 
     private string $filename;
     private string $mode;
@@ -105,7 +96,7 @@ final class FileStreamWriter implements StreamWriterInterface
         $written = fwrite($handle, $string);
 
         if (! is_int($written)) {
-            throw IOException::forWritingToStream($this->filename);
+            throw IOException::forWritingToFilename($this->filename);
         }
 
         return $written;

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Fugue\Container;
 
 use Fugue\Collection\CollectionList;
-use Fugue\Collection\CollectionMap;
 use Fugue\Caching\CacheInterface;
 use ReflectionNamedType;
 use ReflectionException;
@@ -21,23 +20,18 @@ final class ClassResolver
         $this->cache = $cache;
     }
 
-    public function resolve(
-        string $className,
-        Container $container,
-        CollectionMap $classToObjects
-    ) {
-        $reflectionClasses = $this->getArgumentClassesFromConstructorWithCache($className);
-        $arguments         = $reflectionClasses->map(
-            static function (string $typeName) use ($container, $classToObjects) {
-                if ($classToObjects->containsKey($typeName)) {
-                    return $classToObjects[$typeName];
-                } elseif ($container->isRegistered($typeName)) {
-                    return $container->resolve($typeName);
-                }
+    public function resolve(string $className, Container $container)
+    {
+        $arguments = $this->getArgumentClassesFromConstructorWithCache($className)
+                          ->map(
+                                static function (string $typeName) use ($container) {
+                                    if ($container->isRegistered($typeName)) {
+                                        return $container->resolve($typeName);
+                                    }
 
-                throw CannotResolveClassException::forUnresolvedClass($typeName);
-            }
-        );
+                                    throw CannotResolveClassException::forUnresolvedClass($typeName);
+                                }
+                            );
 
         return new $className(...$arguments);
     }
@@ -84,7 +78,7 @@ final class ClassResolver
             }
 
             return $classes;
-        } catch (ReflectionException $reflectionException) {
+        } catch (ReflectionException) {
             throw InvalidClassException::forClassName($className);
         }
     }

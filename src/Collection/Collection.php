@@ -13,6 +13,7 @@ use Countable;
 use function array_key_exists;
 use function array_key_first;
 use function array_key_last;
+use function array_values;
 use function array_reduce;
 use function array_search;
 use function array_merge;
@@ -27,28 +28,28 @@ use function count;
 use function max;
 use function min;
 
-abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
+class Collection implements ArrayAccess, IteratorAggregate, Countable
 {
     /** @var callable[]|string[] */
     private const TYPE_MAPPING = [
-        'countable' => 'is_countable',
-        'resource'  => 'is_resource',
-        'callable'  => 'is_callable',
-        'function'  => 'is_callable',
-        'iterable'  => 'is_iterable',
-        'numeric'   => 'is_numeric',
-        'scalar'    => 'is_scalar',
-        'object'    => 'is_object',
-        'string'    => 'is_string',
-        'array'     => 'is_array',
-        'float'     => 'is_float',
-        'double'    => 'is_float',
-        'real'      => 'is_float',
-        'boolean'   => 'is_bool',
-        'bool'      => 'is_bool',
-        'null'      => 'is_null',
-        'int'       => 'is_int',
-        'integer'   => 'is_int',
+        'countable' => '\is_countable',
+        'resource'  => '\is_resource',
+        'callable'  => '\is_callable',
+        'function'  => '\is_callable',
+        'iterable'  => '\is_iterable',
+        'numeric'   => '\is_numeric',
+        'scalar'    => '\is_scalar',
+        'object'    => '\is_object',
+        'string'    => '\is_string',
+        'array'     => '\is_array',
+        'float'     => '\is_float',
+        'double'    => '\is_float',
+        'real'      => '\is_float',
+        'boolean'   => '\is_bool',
+        'bool'      => '\is_bool',
+        'null'      => '\is_null',
+        'int'       => '\is_int',
+        'integer'   => '\is_int',
     ];
 
     private array $elements = [];
@@ -67,8 +68,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         return (bool)array_key_exists($key, $this->elements);
     }
 
-    /** @return static */
-    public function merge(array $other): self
+    public function merge(array $other): static
     {
         return new static(
             array_merge($this->elements, $other),
@@ -129,8 +129,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         }
     }
 
-    /** @return static */
-    public function filter(callable $filter): self
+    public function filter(callable $filter): static
     {
         return new static(
             array_filter($this->elements, $filter),
@@ -190,6 +189,11 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         return $this->elements;
     }
 
+    public function values(): array
+    {
+        return array_values($this->elements);
+    }
+
     public function contains($element): bool
     {
         return array_search($element, $this->elements, true) !== false;
@@ -200,8 +204,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         return array_keys($this->elements);
     }
 
-    /** @return static */
-    public function slice(int $offset, ?int $length = null): self
+    public function slice(int $offset, ?int $length = null): static
     {
         return new static(
             array_slice(
@@ -214,8 +217,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         );
     }
 
-    /** @return static */
-    public function subset(int $start, ?int $end = null): self
+    public function subset(int $start, ?int $end = null): static
     {
         return $this->slice(
             $start,
@@ -288,8 +290,7 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         return false;
     }
 
-    /** @return int|float */
-    public function sum()
+    public function sum(): int|float
     {
         return array_sum($this->elements);
     }
@@ -321,32 +322,27 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         }
     }
 
-    /** @return static */
-    public static function forString(iterable $elements): self
+    public static function forString(iterable $elements): static
     {
         return new static($elements, 'string');
     }
 
-    /** @return static */
-    public static function forInt(iterable $elements): self
+    public static function forInt(iterable $elements): static
     {
         return new static($elements, 'int');
     }
 
-    /** @return static */
-    public static function forFloat(iterable $elements): self
+    public static function forFloat(iterable $elements): static
     {
         return new static($elements, 'float');
     }
 
-    /** @return static */
-    public static function forBool(iterable $elements): self
+    public static function forBool(iterable $elements): static
     {
         return new static($elements, 'bool');
     }
 
-    /** @return static */
-    public static function forAuto(iterable $elements): self
+    public static function forAuto(iterable $elements): static
     {
         $runtimeClass = static::class;
         if ($elements instanceof $runtimeClass) {
@@ -370,5 +366,10 @@ abstract class Collection implements ArrayAccess, IteratorAggregate, Countable
         }
 
         return new static($elements);
+    }
+
+    public static function forMixed(iterable $elements): static
+    {
+        return new static($elements, null);
     }
 }

@@ -21,9 +21,14 @@ final class NativeFileSystem implements FileSystemInterface
         return $file !== '' && is_file($file);
     }
 
-    public function isReadable(string $file): bool
+    public function isReadableDir(string $directory): bool
     {
-        return $file !== '' && is_readable($file);
+        return $this->isDir($directory) && is_readable($directory);
+    }
+
+    public function isReadableFile(string $file): bool
+    {
+        return $this->isFile($file) && is_readable($file);
     }
 
     public function isExecutable(string $file): bool

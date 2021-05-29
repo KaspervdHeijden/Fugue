@@ -8,6 +8,7 @@ use Fugue\Persistence\Database\PdoMySqlDatabaseQueryAdapter;
 use Fugue\Persistence\Database\DatabaseConnectionSettings;
 use Fugue\Container\SingletonContainerDefinition;
 use Fugue\Container\ContainerDefinition;
+use Fugue\Container\ClassResolver;
 use Fugue\Container\Container;
 use Fugue\Logging\EmptyLogger;
 
@@ -16,6 +17,7 @@ return [
     new SingletonContainerDefinition(
         DatabaseQueryAdapterInterface::class,
         static function (Container $container): DatabaseQueryAdapterInterface {
+            /** @var ConfigurationLoaderInterface $loader */
             $loader   = $container->resolve(ConfigurationLoaderInterface::class);
             $settings = $loader->load('database.conf');
             $config   = new DatabaseConnectionSettings(
@@ -27,7 +29,14 @@ return [
                 $settings['options'] ?? []
             );
 
-            return new PdoMySqlDatabaseQueryAdapter($config, new EmptyLogger());
+            /** @var ClassResolver $resolver */
+            $resolver = $container->resolve(ClassResolver::class);
+            $logger   = $resolver->resolve($settings['logger'], $container);
+
+            return new PdoMySqlDatabaseQueryAdapter(
+                $config,
+                $logger ?: new EmptyLogger()
+            );
         }
     ),
 ];

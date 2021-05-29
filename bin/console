@@ -14,29 +14,18 @@ declare(strict_types=1);
  */
 
 use Fugue\Core\Runtime\RuntimeInterface;
-use Fugue\Container\ClassResolver;
 use Fugue\Core\Runtime\CLIRuntime;
 use Fugue\Command\CommandFactory;
-use Fugue\Core\FrontController;
 use Fugue\Container\Container;
 use Fugue\HTTP\Request;
 use Fugue\Core\Kernel;
 
 require_once __DIR__ . '/../src/bootstrap.inc.php';
 
-(new class(E_ALL, 'utf-8', true) extends FrontController
+(new class() extends Kernel
 {
-    final protected function createRuntime(
-        Kernel $kernel,
-        Container $container,
-        ClassResolver $classResolver
-    ): RuntimeInterface {
-        $factory = new CommandFactory(
-            $kernel->getClassLoader(),
-            $classResolver,
-            $container
-        );
-
-        return new CLIRuntime($factory);
+    final protected function createRuntime(Container $container): RuntimeInterface
+    {
+        return new CLIRuntime(new CommandFactory($this, $container));
     }
 })->handleRequest(Request::fromArrays($_SERVER, $_ENV));

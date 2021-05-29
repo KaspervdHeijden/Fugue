@@ -27,9 +27,8 @@ final class DefaultClassLoader implements ClassLoaderInterface
         $this->rootDir       = $rootDir;
     }
 
-    private function classNameToFileName(
-        string $className
-    ): string {
+    private function classNameToFileName(string $className): string
+    {
         return str_replace(
             ['\\', "{$this->rootNamespace}/"],
             ['/', "{$this->rootDir}/"],
@@ -40,8 +39,7 @@ final class DefaultClassLoader implements ClassLoaderInterface
     public function loadClass(string $className): void
     {
         $fileName = $this->classNameToFileName($className);
-
-        if ($this->fileSystem->isFile($fileName) && $this->fileSystem->isReadable($fileName)) {
+        if ($this->fileSystem->isReadableFile($fileName)) {
             (static function (string $fileName): void {
                 /** @noinspection PhpIncludeInspection */
                 require_once $fileName;
@@ -49,10 +47,8 @@ final class DefaultClassLoader implements ClassLoaderInterface
         }
     }
 
-    public function exists(
-        string $className,
-        bool $autoload
-    ): bool {
+    public function exists(string $className, bool $autoload): bool
+    {
         return class_exists($className, $autoload);
     }
 }
