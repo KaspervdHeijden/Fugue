@@ -21,9 +21,7 @@ final class ReflectionClassMapper implements RecordMapperInterface
     public function __construct(string $className)
     {
         if ($className === '') {
-            throw new InvalidArgumentException(
-                'Classname should not be empty'
-            );
+            throw new InvalidArgumentException('Classname should not be empty');
         }
 
         try {
@@ -35,7 +33,7 @@ final class ReflectionClassMapper implements RecordMapperInterface
                 $constructor->getNumberOfRequiredParameters() > 0
             ) {
                 throw new LogicException(
-                    "Cannot instantiate a new {$className} because it requires arguments"
+                    "Cannot instantiate a new '{$className}' because it requires arguments"
                 );
             }
 
@@ -49,7 +47,7 @@ final class ReflectionClassMapper implements RecordMapperInterface
         }
     }
 
-    private function shouldSet($value, ?ReflectionType $type): bool
+    private function shouldSet(mixed $value, ?ReflectionType $type): bool
     {
         if (! $type instanceof ReflectionType) {
             return true;
@@ -62,7 +60,7 @@ final class ReflectionClassMapper implements RecordMapperInterface
         return true;
     }
 
-    private function cast($value, ?ReflectionType $type)
+    private function cast(mixed $value, ?ReflectionType $type): mixed
     {
         if (! $type instanceof ReflectionNamedType) {
             return $value;
@@ -87,7 +85,7 @@ final class ReflectionClassMapper implements RecordMapperInterface
     private function setProperty(
         object $instance,
         string $propertyName,
-        $value
+        mixed $value
     ): void {
         $setter = 'set' . ucfirst($propertyName);
         if (! $this->reflection->hasMethod($setter)) {

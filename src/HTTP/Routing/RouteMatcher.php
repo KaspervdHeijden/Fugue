@@ -83,10 +83,8 @@ final class RouteMatcher
         return new RouteMatchResult($route, Collection::forMixed($arguments));
     }
 
-    public function getUrl(
-        string $routeName,
-        array $parameters
-    ): string {
+    public function getUrl(string $routeName, array $parameters): string
+    {
         $route = $this->routeMap->get($routeName);
         if (! $route instanceof Route) {
             return '';

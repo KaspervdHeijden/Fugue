@@ -52,5 +52,5 @@ interface DatabaseQueryAdapterInterface
     public function fetchValue(
         string $sql,
         array $params = []
-    );
+    ): float|int|bool|string|null;
 }

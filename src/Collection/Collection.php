@@ -52,6 +52,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
         'integer'   => '\is_int',
     ];
 
+    /** @var mixed[] */
     private array $elements = [];
     private ?string $type;
 
@@ -65,7 +66,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
 
     public function containsKey($key): bool
     {
-        return (bool)array_key_exists($key, $this->elements);
+        return array_key_exists($key, $this->elements);
     }
 
     public function merge(array $other): static
@@ -76,32 +77,32 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
         );
     }
 
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return $this->containsKey($offset);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->get($offset);
     }
 
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->set($value, $offset);
     }
 
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         $this->unset($offset);
     }
 
-    public function get($key, $default = null)
+    public function get(mixed $key, mixed $default = null): mixed
     {
         return $this->elements[$key] ?? $default;
     }
 
-    public function set($value, $key = null): void
+    public function set(mixed $value, mixed $key = null): void
     {
         if (! $this->checkKey($key)) {
             throw InvalidTypeException::forKey(static::class);
@@ -118,7 +119,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
         }
     }
 
-    public function unset(...$keys): void
+    public function unset(mixed ...$keys): void
     {
         foreach ($keys as $key) {
             if (! $this->checkKey($key)) {
@@ -139,7 +140,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
 
     public function reduce(
         callable $combinator,
-        $initialValue = null
+        mixed $initialValue = null
     ) {
         return array_reduce(
             $this->elements,
@@ -152,7 +153,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
         string $glue = '',
         ?callable $caster = null
     ): string {
-        $caster = $caster ?: fn ($element): string => (string)$element;
+        $caster = $caster ?: fn (mixed $element): string => (string)$element;
         return implode($glue, $this->map($caster));
     }
 
@@ -161,7 +162,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
         return array_map($filter, $this->elements);
     }
 
-    protected function checkValue($value): bool
+    protected function checkValue(mixed $value): bool
     {
         if (! is_string($this->type)) {
             return true;
@@ -174,7 +175,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
         return ($value instanceof $this->type);
     }
 
-    protected function checkKey($key): bool
+    protected function checkKey(mixed $key): bool
     {
         return true;
     }
@@ -194,7 +195,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
         return array_values($this->elements);
     }
 
-    public function contains($element): bool
+    public function contains(mixed $element): bool
     {
         return array_search($element, $this->elements, true) !== false;
     }
@@ -225,7 +226,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
         );
     }
 
-    public function first()
+    public function first(): mixed
     {
         $key = array_key_first($this->elements);
         if ($key === null) {
@@ -235,7 +236,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
         return $this->elements[$key];
     }
 
-    public function last()
+    public function last(): mixed
     {
         $key = array_key_last($this->elements);
         if ($key === null) {
@@ -262,7 +263,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
 
     public function every(
         callable $checker,
-        $expectedResult = true
+        mixed $expectedResult = true
     ): bool {
         foreach ($this->elements as $element) {
             if ($checker($element) !== $expectedResult) {
@@ -275,7 +276,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
 
     public function any(
         callable $checker,
-        $expectedResult = true
+        mixed $expectedResult = true
     ): bool {
         if ($this->isEmpty()) {
             return true;
@@ -292,7 +293,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
 
     public function sum(): int|float
     {
-        return array_sum($this->elements);
+        return array_sum($this->values());
     }
 
     public function avg(): float
@@ -305,14 +306,14 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
         return (float)($this->sum() / $count);
     }
 
-    public function max()
+    public function max(): mixed
     {
-        return max(...$this->elements);
+        return max(...$this->values());
     }
 
-    public function min()
+    public function min(): mixed
     {
-        return min(...$this->elements);
+        return min(...$this->values());
     }
 
     public function push(iterable $elements): void

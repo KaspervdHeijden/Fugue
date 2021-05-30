@@ -6,16 +6,15 @@ namespace Fugue\Container;
 
 final class SingletonContainerDefinition extends ContainerDefinition
 {
+    private mixed $resolvedValue;
     private bool $resolved = false;
-    /** @var mixed */
-    private $resolvedValue;
 
-    protected function isValidDefinition($definition): bool
+    protected function isValidDefinition(mixed $definition): bool
     {
         return is_callable($definition);
     }
 
-    public function resolve(Container $container)
+    public function resolve(Container $container): mixed
     {
         if (! $this->resolved) {
             $this->resolvedValue = $this->getDefinition()($container);

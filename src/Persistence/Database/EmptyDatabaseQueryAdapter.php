@@ -25,7 +25,7 @@ final class EmptyDatabaseQueryAdapter implements DatabaseQueryAdapterInterface
     public function fetchValue(
         string $sql,
         array $params = []
-    ) {
+    ): float|int|bool|string|null {
         return null;
     }
 

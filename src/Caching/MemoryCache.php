@@ -15,7 +15,7 @@ final class MemoryCache implements CacheInterface
         return array_key_exists($key, $this->items);
     }
 
-    public function retrieve(string $key)
+    public function retrieve(string $key): mixed
     {
         if (! $this->hasEntry($key)) {
             throw ValueNotFoundException::forKey($key);
@@ -24,7 +24,7 @@ final class MemoryCache implements CacheInterface
         return $this->items[$key];
     }
 
-    public function store(string $key, $value): void
+    public function store(string $key, mixed $value): void
     {
         $this->items[$key] = $value;
     }

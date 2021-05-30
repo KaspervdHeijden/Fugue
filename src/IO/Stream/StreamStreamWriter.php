@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Fugue\IO\Stream;
 
-use Fugue\IO\IOException;
 use InvalidArgumentException;
+use Fugue\IO\IOException;
+
 use function is_resource;
 
 class StreamStreamWriter implements StreamWriterInterface
@@ -39,7 +40,6 @@ class StreamStreamWriter implements StreamWriterInterface
         }
 
         return $written;
-
     }
 
     public function close(): void

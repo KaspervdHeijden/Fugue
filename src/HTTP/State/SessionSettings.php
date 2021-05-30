@@ -29,6 +29,7 @@ final class SessionSettings
         $this->httpOnly       = $httpOnly;
         $this->timeout        = $timeout;
         $this->secure         = $secure;
+        $this->name           = $name;
     }
 
     public function shouldUseOnlyCookies(): bool

@@ -6,20 +6,18 @@ namespace Fugue\Persistence\Database;
 
 final class QueryResult
 {
-    private int $numberOfAffectedRows;
     private ?string $insertedId;
+    private int $affectedRows;
 
-    public function __construct(
-        int $numberOfAffectedRows,
-        ?string $insertedId
-    ) {
-        $this->numberOfAffectedRows = $numberOfAffectedRows;
-        $this->insertedId           = $insertedId;
+    public function __construct(int $affectedRows, ?string $insertedId)
+    {
+        $this->affectedRows = $affectedRows;
+        $this->insertedId   = $insertedId;
     }
 
-    public function getNumberOfAffectedRows(): int
+    public function getAffectedRows(): int
     {
-        return $this->numberOfAffectedRows;
+        return $this->affectedRows;
     }
 
     public function getInsertedId(): ?string

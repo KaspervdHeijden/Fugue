@@ -17,7 +17,11 @@ final class StreamLogger extends Logger
 
     protected function log(string $logType, string $message): void
     {
-        $formattedMessage = $this->getFormattedMessage($logType, $message);
-        $this->streamWriter->write($formattedMessage);
+        $this->streamWriter->write(
+            $this->getFormattedMessage(
+                $logType,
+                $message
+            )
+        );
     }
 }

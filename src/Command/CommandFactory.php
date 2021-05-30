@@ -14,8 +14,8 @@ final class CommandFactory
 
     public function __construct(Kernel $kernel, Container $container)
     {
-        $this->kernel    = $kernel;
         $this->container = $container;
+        $this->kernel    = $kernel;
     }
 
     public function getForIdentifier(string $identifier): CommandInterface

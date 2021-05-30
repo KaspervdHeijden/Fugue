@@ -23,7 +23,7 @@ final class Container implements Countable, ArrayAccess
         }
     }
 
-    public function __set($name, $value): void
+    public function __set(mixed $name, mixed $value): void
     {
         $this->register(
             new RawContainerDefinition(
@@ -33,17 +33,17 @@ final class Container implements Countable, ArrayAccess
         );
     }
 
-    public function __get($name)
+    public function __get(mixed $name): mixed
     {
         return $this->resolve($this->ensureStringName($name));
     }
 
-    public function __isset($name): bool
+    public function __isset(mixed $name): bool
     {
         return $this->isRegistered((string)$name);
     }
 
-    public function __unset($name): void
+    public function __unset(mixed $name): void
     {
         $this->unregister((string)$name);
     }
@@ -53,17 +53,17 @@ final class Container implements Countable, ArrayAccess
         return count($this->definitions);
     }
 
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return $this->isRegistered((string)$offset);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->resolve($this->ensureStringName($offset));
     }
 
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->register(
             new RawContainerDefinition(
@@ -73,14 +73,14 @@ final class Container implements Countable, ArrayAccess
         );
     }
 
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         $this->unregister((string)$offset);
     }
 
     public function unregister(string $name): void
     {
-        unset($this->definitions[(string)$name]);
+        unset($this->definitions[$name]);
     }
 
     public function isRegistered(string $name): bool
@@ -94,7 +94,7 @@ final class Container implements Countable, ArrayAccess
      * @param string $name The name of the object to load.
      * @return mixed       The value/service/object, or null if the object isn't registered.
      */
-    public function resolve(string $name)
+    public function resolve(string $name): mixed
     {
         if (! $this->isRegistered($name)) {
             return null;
@@ -114,12 +114,12 @@ final class Container implements Countable, ArrayAccess
         $this->definitions[$definition->getName()] = $definition;
     }
 
-    private function ensureStringName($name): string
+    private function ensureStringName(mixed $name): string
     {
         if (! is_string($name)) {
             throw new InvalidArgumentException('Name must be a string');
         }
 
-        return (string)$name;
+        return $name;
     }
 }

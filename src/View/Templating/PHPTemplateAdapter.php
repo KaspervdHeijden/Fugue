@@ -11,6 +11,7 @@ use Fugue\Collection\PropertyBag;
 use const DIRECTORY_SEPARATOR;
 use const ENT_QUOTES;
 use const ENT_HTML5;
+
 use function htmlspecialchars;
 use function ob_get_clean;
 use function preg_match;
@@ -34,7 +35,7 @@ final class PHPTemplateAdapter implements TemplateInterface
         $this->rootDir    = $rootDir;
     }
 
-    public function escape($text, int $flags = ENT_HTML5 | ENT_QUOTES): string
+    public function escape(mixed $text, int $flags = ENT_HTML5 | ENT_QUOTES): string
     {
         return htmlspecialchars((string)$text, $flags);
     }

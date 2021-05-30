@@ -6,5 +6,5 @@ namespace Fugue\Container;
 
 interface ContainerDefinitionInterface
 {
-    public function resolve(Container $container);
+    public function resolve(Container $container): mixed;
 }

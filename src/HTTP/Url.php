@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Fugue\HTTP;
 
 use UnexpectedValueException;
+use Stringable;
 
 use function parse_url;
 use function is_array;
 
-final class Url
+final class Url implements Stringable
 {
     public const DEFAULT_PORT = 80;
 

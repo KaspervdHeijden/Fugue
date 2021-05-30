@@ -6,7 +6,7 @@ namespace Fugue\Collection;
 
 class CollectionSet extends Collection
 {
-    protected function checkValue($value): bool
+    protected function checkValue(mixed $value): bool
     {
         if (! parent::checkValue($value)) {
             return false;

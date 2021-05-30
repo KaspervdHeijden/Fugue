@@ -11,12 +11,12 @@ final class EmptyCache implements CacheInterface
         return false;
     }
 
-    public function retrieve(string $key)
+    public function retrieve(string $key): mixed
     {
         throw ValueNotFoundException::forKey($key);
     }
 
-    public function store(string $key, $value): void
+    public function store(string $key, mixed $value): void
     {
     }
 }

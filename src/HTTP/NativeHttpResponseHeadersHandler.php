@@ -26,7 +26,6 @@ final class NativeHttpResponseHeadersHandler implements ResponseHeadersHandlerIn
         header_remove();
         header("{$request->getProtocol()} {$code} {$response->getStatusText()}", true, $code);
 
-        /** @var Header $header */
         foreach ($headers as $header) {
             header($header->toHeaderString(), true, $code);
         }

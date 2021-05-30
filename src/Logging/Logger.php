@@ -41,10 +41,7 @@ abstract class Logger implements LoggerInterface
         $this->dateFormat = $dateFormat;
     }
 
-    abstract protected function log(
-        string $logType,
-        string $message
-    ): void;
+    abstract protected function log(string $logType, string $message): void;
 
     protected function callLogIfNotEmpty(
         string $logType,

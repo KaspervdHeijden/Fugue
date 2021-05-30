@@ -6,7 +6,7 @@ namespace Fugue\Container;
 
 final class RawContainerDefinition extends ContainerDefinition
 {
-    public function resolve(Container $container)
+    public function resolve(Container $container): mixed
     {
         return $this->getDefinition();
     }

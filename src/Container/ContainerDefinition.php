@@ -6,11 +6,10 @@ namespace Fugue\Container;
 
 abstract class ContainerDefinition implements ContainerDefinitionInterface
 {
+    private mixed $definition;
     private string $name;
-    /** @var mixed */
-    private $definition;
 
-    public function __construct(string $name, $definition)
+    public function __construct(string $name, mixed $definition)
     {
         if (! $this->isValidDefinition($definition)) {
             throw InvalidDefinitionTypeException::forDefinitionName($name);
@@ -20,8 +19,7 @@ abstract class ContainerDefinition implements ContainerDefinitionInterface
         $this->name       = $name;
     }
 
-    /** @noinspection PhpUnusedParameterInspection */
-    protected function isValidDefinition($definition): bool
+    protected function isValidDefinition(mixed $definition): bool
     {
         return true;
     }
@@ -31,10 +29,10 @@ abstract class ContainerDefinition implements ContainerDefinitionInterface
         return $this->name;
     }
 
-    public function getDefinition()
+    public function getDefinition(): mixed
     {
         return $this->definition;
     }
 
-    abstract public function resolve(Container $container);
+    abstract public function resolve(Container $container): mixed;
 }

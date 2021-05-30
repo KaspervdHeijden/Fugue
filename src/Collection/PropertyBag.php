@@ -8,7 +8,7 @@ use function is_string;
 
 final class PropertyBag extends CollectionMap
 {
-    protected function checkKey($key): bool
+    protected function checkKey(mixed $key): bool
     {
         return parent::checkKey($key) && is_string($key);
     }

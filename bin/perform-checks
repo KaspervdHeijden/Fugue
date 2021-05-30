@@ -47,6 +47,7 @@ if [ -n "${output}" ]; then
 fi
 
 echo '- Checking code style';
+export PHP_CS_FIXER_IGNORE_ENV=1;
 if ! ./vendor/bin/php-cs-fixer fix -vvv --dry-run --no-interaction --using-cache=no src; then
   exitCode=$?;
   echo 'PHP-CS-Fixer failed!' >&2;

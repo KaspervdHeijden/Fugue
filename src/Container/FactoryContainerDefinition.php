@@ -8,12 +8,12 @@ use function is_callable;
 
 final class FactoryContainerDefinition extends ContainerDefinition
 {
-    protected function isValidDefinition($definition): bool
+    protected function isValidDefinition(mixed $definition): bool
     {
         return is_callable($definition);
     }
 
-    public function resolve(Container $container)
+    public function resolve(Container $container): mixed
     {
         return $this->getDefinition()($container);
     }

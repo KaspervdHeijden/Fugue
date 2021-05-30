@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Fugue\HTTP;
 
+use Stringable;
 use Countable;
 
 use function mb_strlen;
 use function strlen;
 
-final class StringBuffer implements Countable
+final class StringBuffer implements Countable, Stringable
 {
     private string $value;
 

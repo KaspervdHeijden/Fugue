@@ -168,7 +168,7 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
         );
     }
 
-    public function fetchValue(string $sql, array $params = [])
+    public function fetchValue(string $sql, array $params = []): float|int|bool|string|null
     {
         $stmt   = $this->execute($sql, $params);
         $column = $stmt->fetchColumn();

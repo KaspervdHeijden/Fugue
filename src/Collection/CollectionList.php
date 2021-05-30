@@ -8,7 +8,7 @@ use function is_int;
 
 class CollectionList extends Collection
 {
-    protected function checkKey($key): bool
+    protected function checkKey(mixed $key): bool
     {
         if (! parent::checkKey($key)) {
             return false;
@@ -23,10 +23,5 @@ class CollectionList extends Collection
         }
 
         return false;
-    }
-
-    public static function forValues(...$values): self
-    {
-        return new static($values);
     }
 }

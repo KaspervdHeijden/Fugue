@@ -9,7 +9,7 @@ use function is_int;
 
 class CollectionMap extends Collection
 {
-    protected function checkKey($key): bool
+    protected function checkKey(mixed $key): bool
     {
         if (! parent::checkKey($key)) {
             return false;

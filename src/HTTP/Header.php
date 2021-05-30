@@ -7,6 +7,7 @@ namespace Fugue\HTTP;
 use Fugue\Collection\CollectionMap;
 use InvalidArgumentException;
 use DateTimeInterface;
+use Stringable;
 
 use function mb_strtolower;
 use function array_map;
@@ -16,7 +17,7 @@ use function lcfirst;
 use function ucfirst;
 use function trim;
 
-final class Header
+final class Header implements Stringable
 {
     public const NAME_CONTENT_DISPOSITION = 'content_disposition';
     public const NAME_CONTENT_TYPE        = 'content_type';
