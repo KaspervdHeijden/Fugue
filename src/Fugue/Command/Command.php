@@ -14,6 +14,8 @@ use function explode;
 
 abstract class Command implements CommandInterface
 {
+    public const DEFAULT_EXCEPTION_EXITCODE = 1;
+
     private ExceptionHandlerInterface $exceptionHandler;
     private LoggerInterface $logger;
     private string $name;
@@ -45,18 +47,22 @@ abstract class Command implements CommandInterface
     public function run(CollectionList $arguments): int
     {
         try {
-            $this->logger->verbose("Starting {$this->name}");
-            $this->execute($arguments);
-            $this->logger->verbose("Completed {$this->name}");
+            $name = $this->getName();
+            $this->logger->verbose("Starting {$name}");
+            $exitCode = $this->execute($arguments);
+            $this->logger->verbose("Completed {$name}");
 
-            return 0;
+            return $exitCode;
         } catch (Throwable $throwable) {
-            $this->logger->verbose("Exception {$throwable->getMessage()}");
-
             $this->getExceptionHandler()->handle($throwable);
-            return (int)($throwable->getCode() ?: 1);
+            return (int)($throwable->getCode() ?: self::DEFAULT_EXCEPTION_EXITCODE);
         }
     }
 
-    abstract protected function execute(CollectionList $arguments): void;
+    public function __invoke(CollectionList $arguments): int
+    {
+        return $this->run($arguments);
+    }
+
+    abstract protected function execute(CollectionList $arguments): int;
 }

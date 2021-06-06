@@ -14,24 +14,19 @@ final class DefaultClassLoader implements ClassLoaderInterface
     private const FILE_NAME_EXTENSION = '.php';
 
     private FileSystemInterface $fileSystem;
-    private string $rootNamespace;
     private string $rootDir;
 
-    public function __construct(
-        FileSystemInterface $fileSystem,
-        string $rootDir,
-        string $rootNamespace
-    ) {
-        $this->rootNamespace = $rootNamespace;
+    public function __construct(FileSystemInterface $fileSystem, string $rootDir)
+    {
         $this->fileSystem    = $fileSystem;
         $this->rootDir       = $rootDir;
     }
 
     private function classNameToFileName(string $className): string
     {
-        return str_replace(
-            ['\\', "{$this->rootNamespace}/"],
-            ['/', "{$this->rootDir}/"],
+        return $this->rootDir . str_replace(
+            ['\\'],
+            ['/'],
             $className
         ) . self::FILE_NAME_EXTENSION;
     }

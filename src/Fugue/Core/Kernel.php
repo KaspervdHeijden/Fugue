@@ -34,9 +34,7 @@ use function mb_internal_encoding;
 use function mb_regex_encoding;
 use function set_error_handler;
 use function mb_http_output;
-use function array_slice;
 use function mb_substr;
-use function explode;
 use function ini_set;
 use function rtrim;
 
@@ -63,13 +61,9 @@ abstract class Kernel
         ?ClassLoaderInterface $classLoader           = null,
         FileSystemInterface $fileSystem              = null
     ) {
-        $rootDir           = $this->getRootDir();
+        $srcDir            = $this->getSrcDir();
         $fileSystem        = $fileSystem ?: new NativeFileSystem();
-        $this->classLoader = $classLoader ?: new DefaultClassLoader(
-            $fileSystem,
-            $rootDir,
-            array_slice(explode('\\', self::class), 0, 1)[0]
-        );
+        $this->classLoader = $classLoader ?: new DefaultClassLoader($fileSystem, $srcDir);
 
         spl_autoload_register([$this->classLoader, 'loadClass'], true, true);
 
@@ -79,12 +73,13 @@ abstract class Kernel
 
         set_error_handler([$this, 'handleUnexpectedException']);
 
+        $confDirectory      = "{$srcDir}/../conf";
         $charset            = $this->getCharset();
         $this->logger       = $logger ?: new OutputLogger($this->outputHandler);
         $this->configLoader = $configLoader ?: new MultiConfigurationLoader(
-            new JsonConfigurationLoader($fileSystem, "{$rootDir}/../conf", 'json'),
-            new IniConfigurationLoader($fileSystem, "{$rootDir}/../conf", 'ini'),
-            new PHPConfigurationLoader($fileSystem, "{$rootDir}/../conf", 'php'),
+            new JsonConfigurationLoader($fileSystem, $confDirectory, 'json'),
+            new IniConfigurationLoader($fileSystem, $confDirectory, 'ini'),
+            new PHPConfigurationLoader($fileSystem, $confDirectory, 'php'),
         );
 
         ini_set('display_errors', $this->displayErrors() ? '1' : '0');
@@ -121,9 +116,9 @@ abstract class Kernel
         return $this->logger;
     }
 
-    public function getRootDir(): string
+    public function getSrcDir(): string
     {
-        return mb_substr(rtrim(__DIR__, DIRECTORY_SEPARATOR), 0, -4);
+        return mb_substr(rtrim(__DIR__, DIRECTORY_SEPARATOR), 0, -10);
     }
 
     protected function getCharset(): string
