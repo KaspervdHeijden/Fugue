@@ -5,4 +5,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - name: Perform checks
-          run: ./bin/perform-checks
+          run: ls -laFH
