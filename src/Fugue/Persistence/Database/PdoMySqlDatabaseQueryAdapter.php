@@ -54,14 +54,20 @@ final class PdoMySqlDatabaseQueryAdapter implements DatabaseQueryAdapterInterfac
         }
 
         $timeZone = $this->settings->getTimezone();
-        if ($timeZone !== '') {
-            if (
-                ! $this->pdo->query('SET @session.time_zone = ?', [$timeZone]) &&
-                ! $this->pdo->query('SET @@time_zone = ?', [$timeZone])
-            ) {
-                throw new RuntimeException('Could not set time zone');
+        if ($timeZone === '') {
+            return;
+        }
+
+        $queries = ['SET @session.time_zone = ?', 'SET @time_zone = ?'];
+        foreach ($queries as $query) {
+            try {
+                $this->execute($query, [$timeZone]);
+                return;
+            } catch (PDOException) {
             }
         }
+
+        throw new RuntimeException('Could not set time zone');
     }
 
     private function throwExceptionFromArray(array $errorInfo): void

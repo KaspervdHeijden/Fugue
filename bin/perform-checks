@@ -47,7 +47,6 @@ if [ -n "${output}" ]; then
 fi
 
 echo '- Checking code style';
-export PHP_CS_FIXER_IGNORE_ENV=1;
 if ! ./vendor/bin/php-cs-fixer fix -vvv --dry-run --no-interaction --using-cache=no src; then
   exitCode=$?;
   echo 'PHP-CS-Fixer failed!' >&2;
@@ -55,7 +54,7 @@ if ! ./vendor/bin/php-cs-fixer fix -vvv --dry-run --no-interaction --using-cache
 fi
 
 echo '- Checking PHP standards';
-if ! ./vendor/bin/phpstan analyse src/; then
+if ! ./vendor/bin/phpstan analyse --no-interaction --level 5 -vvv src/; then
   exitCode=$?;
   echo 'PHP stan failed!' >&2;
   exit $exitCode;

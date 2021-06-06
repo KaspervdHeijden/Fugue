@@ -141,9 +141,9 @@ abstract class Kernel
         string $message,
         string $file,
         int $line
-    ): void {
+    ): bool {
         if (($code & $this->getErrorLevel()) === 0) {
-            return;
+            return true;
         }
 
         try {
