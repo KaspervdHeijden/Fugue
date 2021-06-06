@@ -1,8 +1,0 @@
-name: Perform checks
-on: push
-jobs:
-  job1:
-    runs-on: ubuntu-latest
-    steps:
-        - name: Perform checks
-          run: ls -laFH
