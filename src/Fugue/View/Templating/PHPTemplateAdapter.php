@@ -8,16 +8,16 @@ use Fugue\IO\Filesystem\FileSystemInterface;
 use Fugue\HTTP\Routing\RouteMatcher;
 use Fugue\Collection\PropertyBag;
 
-use const DIRECTORY_SEPARATOR;
-use const ENT_QUOTES;
-use const ENT_HTML5;
-
 use function htmlspecialchars;
 use function ob_get_clean;
 use function preg_match;
 use function is_string;
 use function ob_start;
 use function extract;
+
+use const DIRECTORY_SEPARATOR;
+use const ENT_QUOTES;
+use const ENT_HTML5;
 
 final class PHPTemplateAdapter implements TemplateInterface
 {

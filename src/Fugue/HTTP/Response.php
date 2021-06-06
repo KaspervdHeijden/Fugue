@@ -77,7 +77,7 @@ final class Response
     public const CONTENT_TYPE_CSS        = 'text/css';
     public const CONTENT_TYPE_CSV        = 'text/csv';
     public const CONTENT_TYPE_PDF        = 'application/pdf';
-    
+
     private const STATUS_CODE_MAPPING    = [
         self::HTTP_CONTINUE                        => 'Continue',
         self::HTTP_SWITCHING_PROTOCOLS             => 'Switching Protocols',

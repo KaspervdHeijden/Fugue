@@ -25,12 +25,12 @@ final class ClassResolver
         $arguments = $this->getArgumentClassesFromConstructorWithCache($className)
                           ->map(
                               static function (string $typeName) use ($container): mixed {
-                                    if ($container->isRegistered($typeName)) {
-                                        return $container->resolve($typeName);
-                                    }
+                                  if ($container->isRegistered($typeName)) {
+                                      return $container->resolve($typeName);
+                                  }
 
-                                    throw CannotResolveClassException::forUnresolvedClass($typeName);
-                                }
+                                  throw CannotResolveClassException::forUnresolvedClass($typeName);
+                              }
                           );
 
         return new $className(...$arguments);
