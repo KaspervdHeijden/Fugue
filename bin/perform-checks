@@ -48,23 +48,20 @@ fi
 
 echo '- Checking code style';
 if ! ./vendor/bin/php-cs-fixer fix -vvv --dry-run --no-interaction --using-cache=no src; then
-  exitCode=$?;
   echo 'PHP-CS-Fixer failed!' >&2;
-  exit $exitCode;
+  exit 11;
 fi
 
 echo '- Checking PHP standards';
 if ! ./vendor/bin/phpstan analyse --no-interaction --level 5 -vvv src/; then
-  exitCode=$?;
   echo 'PHP stan failed!' >&2;
-  exit $exitCode;
+  exit 12;
 fi
 
 echo '- Checking console';
 if ! "${dirName}/bin/console" '\Fugue\Command\TestCommand'; then
-  exitCode=$?;
   echo 'console test command failed!' >&2;
-  exit $exitCode;
+  exit 13;
 fi
 
 echo '';
