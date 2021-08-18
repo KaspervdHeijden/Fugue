@@ -82,7 +82,6 @@ final class PHPTemplateAdapter implements TemplateInterface
             extract($templateVariables);
             unset($templateVariables);
 
-            /** @noinspection PhpIncludeInspection */
             include $currentTemplateFileName;
 
             $content = ob_get_clean();

@@ -22,9 +22,10 @@ abstract class Command implements CommandInterface
 
     public function __construct(
         LoggerInterface $logger,
-        ExceptionHandlerInterface $exceptionHandler
+        ExceptionHandlerInterface $exceptionHandler,
+        ?string $name = null
     ) {
-        $this->name             = (string)array_slice(explode('\\', static::class), -1)[0];
+        $this->name             = $name ?: (string)array_slice(explode('\\', static::class), -1)[0];
         $this->exceptionHandler = $exceptionHandler;
         $this->logger           = $logger;
     }
@@ -47,10 +48,9 @@ abstract class Command implements CommandInterface
     public function run(CollectionList $arguments): int
     {
         try {
-            $name = $this->getName();
-            $this->logger->verbose("Starting {$name}");
+            $this->logger->verbose("Starting {$this->getName()}");
             $exitCode = $this->execute($arguments);
-            $this->logger->verbose("Completed {$name}");
+            $this->logger->verbose("Completed {$this->getName()}");
 
             return $exitCode;
         } catch (Throwable $throwable) {
