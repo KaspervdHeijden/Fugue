@@ -17,12 +17,10 @@ use function array_values;
 use function array_reduce;
 use function array_search;
 use function array_merge;
-use function array_slice;
 use function array_keys;
 use function is_object;
 use function is_string;
 use function array_sum;
-use function get_class;
 use function gettype;
 use function count;
 use function max;
@@ -52,7 +50,10 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
         'integer'   => '\is_int',
     ];
 
-    /** @var mixed[] */
+    /**
+     * @noinspection PhpPluralMixedCanBeReplacedWithArrayInspection
+     * @var mixed[]
+     */
     private array $elements = [];
     private ?string $type;
 
@@ -205,27 +206,6 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
         return array_keys($this->elements);
     }
 
-    public function slice(int $offset, ?int $length = null): static
-    {
-        return new static(
-            array_slice(
-                $this->elements,
-                $offset,
-                $length,
-                true
-            ),
-            $this->type
-        );
-    }
-
-    public function subset(int $start, ?int $end = null): static
-    {
-        return $this->slice(
-            $start,
-            $end === null ? null : ($end - $start)
-        );
-    }
-
     public function first(): mixed
     {
         $key = array_key_first($this->elements);
@@ -323,6 +303,16 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
         }
     }
 
+    public function cloneType(iterable $newElements = []): static
+    {
+        return new static($newElements, $this->type);
+    }
+
+    public static function forArray(iterable $elements): static
+    {
+        return new static($elements, 'array');
+    }
+
     public static function forString(iterable $elements): static
     {
         return new static($elements, 'string');
@@ -345,8 +335,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
 
     public static function forAuto(iterable $elements): static
     {
-        $runtimeClass = static::class;
-        if ($elements instanceof $runtimeClass) {
+        if ($elements instanceof (static::class)) {
             /** @var static $elements */
             return $elements->merge([]);
         }
@@ -357,7 +346,7 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
             }
 
             if (is_object($element)) {
-                return new static($elements, get_class($element));
+                return new static($elements, $element::class);
             }
 
             $type = gettype($element);
@@ -372,5 +361,10 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
     public static function forMixed(iterable $elements): static
     {
         return new static($elements, null);
+    }
+
+    public static function forType(string $type, iterable $elements = []): static
+    {
+        return new static($elements, $type);
     }
 }

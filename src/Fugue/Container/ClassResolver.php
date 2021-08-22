@@ -8,6 +8,7 @@ use Fugue\Collection\CollectionList;
 use Fugue\Caching\CacheInterface;
 use ReflectionNamedType;
 use ReflectionException;
+use ReflectionParameter;
 use ReflectionMethod;
 use ReflectionClass;
 
@@ -24,12 +25,20 @@ final class ClassResolver
     {
         $arguments = $this->getArgumentClassesFromConstructorWithCache($className)
                           ->map(
-                              static function (string $typeName) use ($container): mixed {
+                              static function (ReflectionParameter $parameter) use ($container, $className): mixed {
+                                  /** @var ReflectionNamedType $type */
+                                  $type     = $parameter->getType();
+                                  $typeName = $type->getName();
+
                                   if ($container->isRegistered($typeName)) {
                                       return $container->resolve($typeName);
                                   }
 
-                                  throw CannotResolveClassException::forUnresolvedClass($typeName);
+                                  if ($parameter->isOptional()) {
+                                      return null;
+                                  }
+
+                                  throw CannotResolveClassException::forUnresolvedClass($typeName, $className);
                               }
                           );
 
@@ -51,19 +60,18 @@ final class ClassResolver
     private function getArgumentClassesFromConstructor(string $className): CollectionList
     {
         try {
+            $paramList   = CollectionList::forType(ReflectionParameter::class);
             $reflection  = new ReflectionClass($className);
-            $classes     = CollectionList::forString([]);
             $constructor = $reflection->getConstructor();
 
             if (! $constructor instanceof ReflectionMethod) {
-                return $classes;
+                return $paramList;
             }
 
             $parameters = $constructor->getParameters();
             foreach ($parameters as $parameter) {
-                $class = $parameter->getType();
-                if ($class instanceof ReflectionNamedType) {
-                    $classes[] = $class->getName();
+                if ($parameter->getType() instanceof ReflectionNamedType) {
+                    $paramList[] = $parameter;
                     continue;
                 }
 
@@ -77,7 +85,7 @@ final class ClassResolver
                 );
             }
 
-            return $classes;
+            return $paramList;
         } catch (ReflectionException $reflectionException) {
             throw InvalidClassException::forClassName(
                 $className,

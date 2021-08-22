@@ -20,7 +20,7 @@ final class CLIRuntime implements RuntimeInterface
 
     public function handle(Request $request): void
     {
-        $args = new CollectionList($request->server()->getArray('argv'), null);
+        $args = CollectionList::forMixed($request->server()->getArray('argv'));
         if ($args->count() < 2) {
             throw InvalidCommandException::forMissingIdentifier();
         }

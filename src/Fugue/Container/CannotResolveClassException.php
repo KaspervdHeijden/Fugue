@@ -17,8 +17,10 @@ final class CannotResolveClassException extends LogicException
         );
     }
 
-    public static function forUnresolvedClass(string $className): self
+    public static function forUnresolvedClass(string $type, string $className): self
     {
-        return new self("Could not resolve class {$className}");
+        return new self(
+            "Could not resolve class parameter of type ({$type}) in the {$className} constructor"
+        );
     }
 }
